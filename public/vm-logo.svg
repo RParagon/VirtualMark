@@ -1,0 +1,34 @@
+<svg
+  width="200"
+  height="100"
+  viewBox="0 0 200 100"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <!-- Definição do gradiente linear -->
+  <defs>
+    <linearGradient id="gradVM" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ED4242" />
+      <stop offset="100%" stop-color="#BB1E1E" />
+    </linearGradient>
+  </defs>
+
+  <!-- Letra V (posição original) -->
+  <path
+    d="M 20 20 L 40 80 L 60 20"
+    fill="none"
+    stroke="url(#gradVM)"
+    stroke-width="25"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+
+  <!-- Letra M (mais próxima e ainda ampliada) -->
+  <path
+    d="M 90 80 L 90 20 L 115 60 L 140 20 L 140 80"
+    fill="none"
+    stroke="url(#gradVM)"
+    stroke-width="25"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+</svg>

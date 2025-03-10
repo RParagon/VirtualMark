@@ -1,0 +1,261 @@
+<svg
+  width="375"
+  height="600"
+  viewBox="0 0 375 600"
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  style="background-color: #2d2d2d;"
+>
+  <defs>
+    <!-- Gradiente de fundo aprimorado -->
+    <radialGradient id="bgGradient" cx="50%" cy="50%" r="80%">
+      <stop offset="0%" stop-color="#2d2d2d"/>
+      <stop offset="60%" stop-color="#1a1a1a"/>
+      <stop offset="100%" stop-color="#111"/>
+    </radialGradient>
+
+    <!-- Gradiente 3D para as barras (vermelho) -->
+    <linearGradient id="barGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ef4444"/>
+      <stop offset="40%" stop-color="#dc2626"/>
+      <stop offset="100%" stop-color="#7f1d1d" stop-opacity="0.8"/>
+    </linearGradient>
+
+    <!-- Gradiente para a linha (ex.: CTR) -->
+    <linearGradient id="lineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#fde047"/>
+    </linearGradient>
+
+    <!-- Filtro para a swirl -->
+    <filter id="swirlFilter" x="-20%" y="-20%" width="140%" height="140%">
+      <feTurbulence
+        type="turbulence"
+        baseFrequency="0.02"
+        numOctaves="2"
+        result="turb"
+      />
+      <feDisplacementMap
+        in="SourceGraphic"
+        in2="turb"
+        scale="10"
+        xChannelSelector="R"
+        yChannelSelector="G"
+      />
+    </filter>
+
+    <!-- Filtro para as barras (sombra) -->
+    <filter id="barShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="2" dy="3" stdDeviation="3" flood-color="#7f1d1d" flood-opacity="0.5"/>
+    </filter>
+
+    <!-- Padrão de grade (opcional) -->
+    <pattern id="gridPattern" width="50" height="50" patternUnits="userSpaceOnUse">
+      <path d="M 50 0 L 0 0 0 50" fill="none" stroke="#404040" stroke-width="0.5"/>
+    </pattern>
+  </defs>
+
+  <!-- Fundo com gradiente e swirl -->
+  <rect width="100%" height="100%" fill="url(#bgGradient)" />
+
+  <!-- Swirl no fundo (curva animada) -->
+  <path
+    d="M 187.5 300
+       c -60 -60,  60 -180, 0 -240
+       c -60 -60,  60 -180, 0 -240
+       "
+    fill="none"
+    stroke="rgba(255,255,255,0.06)"
+    stroke-width="2"
+    stroke-dasharray="1000"
+    stroke-dashoffset="1000"
+    filter="url(#swirlFilter)"
+  >
+    <animate
+      attributeName="stroke-dashoffset"
+      from="1000" to="0"
+      begin="0.5s"
+      dur="2.5s"
+      fill="freeze"
+    />
+  </path>
+
+  <!-- Área de grade no retângulo principal (opcional) -->
+  <rect x="40" y="120" width="295" height="380" fill="url(#gridPattern)" opacity="0.2" />
+
+  <!-- Cabeçalho -->
+  <g transform="translate(187.5, 60)">
+    <text
+      text-anchor="middle"
+      fill="#fff"
+      font-size="20"
+      font-family="Arial, sans-serif"
+      font-weight="700"
+    >
+      VirtualMark
+    </text>
+    <rect x="-60" y="25" width="120" height="3" fill="#ef4444"/>
+    <text
+      y="48"
+      text-anchor="middle"
+      fill="#ef4444"
+      font-size="12"
+      font-family="Arial, sans-serif"
+      font-weight="500"
+    >
+      Dashboard
+    </text>
+  </g>
+
+  <!-- Eixos e Grade -->
+  <g stroke="#888" stroke-width="2">
+    <!-- Eixo X -->
+    <line x1="40" y1="500" x2="335" y2="500" />
+    <!-- Eixo Y -->
+    <line x1="40" y1="120" x2="40" y2="500" />
+  </g>
+
+  <!-- Rótulos Eixo Y -->
+  <g font-family="Arial, sans-serif" font-size="10" fill="#ccc">
+    <text x="35" y="505" text-anchor="end">0</text>
+    <text x="35" y="405" text-anchor="end">100</text>
+    <text x="35" y="305" text-anchor="end">200</text>
+    <text x="35" y="205" text-anchor="end">300</text>
+    <text x="35" y="125" text-anchor="end">400</text>
+  </g>
+
+  <!-- Rótulos Eixo X (meses) -->
+  <g font-family="Arial, sans-serif" font-size="10" fill="#ccc">
+    <text x="60"  y="515">Jan</text>
+    <text x="110" y="515">Fev</text>
+    <text x="160" y="515">Mar</text>
+    <text x="210" y="515">Abr</text>
+    <text x="260" y="515">Mai</text>
+    <text x="310" y="515">Jun</text>
+  </g>
+
+  <!-- Barras (dados fictícios) -->
+  <g transform="translate(40, 500)" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Barra 1 -->
+    <rect
+      x="10" y="0"
+      width="30" height="0"
+      fill="url(#barGrad)"
+      filter="url(#barShadow)"
+      rx="4"
+    >
+      <animate attributeName="height" from="0" to="150" begin="0.8s" dur="0.8s" fill="freeze"/>
+      <animate attributeName="y" from="0" to="-150" begin="0.8s" dur="0.8s" fill="freeze"/>
+    </rect>
+
+    <!-- Barra 2 -->
+    <rect
+      x="60" y="0"
+      width="30" height="0"
+      fill="url(#barGrad)"
+      filter="url(#barShadow)"
+      rx="4"
+    >
+      <animate attributeName="height" from="0" to="100" begin="1s" dur="0.8s" fill="freeze"/>
+      <animate attributeName="y" from="0" to="-100" begin="1s" dur="0.8s" fill="freeze"/>
+    </rect>
+
+    <!-- Barra 3 -->
+    <rect
+      x="110" y="0"
+      width="30" height="0"
+      fill="url(#barGrad)"
+      filter="url(#barShadow)"
+      rx="4"
+    >
+      <animate attributeName="height" from="0" to="80" begin="1.2s" dur="0.8s" fill="freeze"/>
+      <animate attributeName="y" from="0" to="-80" begin="1.2s" dur="0.8s" fill="freeze"/>
+    </rect>
+
+    <!-- Barra 4 -->
+    <rect
+      x="160" y="0"
+      width="30" height="0"
+      fill="url(#barGrad)"
+      filter="url(#barShadow)"
+      rx="4"
+    >
+      <animate attributeName="height" from="0" to="120" begin="1.4s" dur="0.8s" fill="freeze"/>
+      <animate attributeName="y" from="0" to="-120" begin="1.4s" dur="0.8s" fill="freeze"/>
+    </rect>
+
+    <!-- Barra 5 -->
+    <rect
+      x="210" y="0"
+      width="30" height="0"
+      fill="url(#barGrad)"
+      filter="url(#barShadow)"
+      rx="4"
+    >
+      <animate attributeName="height" from="0" to="160" begin="1.6s" dur="0.8s" fill="freeze"/>
+      <animate attributeName="y" from="0" to="-160" begin="1.6s" dur="0.8s" fill="freeze"/>
+    </rect>
+
+    <!-- Barra 6 -->
+    <rect
+      x="260" y="0"
+      width="30" height="0"
+      fill="url(#barGrad)"
+      filter="url(#barShadow)"
+      rx="4"
+    >
+      <animate attributeName="height" from="0" to="70" begin="1.8s" dur="0.8s" fill="freeze"/>
+      <animate attributeName="y" from="0" to="-70" begin="1.8s" dur="0.8s" fill="freeze"/>
+    </rect>
+  </g>
+
+  <!-- Linha de tendência (ex.: CTR) -->
+  <path
+    d="M 50 380 Q 120 320 190 340 T 280 280 T 335 320"
+    stroke="url(#lineGrad)"
+    stroke-width="3"
+    fill="none"
+    stroke-dasharray="400"
+    stroke-dashoffset="400"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <animate
+      attributeName="stroke-dashoffset"
+      from="400"
+      to="0"
+      begin="2.5s"
+      dur="1.2s"
+      fill="freeze"
+    />
+  </path>
+
+  <!-- Pontos na linha -->
+  <g fill="#fde047" stroke="#1a1a1a" stroke-width="1">
+    <circle cx="50"  cy="380" r="0">
+      <animate attributeName="r" from="0" to="4" begin="3s" dur="0.4s" fill="freeze"/>
+    </circle>
+    <circle cx="190" cy="340" r="0">
+      <animate attributeName="r" from="0" to="4" begin="3.2s" dur="0.4s" fill="freeze"/>
+    </circle>
+    <circle cx="280" cy="280" r="0">
+      <animate attributeName="r" from="0" to="4" begin="3.4s" dur="0.4s" fill="freeze"/>
+    </circle>
+    <circle cx="335" cy="320" r="0">
+      <animate attributeName="r" from="0" to="4" begin="3.6s" dur="0.4s" fill="freeze"/>
+    </circle>
+  </g>
+
+  <!-- Legenda / Indicadores -->
+  <g font-family="Arial, sans-serif" font-size="10" fill="#fff">
+    <rect x="45" y="550" width="140" height="40" fill="#1a1a1a" rx="5" opacity="0.8"/>
+    <g text-anchor="start">
+      <rect x="55" y="560" width="12" height="12" fill="#ef4444" rx="2"/>
+      <text x="73" y="570">Visitas</text>
+
+      <circle cx="61" cy="584" r="5" fill="#fde047"/>
+      <text x="73" y="588">CTR</text>
+    </g>
+  </g>
+
+</svg>

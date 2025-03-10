@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    font-family: 'Inter', sans-serif;
+  }
+}
+
+@layer components {
+  .gradient-text {
+    @apply bg-gradient-to-r from-primary-500 to-primary-700 text-transparent bg-clip-text;
+  }
+  
+  .card-hover {
+    @apply hover:border-primary-500/50 transition-all duration-300 transform hover:-translate-y-1;
+  }
+  
+  .button-primary {
+    @apply px-8 py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-semibold transition-colors animate-glow shadow-lg shadow-primary-600/20;
+  }
+  
+  .button-secondary {
+    @apply px-8 py-3 bg-gray-800 hover:bg-gray-700 text-white rounded-lg font-semibold transition-colors;
+  }
+}
+
+@layer utilities {
+  .bg-gradient-custom {
+    @apply bg-gradient-to-b from-background to-gray-900/30;
+  }
+  
+  .text-gradient {
+    @apply bg-gradient-to-r from-primary-500 to-primary-700 text-transparent bg-clip-text;
+  }
+}
