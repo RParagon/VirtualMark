@@ -36,7 +36,7 @@ const Results = () => {
       title: 'Game Safari',
       // Descrição enfatizando foco em vendas e ROI
       description:
-        'A Game Safari é especializada na revenda de produtos digitais (ex.: Game Pass, Netflix e outros serviços de streaming). A Virtual Mark implementou estratégias de marketing multicanal para aumentar as vendas e o ROI, otimizando campanhas de conversão tanto no Google quanto no Meta Ads. Também aplicamos técnicas avançadas de remarketing para reter e engajar o público interessado.',
+        'A Game Safari, um e-commerce especializado na revenda de serviços digitais como Game Pass e assinaturas de streaming, buscava expandir suas vendas sem perder eficiência. A Virtual Mark desenvolveu uma estratégia multicanal voltada à maximização de conversões, combinando campanhas otimizadas no Google e Meta Ads, além de remarketing para reengajar usuários e automações de e-mail para nutrir potenciais clientes. Graças ao monitoramento contínuo de métricas de custo por aquisição (CPA) e retorno sobre investimento (ROI), o resultado foi surpreendente: o ROI duplicou, houve a conquista de mais de 800 novos assinantes mensais e as vendas mensais chegaram a 1500 unidades. Esse crescimento consolidou a Game Safari como referência no mercado de produtos digitais e reforçou seu posicionamento como um e-commerce de alto desempenho.',
       // Ferramentas utilizadas
       tools: ['Google Ads', 'Meta Ads', 'Marketing de Conteudo', 'Shopfy'],
       // Métricas (exemplos para destacar bons resultados)
@@ -50,13 +50,13 @@ const Results = () => {
       image: '/game-safari.png'
     },
     {
-      // 2) Amazônia Vital
+      // 2) DDtizz
       title: 'DDTizz',
       // Descrição enfatizando foco em vendas, ROI, loja de roupa feminina
       description:
-        'A Amazônia Vital é uma loja de roupas femininas com forte presença online. Para impulsionar as vendas, trabalhamos campanhas segmentadas voltadas ao público-alvo feminino, otimizando anúncios de catálogo e ações de conversão. Também criamos estratégias de upsell e cross-sell para maximizar o ROI em cada etapa do funil de vendas.',
+        'A Ddtizz, especializada em soluções de controle de pragas, buscava expandir sua presença digital para atrair mais clientes residenciais e corporativos. A Virtual Mark elaborou um plano integrado que combinou marketing de conteúdo, campanhas segmentadas (Google e redes sociais) e otimização local, garantindo maior visibilidade para quem procurava serviços de dedetização. Páginas otimizadas para conversão e formulários de contato ágeis aceleraram o fechamento de orçamentos, enquanto o remarketing reengajou visitantes interessados. O resultado foi um salto de 60% no tráfego orgânico e um incremento expressivo na taxa de conversão, consolidando a DD Tizz como referência em controle de pragas e intensificando seu relacionamento com potenciais clientes.',
       // Ferramentas utilizadas
-      tools: ['Meta Ads', 'Google Ads', 'Youtube Ads', 'Loja Integrada'],
+      tools: ['Google Ads', 'Youtube Ads', 'WhatsApp'],
       // Métricas de exemplo
       metrics: [
         { value: '+250%', label: 'Crescimento em Faturamento' },
@@ -71,7 +71,7 @@ const Results = () => {
       title: 'Colonial Guararema',
       // Descrição enfatizando geração de leads
       description:
-        'A Colonial Guararema atua no segmento de materiais de construção e precisava gerar leads qualificados via WhatsApp para o departamento de vendas. Implantamos estratégias de anúncios segmentados, integrando campanhas de captação de leads no Google e no Meta. Além disso, criamos formulários e landing pages otimizadas, direcionando os usuários diretamente para o WhatsApp da equipe comercial.',
+        'A Colonial Guararema, já reconhecida como referência na área de materiais de construção, precisava potencializar o volume de leads gerados por meio do WhatsApp – canal estratégico para vendas e relacionamento. Para suprir essa demanda, a Virtual Mark implementou uma ação de marketing com foco em campanhas segmentadas no Google e no Meta, cada qual configurada para atrair diferentes perfis do setor de construção civil. Em complemento, foram criados formulários e landing pages otimizadas, permitindo que os usuários interessados chegassem rapidamente ao WhatsApp da equipe comercial, encurtando o ciclo de vendas. O resultado dessa combinação de anúncios bem direcionados, automação de captação e ativos digitais eficientes foi um crescimento de 400% na geração de leads, com conversões atingindo cerca de 30% e mais de 800 mensagens de potenciais clientes recebidas mensalmente. Esse case ilustra como uma estratégia integrada e voltada a resultados pode fortalecer o relacionamento com o público-alvo e consolidar a posição de destaque da Colonial Guararema no competitivo mercado de materiais de construção.',
       // Ferramentas utilizadas
       tools: ['Google Ads', 'Meta Ads', 'WhatsApp Business', 'Treinameto Personalizado'],
       // Métricas de exemplo
