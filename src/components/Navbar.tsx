@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 import { Link } from 'react-router-dom'
-import { useContact } from '../contexts/ContactContext'
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false)
@@ -53,12 +52,8 @@ const Navbar = () => {
     { name: 'Contato', href: '/contact' }
   ]
 
-  const { contactInfo } = useContact()
-
   const handleContactClick = () => {
-    const message = 'Olá! Gostaria de saber mais sobre os serviços da VirtualMark.'
-    const whatsappURL = `https://api.whatsapp.com/send?phone=${contactInfo.whatsappNumber}&text=${encodeURIComponent(message)}`
-    window.open(whatsappURL, '_blank')
+    window.location.href = '/contact'
   }
 
   const languages = ['PT', 'EN', 'ES']

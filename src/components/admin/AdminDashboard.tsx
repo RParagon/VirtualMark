@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import BlogAdmin from './BlogAdmin'
 import CaseAdmin from './CaseAdmin'
 import LeadsAdmin from './LeadsAdmin'
+import GoogleTagsAdmin from './GoogleTagsAdmin'
 import { useAuth } from '../../contexts/AuthContext'
 import { supabase } from '../../lib/supabase'
 import {
@@ -164,11 +165,18 @@ const AdminDashboard = () => {
               >
                 Leads
               </button>
+              <button
+                onClick={() => setActiveTab('google_tags')}
+                className={`px-4 py-4 font-medium border-b-2 transition-colors ${activeTab === 'google_tags' ? 'border-primary-500 text-primary-500' : 'border-transparent text-gray-400 hover:text-white'}`}
+              >
+                Google Tags
+              </button>
             </div>
           </div>
           <div className="p-6">
             {activeTab === 'blog' ? <BlogAdmin /> : 
              activeTab === 'cases' ? <CaseAdmin /> : 
+             activeTab === 'google_tags' ? <GoogleTagsAdmin /> :
              <LeadsAdmin />}
           </div>
         </div>

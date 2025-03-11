@@ -6,6 +6,7 @@ import { CaseProvider } from './contexts/CaseContext'
 import { ContactProvider } from './contexts/ContactContext'
 import { ServiceProvider } from './contexts/ServiceContext'
 import { AuthProvider } from './contexts/AuthContext'
+import { CookieProvider } from './contexts/CookieContext'
 import ScrollToTop from './components/ScrollToTop'
 
 // Components will be imported here as they are created
@@ -20,10 +21,12 @@ import Testimonials from './components/Testimonials'
 import CallToAction from './components/CallToAction'
 import Footer from './components/Footer'
 import BlogPage from './pages/BlogPage'
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage'
 import AdminPage from './pages/AdminPage'
 import CasesPage from './pages/CasesPage'
 import CaseDetailPage from './pages/CaseDetailPage'
 import ContactPage from './pages/ContactPage'
+import CookieConsent from './components/CookieConsent'
 
 // Service Pages
 import TrafficManagement from './pages/services/TrafficManagement'
@@ -48,49 +51,54 @@ function App() {
   }, [])
 
   return (
-    <AuthProvider>
-      <PostProvider>
-        <ContactProvider>
-          <Router>
-            <ScrollToTop />
-          <div className="relative min-h-screen">
-        {/* Progress bar */}
-        <motion.div
-          className="fixed top-0 left-0 right-0 h-1 bg-primary-600 origin-left z-50"
-          style={{ scaleX }}
-        />
-
-        {/* Main content */}
-        <Routes>
-          <Route path="/blog/*" element={<BlogPage />} />
-          <Route path="/admin" element={<AdminPage />} />
-          <Route path="/cases" element={<CaseProvider><CasesPage /></CaseProvider>} />
-          <Route path="/cases/:slug" element={<CaseProvider><CaseDetailPage /></CaseProvider>} />
-          <Route path="/contact" element={<ContactPage />} />
-          <Route path="/services/traffic-management" element={<ServiceProvider><TrafficManagement /></ServiceProvider>} />
-          <Route path="/services/performance-marketing" element={<ServiceProvider><PerformanceMarketing /></ServiceProvider>} />
-          <Route path="/services/content-marketing" element={<ServiceProvider><ContentMarketing /></ServiceProvider>} />
-          <Route path="/services/digital-consulting" element={<ServiceProvider><DigitalConsulting /></ServiceProvider>} />
-          <Route path="/" element={
-            <main className="relative">
-              <Navbar />
-              <Hero />
-              <Results />
-              <Qualification />
-              <Services />
-              <Expertise />
-              <Assessment />
-              <Testimonials />
-              <CallToAction />
-              <Footer />
-            </main>
-          } />
-        </Routes>
-      </div>
+    <Router>
+      <AuthProvider>
+        <PostProvider>
+          <CaseProvider>
+            <ContactProvider>
+              <ServiceProvider>
+                <CookieProvider>
+                  <div className="relative">
+                    <motion.div
+                      className="fixed top-0 left-0 right-0 h-1 bg-primary-600 origin-left z-50"
+                      style={{ scaleX }}
+                    />
+                    <ScrollToTop />
+                    <Routes>
+                      <Route path="/blog/*" element={<BlogPage />} />
+                      <Route path="/admin" element={<AdminPage />} />
+                      <Route path="/cases" element={<CaseProvider><CasesPage /></CaseProvider>} />
+                      <Route path="/cases/:slug" element={<CaseProvider><CaseDetailPage /></CaseProvider>} />
+                      <Route path="/contact" element={<ContactPage />} />
+                      <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+                      <Route path="/services/traffic-management" element={<ServiceProvider><TrafficManagement /></ServiceProvider>} />
+                      <Route path="/services/performance-marketing" element={<ServiceProvider><PerformanceMarketing /></ServiceProvider>} />
+                      <Route path="/services/content-marketing" element={<ServiceProvider><ContentMarketing /></ServiceProvider>} />
+                      <Route path="/services/digital-consulting" element={<ServiceProvider><DigitalConsulting /></ServiceProvider>} />
+                      <Route path="/" element={
+                        <main className="relative">
+                          <Navbar />
+                          <Hero />
+                          <Results />
+                          <Qualification />
+                          <Services />
+                          <Expertise />
+                          <Assessment />
+                          <Testimonials />
+                          <CallToAction />
+                          <Footer />
+                        </main>
+                      } />
+                    </Routes>
+                    <CookieConsent />
+                  </div>
+                </CookieProvider>
+              </ServiceProvider>
+            </ContactProvider>
+          </CaseProvider>
+        </PostProvider>
+      </AuthProvider>
     </Router>
-        </ContactProvider>
-      </PostProvider>
-    </AuthProvider>
   )
 }
 

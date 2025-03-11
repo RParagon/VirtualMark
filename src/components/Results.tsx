@@ -56,7 +56,7 @@ const Results = () => {
       description:
         'A Ddtizz, especializada em soluções de controle de pragas, buscava expandir sua presença digital para atrair mais clientes residenciais e corporativos. A Virtual Mark elaborou um plano integrado que combinou marketing de conteúdo, campanhas segmentadas (Google e redes sociais) e otimização local, garantindo maior visibilidade para quem procurava serviços de dedetização. Páginas otimizadas para conversão e formulários de contato ágeis aceleraram o fechamento de orçamentos, enquanto o remarketing reengajou visitantes interessados. O resultado foi um salto de 60% no tráfego orgânico e um incremento expressivo na taxa de conversão, consolidando a DD Tizz como referência em controle de pragas e intensificando seu relacionamento com potenciais clientes.',
       // Ferramentas utilizadas
-      tools: ['Google Ads', 'Social Media', 'WhatsApp'],
+      tools: ['Google Ads', 'Youtube Ads', 'WhatsApp'],
       // Métricas de exemplo
       metrics: [
         { value: '+250%', label: 'Crescimento em Faturamento' },

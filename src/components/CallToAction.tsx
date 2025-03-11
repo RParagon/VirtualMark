@@ -1,5 +1,4 @@
 import { motion } from 'framer-motion'
-import { useContact } from '../contexts/ContactContext'
 import { useInView } from 'react-intersection-observer'
 import { Link } from 'react-router-dom'
 
@@ -9,12 +8,8 @@ const CallToAction = () => {
     threshold: 0.1
   })
 
-  const { contactInfo } = useContact()
-
   const handleConsultationRequest = () => {
-    const message = 'Olá! Gostaria de agendar uma consulta gratuita com a VirtualMark.'
-    const whatsappURL = `https://api.whatsapp.com/send?phone=${contactInfo.whatsappNumber}&text=${encodeURIComponent(message)}`
-    window.open(whatsappURL, '_blank')
+    window.location.href = '/contact'
   }
 
   const containerVariants = {
