@@ -2,14 +2,223 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { Target, Globe, BarChart2, TrendingUp } from 'lucide-react'
+import { Helmet } from 'react-helmet'
 import { HeroGeometric } from '@/components/ui/shape-landing-hero'
 import { BentoGrid } from '@/components/ui/bento-grid'
 import { ContainerScroll } from '@/components/ui/container-scroll-animation'
 import type { BentoItem } from '@/components/ui/bento-grid'
-import Footer from '../components/Footer'
 import { ChevronDownIcon, CheckCircleIcon } from '@heroicons/react/24/outline'
 
-const WPP_BASE = 'https://wa.me/5511992794634'
+// ─── SEO / GEO Structured Data ───────────────────────────────────────────────
+
+const SITE_URL = 'https://virtualmark.com.br'
+const PAGE_URL = `${SITE_URL}/imobiliarias`
+const OG_IMAGE = 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1200&q=80'
+
+const seoSchema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebSite',
+      '@id': `${SITE_URL}/#website`,
+      url: SITE_URL,
+      name: 'VirtualMark',
+      description: 'Agência de marketing digital especializada em geração de leads qualificados para imobiliárias e corretores de imóveis no Brasil.',
+      inLanguage: 'pt-BR',
+      publisher: { '@id': `${SITE_URL}/#organization` },
+    },
+    {
+      '@type': 'WebPage',
+      '@id': `${PAGE_URL}#webpage`,
+      url: PAGE_URL,
+      name: 'Marketing Digital para Imobiliárias | Leads Qualificados | VirtualMark',
+      description: 'Agência especializada em geração de leads qualificados para imobiliárias e corretores. Campanhas Google Ads e Meta Ads com landing pages otimizadas. Diagnóstico gratuito.',
+      inLanguage: 'pt-BR',
+      isPartOf: { '@id': `${SITE_URL}/#website` },
+      about: { '@id': `${SITE_URL}/#organization` },
+      breadcrumb: { '@id': `${PAGE_URL}#breadcrumb` },
+      speakable: {
+        '@type': 'SpeakableSpecification',
+        cssSelector: ['h1', 'h2', '.speakable-content'],
+      },
+    },
+    {
+      '@type': 'BreadcrumbList',
+      '@id': `${PAGE_URL}#breadcrumb`,
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Início', item: SITE_URL },
+        { '@type': 'ListItem', position: 2, name: 'Marketing para Imobiliárias', item: PAGE_URL },
+      ],
+    },
+    {
+      '@type': 'Organization',
+      '@id': `${SITE_URL}/#organization`,
+      name: 'VirtualMark',
+      url: SITE_URL,
+      email: 'contato@virtualmark.com.br',
+      telephone: '+5511992794634',
+      description: 'Agência de marketing digital especializada em geração de leads qualificados para imobiliárias e corretores de imóveis no Brasil via Google Ads e Meta Ads.',
+      foundingDate: '2019',
+      areaServed: { '@type': 'Country', name: 'Brasil' },
+      knowsAbout: [
+        'Marketing Digital para Imobiliárias',
+        'Google Ads',
+        'Meta Ads',
+        'Geração de Leads Qualificados',
+        'Landing Pages de Alta Conversão',
+        'Gestão de Tráfego Pago',
+        'CRM Imobiliário',
+        'Mercado Imobiliário Brasileiro',
+      ],
+      address: {
+        '@type': 'PostalAddress',
+        addressCountry: 'BR',
+        addressRegion: 'SP',
+        addressLocality: 'São Paulo',
+      },
+      contactPoint: {
+        '@type': 'ContactPoint',
+        telephone: '+5511992794634',
+        contactType: 'sales',
+        availableLanguage: 'Portuguese',
+        areaServed: 'BR',
+      },
+    },
+    {
+      '@type': ['LocalBusiness', 'ProfessionalService'],
+      '@id': `${PAGE_URL}#business`,
+      name: 'VirtualMark — Marketing Digital para Imobiliárias',
+      description: 'Especialistas em geração de leads para imobiliárias e corretores. Campanhas Google Ads e Meta Ads com segmentação por perfil de comprador, landing pages de alta conversão e relatórios de CPL em tempo real.',
+      url: PAGE_URL,
+      telephone: '+5511992794634',
+      email: 'contato@virtualmark.com.br',
+      priceRange: '$$',
+      currenciesAccepted: 'BRL',
+      paymentAccepted: 'PIX, Cartão de Crédito, Boleto',
+      address: {
+        '@type': 'PostalAddress',
+        addressCountry: 'BR',
+        addressRegion: 'SP',
+        addressLocality: 'São Paulo',
+      },
+      geo: {
+        '@type': 'GeoCoordinates',
+        latitude: -23.5505,
+        longitude: -46.6333,
+      },
+      areaServed: [
+        { '@type': 'Country', name: 'Brasil' },
+        { '@type': 'AdministrativeArea', name: 'São Paulo' },
+        { '@type': 'AdministrativeArea', name: 'Rio de Janeiro' },
+        { '@type': 'AdministrativeArea', name: 'Minas Gerais' },
+        { '@type': 'AdministrativeArea', name: 'Paraná' },
+        { '@type': 'AdministrativeArea', name: 'Santa Catarina' },
+      ],
+      hasOfferCatalog: {
+        '@type': 'OfferCatalog',
+        name: 'Serviços de Marketing Digital para Imobiliárias',
+        itemListElement: [
+          {
+            '@type': 'Offer',
+            itemOffered: {
+              '@type': 'Service',
+              name: 'Campanha Segmentada Google Ads & Meta Ads para Imobiliárias',
+              description: 'Anúncios otimizados que impactam compradores de imóveis por região, faixa de renda e comportamento de busca.',
+            },
+          },
+          {
+            '@type': 'Offer',
+            itemOffered: {
+              '@type': 'Service',
+              name: 'Landing Pages de Alta Conversão para Imobiliárias',
+              description: 'Páginas dedicadas com formulário e WhatsApp integrados para transformar visitantes em leads qualificados.',
+            },
+          },
+          {
+            '@type': 'Offer',
+            itemOffered: {
+              '@type': 'Service',
+              name: 'Dashboard de CPL e ROI em Tempo Real',
+              description: 'Relatórios semanais com custo por lead, taxa de conversão e retorno sobre investimento por campanha.',
+            },
+          },
+          {
+            '@type': 'Offer',
+            itemOffered: {
+              '@type': 'Service',
+              name: 'Otimização Contínua de Campanhas Imobiliárias',
+              description: 'Ajuste diário das campanhas para reduzir custo por lead e elevar a qualidade dos contatos gerados.',
+            },
+          },
+        ],
+      },
+    },
+    {
+      '@type': 'FAQPage',
+      '@id': `${PAGE_URL}#faq`,
+      mainEntity: [
+        {
+          '@type': 'Question',
+          name: 'Qual o investimento mínimo para começar com marketing digital para imobiliárias?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'A VirtualMark recomenda um investimento inicial de R$1.500 a R$3.000 por mês em mídia (Google Ads e Meta Ads) para validar o canal. O fee de gestão é separado. Antes de qualquer contrato, fazemos uma simulação personalizada com base na faixa de preço dos imóveis e na região de atuação.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'Em quanto tempo uma imobiliária vê os primeiros leads com Google Ads e Meta Ads?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Com estrutura correta de campanha, os primeiros leads qualificados chegam entre 7 e 15 dias após o lançamento. Em 30 dias já existem dados reais de CPL (custo por lead) para otimizar a estratégia com segurança.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'Marketing digital para imobiliárias é melhor do que anunciar em portais imobiliários?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Não são estratégias excludentes. Em portais imobiliários, o mesmo lead é disputado por até 30 corretores simultaneamente. Com captação própria via Google Ads e Meta Ads, o lead chega exclusivamente para a imobiliária. Em 90 dias há dados para decidir a melhor alocação de verba entre os canais.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'O marketing digital para imobiliárias funciona em qualquer cidade do Brasil?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Sim. A segmentação geográfica permite impactar compradores que pesquisam imóveis especificamente na área de atuação da imobiliária — cidade, bairro ou condomínio, de Norte a Sul do Brasil.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'Preciso ter site próprio para gerar leads com marketing digital?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Não. A VirtualMark cria landing pages dedicadas para cada campanha — sem necessidade de site completo. A landing page tem um único objetivo: converter o visitante em lead qualificado para a imobiliária.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'Há fidelidade ou multa para cancelar a gestão de tráfego?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Não. A VirtualMark trabalha com contratos mensais renováveis, sem fidelidade mínima. Se em 60 dias não houver evolução mensurável, a estratégia é revisada sem custo adicional.',
+          },
+        },
+      ],
+    },
+    {
+      '@type': 'Review',
+      '@id': `${PAGE_URL}#review-1`,
+      author: { '@type': 'Person', name: 'Fernando' },
+      reviewBody: 'Completando 5 meses de parceria, foi feito um ótimo trabalho ao otimizar nossas campanhas e melhorar nossa presença online. A equipe foi proativa e ajudou a aumentar nossas vendas nesse curto período.',
+      reviewRating: { '@type': 'Rating', ratingValue: '5', bestRating: '5' },
+      itemReviewed: { '@id': `${SITE_URL}/#organization` },
+    },
+  ],
+}
+
+// ─── Page Data ───────────────────────────────────────────────────────────────
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -186,15 +395,11 @@ const faqs = [
   },
 ]
 
-const wppMsg = encodeURIComponent(
-  'Olá, Virtual Mark! Vim pela página de imobiliárias e quero entender como vocês podem me ajudar a gerar leads qualificados para a minha carteira de imóveis.'
-)
+// ─── Sub-component: Showhome browser frame inside ContainerScroll ─────────────
 
-// Showhome browser mockup shown inside ContainerScroll
 function ShowhomeBrowserFrame() {
   return (
     <div className="flex flex-col h-full bg-[#1e1e1e]">
-      {/* Browser chrome */}
       <div className="flex-none flex items-center gap-2 px-4 py-3 bg-[#2a2a2a] border-b border-white/10">
         <div className="flex gap-1.5">
           <span className="w-3 h-3 rounded-full bg-[#ff5f57]" />
@@ -203,14 +408,13 @@ function ShowhomeBrowserFrame() {
         </div>
         <div className="flex-1 flex justify-center">
           <div className="bg-[#3a3a3a] rounded-md px-4 py-1 flex items-center gap-2 text-xs text-gray-400 max-w-xs w-full">
-            <svg className="w-3 h-3 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <svg className="w-3 h-3 text-gray-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 0v20M2 12h20M4.93 4.93c3.12 3.12 3.12 11.02 0 14.14M19.07 4.93c-3.12 3.12-3.12 11.02 0 14.14" />
             </svg>
-            showhome.com.br
+            showhomenow.com.br
           </div>
         </div>
       </div>
-      {/* Iframe */}
       <div className="flex-1 overflow-hidden">
         <iframe
           src="https://showhomenow.com.br"
@@ -223,11 +427,56 @@ function ShowhomeBrowserFrame() {
   )
 }
 
+// ─── Page Component ───────────────────────────────────────────────────────────
+
 export default function ImobiliariaPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null)
 
   return (
     <div className="min-h-screen bg-background text-white flex flex-col">
+
+      {/* ── SEO / GEO HEAD ── */}
+      <Helmet>
+        {/* Primary */}
+        <html lang="pt-BR" />
+        <title>Marketing Digital para Imobiliárias | Leads Qualificados | VirtualMark</title>
+        <meta name="title" content="Marketing Digital para Imobiliárias | Leads Qualificados | VirtualMark" />
+        <meta name="description" content="Agência especializada em geração de leads qualificados para imobiliárias e corretores. Campanhas Google Ads e Meta Ads com landing pages de alta conversão. Diagnóstico gratuito em 3 minutos." />
+        <meta name="keywords" content="marketing digital para imobiliárias, leads para corretor de imóveis, google ads imobiliária, meta ads imóveis, gestão de tráfego imobiliária, captação de leads imóveis, agência marketing imobiliário, leads qualificados imóveis, anúncios imobiliários brasil, marketing digital corretor" />
+        <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+        <meta name="author" content="VirtualMark" />
+        <meta name="rating" content="general" />
+        <meta httpEquiv="content-language" content="pt-BR" />
+        <link rel="canonical" href={PAGE_URL} />
+
+        {/* Geo */}
+        <meta name="geo.region" content="BR-SP" />
+        <meta name="geo.placename" content="São Paulo, Brasil" />
+        <meta name="geo.position" content="-23.5505;-46.6333" />
+        <meta name="ICBM" content="-23.5505, -46.6333" />
+
+        {/* Open Graph */}
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={PAGE_URL} />
+        <meta property="og:title" content="Marketing Digital para Imobiliárias | VirtualMark" />
+        <meta property="og:description" content="Especialistas em geração de leads para imobiliárias. +400% de crescimento em leads qualificados para nossos clientes. Diagnóstico gratuito em 3 minutos." />
+        <meta property="og:image" content={OG_IMAGE} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content="Imóvel de alto padrão — VirtualMark Marketing Digital para Imobiliárias" />
+        <meta property="og:locale" content="pt_BR" />
+        <meta property="og:site_name" content="VirtualMark" />
+
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Marketing Digital para Imobiliárias | VirtualMark" />
+        <meta name="twitter:description" content="Geração de leads qualificados para imobiliárias. +400% de crescimento. Diagnóstico gratuito." />
+        <meta name="twitter:image" content={OG_IMAGE} />
+
+        {/* JSON-LD Structured Data */}
+        <script type="application/ld+json">{JSON.stringify(seoSchema)}</script>
+      </Helmet>
+
       {/* ── HEADER ── */}
       <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-center h-16 bg-background/80 backdrop-blur-sm border-b border-white/[0.04]">
         <span className="text-white font-bold text-lg tracking-wide">VirtualMark</span>
@@ -240,24 +489,16 @@ export default function ImobiliariaPage() {
         title2="Perdendo Clientes Para a Concorrência"
         subtitle="78% dos compradores pesquisam online antes de contatar qualquer corretor. Se você não aparece quando eles buscam, seu concorrente aparece — e fecha o negócio."
       >
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+        <div className="flex justify-center">
           <Link
             to="/quiz-imoveis"
-            className="px-8 py-4 rounded-xl bg-primary-600 hover:bg-primary-700 text-white font-bold text-lg transition-all duration-200 shadow-lg shadow-primary-600/30 hover:-translate-y-0.5"
+            className="px-10 py-4 rounded-xl bg-primary-600 hover:bg-primary-700 text-white font-bold text-lg transition-all duration-200 shadow-lg shadow-primary-600/30 hover:-translate-y-0.5"
           >
             Fazer Diagnóstico Gratuito →
           </Link>
-          <a
-            href={`${WPP_BASE}?text=${wppMsg}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-8 py-4 rounded-xl bg-white/[0.06] hover:bg-white/[0.10] border border-white/[0.10] text-white font-bold text-lg transition-all duration-200"
-          >
-            💬 Falar com Especialista
-          </a>
         </div>
         <p className="text-sm text-white/40 mt-5">
-          ✓ Diagnóstico gratuito · ✓ Resultado em 3 minutos · ✓ Sem compromisso
+          ✓ Gratuito · ✓ Resultado em 3 minutos · ✓ Plano personalizado no resultado
         </p>
       </HeroGeometric>
 
@@ -277,7 +518,7 @@ export default function ImobiliariaPage() {
                 Alguma Dessas Situações?
               </span>
             </h2>
-            <p className="text-gray-400 max-w-2xl mx-auto">
+            <p className="text-gray-400 max-w-2xl mx-auto speakable-content">
               Cada perfil tem uma solução diferente. Saber qual é o seu é o primeiro passo para
               mudar o jogo.
             </p>
@@ -308,9 +549,8 @@ export default function ImobiliariaPage() {
         </motion.div>
       </section>
 
-      {/* ── MARKET STATS — with real estate background image ── */}
+      {/* ── MARKET STATS — property background image ── */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-        {/* Background property image */}
         <div className="absolute inset-0 z-0">
           <img
             src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1600&q=80"
@@ -331,7 +571,7 @@ export default function ImobiliariaPage() {
             <span className="inline-block text-xs font-bold tracking-widest text-primary-500 bg-primary-500/10 px-4 py-2 rounded-full border border-primary-500/20 mb-5">
               A REALIDADE DO MERCADO IMOBILIÁRIO
             </span>
-            <h2 className="text-3xl sm:text-4xl font-bold">
+            <h2 className="text-3xl sm:text-4xl font-bold speakable-content">
               Os Números Que Você Precisa Conhecer
             </h2>
           </motion.div>
@@ -367,7 +607,7 @@ export default function ImobiliariaPage() {
                 Imobiliárias
               </span>
             </h2>
-            <p className="text-gray-400 max-w-2xl mx-auto">
+            <p className="text-gray-400 max-w-2xl mx-auto speakable-content">
               Não é agência genérica. É operação especializada no mercado imobiliário com foco em
               um único resultado: leads qualificados chegando no seu WhatsApp.
             </p>
@@ -440,8 +680,6 @@ export default function ImobiliariaPage() {
                 segmentadas no Google e Meta com landing pages otimizadas para o perfil premium,
                 integrando WhatsApp Business como canal principal.
               </p>
-
-              {/* Metrics inline */}
               <div className="flex flex-wrap gap-6 mb-6">
                 {caseMetrics.map((m, i) => (
                   <div key={i} className="text-left">
@@ -450,8 +688,6 @@ export default function ImobiliariaPage() {
                   </div>
                 ))}
               </div>
-
-              {/* Checklist */}
               <div className="flex flex-wrap gap-x-6 gap-y-2">
                 {caseChecklist.map((item, i) => (
                   <div key={i} className="flex items-start gap-2 text-xs text-gray-300">
@@ -479,16 +715,11 @@ export default function ImobiliariaPage() {
           <motion.div
             variants={itemVariants}
             className="relative overflow-hidden rounded-3xl border border-primary-500/20 p-10 sm:p-14"
-            style={{
-              background: 'linear-gradient(135deg, rgba(15,8,8,0.98), rgba(20,8,8,0.95))',
-            }}
+            style={{ background: 'linear-gradient(135deg, rgba(15,8,8,0.98), rgba(20,8,8,0.95))' }}
           >
             <div
               className="absolute inset-0 pointer-events-none"
-              style={{
-                background:
-                  'radial-gradient(circle at 50% 0%, rgba(239,68,68,0.11), transparent 60%)',
-              }}
+              style={{ background: 'radial-gradient(circle at 50% 0%, rgba(239,68,68,0.11), transparent 60%)' }}
             />
             <div className="relative z-10">
               <span className="text-5xl mb-5 block">🎯</span>
@@ -498,10 +729,10 @@ export default function ImobiliariaPage() {
                   Plano Personalizado
                 </span>
               </h2>
-              <p className="text-gray-400 mb-8 max-w-xl mx-auto leading-relaxed">
-                Identificamos 6 perfis de corretores e imobiliárias. Em 3 minutos você descobre
-                exatamente quais são os gargalos que estão travando seu crescimento — e o que fazer
-                sobre cada um.
+              <p className="text-gray-400 mb-8 max-w-xl mx-auto leading-relaxed speakable-content">
+                Identificamos 6 perfis de imobiliárias. Em 3 minutos você descobre exatamente
+                quais são os gargalos que travam seu crescimento — e recebe um plano de ação
+                direto no WhatsApp.
               </p>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-8 text-left max-w-md mx-auto">
                 {['Gratuito', 'Resultado imediato', 'Sem compromisso', '8 perguntas', 'Diagnóstico cirúrgico', 'Plano de ação'].map(
@@ -523,9 +754,8 @@ export default function ImobiliariaPage() {
         </motion.div>
       </section>
 
-      {/* ── TESTIMONIALS — with subtle property background ── */}
+      {/* ── TESTIMONIALS — subtle property background ── */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-        {/* Background property image */}
         <div className="absolute inset-0 z-0">
           <img
             src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1600&q=80"
@@ -560,9 +790,7 @@ export default function ImobiliariaPage() {
               >
                 <div className="flex mb-4">
                   {Array.from({ length: t.rating }).map((_, j) => (
-                    <span key={j} className="text-primary-500 text-lg">
-                      ★
-                    </span>
+                    <span key={j} className="text-primary-500 text-lg">★</span>
                   ))}
                 </div>
                 <p className="text-gray-300 text-sm leading-relaxed mb-5">"{t.content}"</p>
@@ -607,9 +835,7 @@ export default function ImobiliariaPage() {
                 >
                   <span className="font-semibold text-white text-sm sm:text-base">{f.q}</span>
                   <ChevronDownIcon
-                    className={`w-5 h-5 text-gray-400 flex-shrink-0 transition-transform duration-300 ${
-                      openFaq === i ? 'rotate-180' : ''
-                    }`}
+                    className={`w-5 h-5 text-gray-400 flex-shrink-0 transition-transform duration-300 ${openFaq === i ? 'rotate-180' : ''}`}
                   />
                 </button>
                 <AnimatePresence>
@@ -635,7 +861,7 @@ export default function ImobiliariaPage() {
 
       {/* ── FINAL CTA ── */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-gray-900/30 to-background">
-        <div className="max-w-3xl mx-auto text-center">
+        <div className="max-w-2xl mx-auto text-center">
           <h2 className="text-3xl sm:text-4xl font-bold mb-4">
             Pronto para Parar de Perder{' '}
             <span className="bg-gradient-to-r from-primary-500 to-primary-700 text-transparent bg-clip-text">
@@ -644,29 +870,24 @@ export default function ImobiliariaPage() {
             Para a Concorrência?
           </h2>
           <p className="text-gray-400 mb-8 max-w-xl mx-auto">
-            Escolha o próximo passo — diagnóstico gratuito ou conversa direta com um especialista.
+            Responda o diagnóstico gratuito. Em 3 minutos você recebe um plano de ação
+            personalizado direto no WhatsApp.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              to="/quiz-imoveis"
-              className="px-8 py-4 bg-primary-600 hover:bg-primary-700 text-white font-bold text-lg rounded-xl transition-all duration-200 shadow-lg shadow-primary-600/30 hover:-translate-y-0.5"
-            >
-              Fazer Diagnóstico Gratuito
-            </Link>
-            <a
-              href={`${WPP_BASE}?text=${wppMsg}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-8 py-4 bg-green-600 hover:bg-green-700 text-white font-bold text-lg rounded-xl transition-all duration-200 shadow-lg shadow-green-600/30 hover:-translate-y-0.5"
-            >
-              💬 Falar Agora no WhatsApp
-            </a>
-          </div>
-          <p className="text-gray-600 text-sm mt-5">Conversa gratuita de 15 min · Sem compromisso</p>
+          <Link
+            to="/quiz-imoveis"
+            className="inline-block px-10 py-4 bg-primary-600 hover:bg-primary-700 text-white font-bold text-lg rounded-xl transition-all duration-200 shadow-lg shadow-primary-600/30 hover:-translate-y-0.5"
+          >
+            Começar Diagnóstico Gratuito →
+          </Link>
+          <p className="text-gray-600 text-sm mt-5">Gratuito · 3 minutos · Sem compromisso</p>
         </div>
       </section>
 
-      <Footer />
+      {/* ── FOOTER ── */}
+      <footer className="border-t border-white/[0.06] py-8 px-4 text-center">
+        <p className="text-gray-500 text-sm">© 2026 VirtualMark. Todos os direitos reservados.</p>
+      </footer>
+
     </div>
   )
 }
