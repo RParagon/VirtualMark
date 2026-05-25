@@ -1,11 +1,14 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Link } from 'react-router-dom'
-import { Target, Globe, BarChart2, TrendingUp } from 'lucide-react'
+import { Target, Globe, BarChart2, TrendingUp, Zap, MessageCircle, Mail, Search, Layers, RefreshCw, Users, MousePointer2, MessageSquare, Pen } from 'lucide-react'
 import { Helmet } from 'react-helmet'
 import { HeroGeometric } from '@/components/ui/shape-landing-hero'
 import { BentoGrid } from '@/components/ui/bento-grid'
 import { ContainerScroll } from '@/components/ui/container-scroll-animation'
+import { GlowCard } from '@/components/ui/spotlight-card'
+import { InfiniteSlider } from '@/components/ui/infinite-slider'
+import { ProgressiveBlur } from '@/components/ui/progressive-blur'
 import type { BentoItem } from '@/components/ui/bento-grid'
 import { ChevronDownIcon, CheckCircleIcon } from '@heroicons/react/24/outline'
 
@@ -257,6 +260,21 @@ const painPoints = [
     reality:
       'Você não falhou — a estratégia estava errada. Impulsionar post não é gestão de tráfego. São coisas completamente diferentes.',
   },
+]
+
+const services = [
+  { name: 'Tráfego Pago', Icon: MousePointer2 },
+  { name: 'Google Ads', Icon: Search },
+  { name: 'Meta Ads', Icon: Globe },
+  { name: 'Social Media', Icon: MessageSquare },
+  { name: 'Landing Pages', Icon: Layers },
+  { name: 'Automações', Icon: Zap },
+  { name: 'WhatsApp Marketing', Icon: MessageCircle },
+  { name: 'Email Marketing', Icon: Mail },
+  { name: 'Analytics', Icon: BarChart2 },
+  { name: 'Criativos', Icon: Pen },
+  { name: 'Remarketing', Icon: RefreshCw },
+  { name: 'CRM', Icon: Users },
 ]
 
 const marketStats = [
@@ -511,6 +529,28 @@ export default function ImobiliariaPage() {
         </p>
       </HeroGeometric>
 
+      {/* ── SERVICES TICKER ── */}
+      <section className="py-8 bg-background border-y border-white/[0.05] relative overflow-hidden">
+        <p className="text-center text-xs font-semibold tracking-widest text-gray-600 uppercase mb-5">
+          O que entregamos
+        </p>
+        <div className="relative">
+          <InfiniteSlider duration={35} durationOnHover={70} className="py-1">
+            {services.map((s, i) => (
+              <div key={i} className="flex items-center gap-8 mx-4">
+                <div className="flex items-center gap-2.5 text-gray-500 hover:text-gray-200 transition-colors cursor-default">
+                  <s.Icon className="w-4 h-4 text-primary-500 flex-shrink-0" />
+                  <span className="text-sm font-medium whitespace-nowrap">{s.name}</span>
+                </div>
+                <span className="text-gray-700 select-none">·</span>
+              </div>
+            ))}
+          </InfiniteSlider>
+          <ProgressiveBlur className="left-0 inset-y-0 w-28" direction="left" blurIntensity={6} />
+          <ProgressiveBlur className="right-0 inset-y-0 w-28" direction="right" blurIntensity={6} />
+        </div>
+      </section>
+
       {/* ── PAIN POINTS ── */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-background to-gray-900/30">
         <motion.div
@@ -535,23 +575,21 @@ export default function ImobiliariaPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {painPoints.map((p, i) => (
-              <motion.div
-                key={i}
-                variants={itemVariants}
-                className="bg-gray-900/70 border border-gray-800 rounded-2xl p-7 hover:border-primary-500/30 transition-all duration-300"
-              >
-                <span className="inline-block text-xs font-bold bg-primary-500/10 text-primary-500 px-3 py-1 rounded-full mb-4 tracking-wide">
-                  {p.tag}
-                </span>
-                <h3 className="text-base font-bold mb-3 text-gray-200 leading-snug italic">
-                  {p.title}
-                </h3>
-                <div className="border-t border-gray-800 pt-4 mt-4">
-                  <p className="text-gray-400 text-sm leading-relaxed">
-                    <span className="text-primary-400 font-semibold not-italic">A realidade: </span>
-                    {p.reality}
-                  </p>
-                </div>
+              <motion.div key={i} variants={itemVariants} className="h-full">
+                <GlowCard glowColor="red" className="h-full bg-gray-900/70 p-7">
+                  <span className="inline-block text-xs font-bold bg-primary-500/10 text-primary-500 px-3 py-1 rounded-full mb-4 tracking-wide">
+                    {p.tag}
+                  </span>
+                  <h3 className="text-base font-bold mb-3 text-gray-200 leading-snug italic">
+                    {p.title}
+                  </h3>
+                  <div className="border-t border-gray-800 pt-4 mt-4">
+                    <p className="text-gray-400 text-sm leading-relaxed">
+                      <span className="text-primary-400 font-semibold not-italic">A realidade: </span>
+                      {p.reality}
+                    </p>
+                  </div>
+                </GlowCard>
               </motion.div>
             ))}
           </div>
@@ -667,60 +705,106 @@ export default function ImobiliariaPage() {
         </motion.div>
       </section>
 
-      {/* ── CASE HIGHLIGHT — SHOWHOME com ContainerScroll ── */}
+      {/* ── CASE HIGHLIGHT — SHOWHOME ── */}
       <section className="bg-gradient-to-b from-background to-gray-900/20 overflow-hidden pt-20">
-        <ContainerScroll
-          titleComponent={
-            <div className="max-w-4xl mx-auto px-4 text-left">
-              <div className="text-center mb-6">
-                <span className="inline-block text-xs font-bold tracking-widest text-primary-500 bg-primary-500/10 px-4 py-2 rounded-full border border-primary-500/20">
-                  CASE DE SUCESSO
-                </span>
-              </div>
-              <span className="inline-block text-xs font-bold bg-primary-500/10 text-primary-500 px-3 py-1 rounded-full mb-4 tracking-wide">
-                SHOWHOME
-              </span>
-              <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">
-                R$3.000 investidos. R$13.000 de comissão. ROI de 4.3x.
-              </h2>
-              <p className="text-gray-400 text-sm leading-relaxed mb-6 max-w-2xl">
-                A Showhome, especialista em imóveis de alto padrão, precisava gerar leads
-                qualificados de forma previsível. A VM estruturou campanhas no Meta Ads com landing
-                pages otimizadas e WhatsApp Business como canal de conversão. Resultado: 330
-                contatos gerados, 25 visitas agendadas e 1 venda fechada — gerando R$13.000 de
-                comissão com apenas R$3.000 investidos em mídia.
-              </p>
 
-              {/* ROI destaque */}
-              <div className="inline-flex items-center gap-3 bg-primary-500/10 border border-primary-500/20 rounded-xl px-5 py-3 mb-6">
-                <span className="text-3xl font-black text-primary-500">ROI 4.3x</span>
-                <div className="text-xs text-gray-400 leading-tight">
-                  <span className="block text-gray-300 font-semibold">R$3.000 investidos</span>
-                  <span className="block">→ R$13.000 de comissão gerada</span>
-                </div>
-              </div>
-
-              <div className="flex flex-wrap gap-6 mb-6">
-                {caseMetrics.map((m, i) => (
-                  <div key={i} className="text-left">
-                    <div className="text-2xl font-black text-primary-500 leading-none mb-1">{m.v}</div>
-                    <div className="text-xs text-gray-500">{m.l}</div>
-                  </div>
-                ))}
-              </div>
-              <div className="flex flex-wrap gap-x-6 gap-y-2">
-                {caseChecklist.map((item, i) => (
-                  <div key={i} className="flex items-start gap-2 text-xs text-gray-300">
-                    <CheckCircleIcon className="w-3.5 h-3.5 text-primary-500 flex-shrink-0 mt-0.5" />
-                    {item}
-                  </div>
-                ))}
+        {/* Mobile: simple card layout, no iframe */}
+        <div className="md:hidden px-4 pb-20 max-w-xl mx-auto">
+          <div className="text-center mb-6">
+            <span className="inline-block text-xs font-bold tracking-widest text-primary-500 bg-primary-500/10 px-4 py-2 rounded-full border border-primary-500/20">
+              CASE DE SUCESSO
+            </span>
+          </div>
+          <GlowCard glowColor="red" className="bg-gray-900/70 p-7">
+            <span className="inline-block text-xs font-bold bg-primary-500/10 text-primary-500 px-3 py-1 rounded-full mb-4 tracking-wide">
+              SHOWHOME
+            </span>
+            <h2 className="text-xl font-bold text-white mb-3">
+              R$3.000 investidos. R$13.000 de comissão. ROI de 4.3x.
+            </h2>
+            <p className="text-gray-400 text-sm leading-relaxed mb-5">
+              Campanhas Meta Ads com landing pages otimizadas e WhatsApp Business como canal de
+              conversão. 330 contatos gerados, 25 visitas e 1 venda fechada.
+            </p>
+            <div className="inline-flex items-center gap-3 bg-primary-500/10 border border-primary-500/20 rounded-xl px-4 py-2.5 mb-5">
+              <span className="text-2xl font-black text-primary-500">ROI 4.3x</span>
+              <div className="text-xs text-gray-400 leading-tight">
+                <span className="block text-gray-300 font-semibold">R$3.000 investidos</span>
+                <span className="block">→ R$13.000 de comissão</span>
               </div>
             </div>
-          }
-        >
-          <ShowhomeBrowserFrame />
-        </ContainerScroll>
+            <div className="grid grid-cols-2 gap-4 mb-5">
+              {caseMetrics.map((m, i) => (
+                <div key={i}>
+                  <div className="text-xl font-black text-primary-500 leading-none mb-1">{m.v}</div>
+                  <div className="text-xs text-gray-500">{m.l}</div>
+                </div>
+              ))}
+            </div>
+            <div className="space-y-2">
+              {caseChecklist.map((item, i) => (
+                <div key={i} className="flex items-start gap-2 text-xs text-gray-300">
+                  <CheckCircleIcon className="w-3.5 h-3.5 text-primary-500 flex-shrink-0 mt-0.5" />
+                  {item}
+                </div>
+              ))}
+            </div>
+          </GlowCard>
+        </div>
+
+        {/* Desktop: ContainerScroll with iframe */}
+        <div className="hidden md:block">
+          <ContainerScroll
+            titleComponent={
+              <div className="max-w-4xl mx-auto px-4 text-left">
+                <div className="text-center mb-6">
+                  <span className="inline-block text-xs font-bold tracking-widest text-primary-500 bg-primary-500/10 px-4 py-2 rounded-full border border-primary-500/20">
+                    CASE DE SUCESSO
+                  </span>
+                </div>
+                <span className="inline-block text-xs font-bold bg-primary-500/10 text-primary-500 px-3 py-1 rounded-full mb-4 tracking-wide">
+                  SHOWHOME
+                </span>
+                <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">
+                  R$3.000 investidos. R$13.000 de comissão. ROI de 4.3x.
+                </h2>
+                <p className="text-gray-400 text-sm leading-relaxed mb-6 max-w-2xl">
+                  A Showhome, especialista em imóveis de alto padrão, precisava gerar leads
+                  qualificados de forma previsível. A VM estruturou campanhas no Meta Ads com landing
+                  pages otimizadas e WhatsApp Business como canal de conversão. Resultado: 330
+                  contatos gerados, 25 visitas agendadas e 1 venda fechada — gerando R$13.000 de
+                  comissão com apenas R$3.000 investidos em mídia.
+                </p>
+                <div className="inline-flex items-center gap-3 bg-primary-500/10 border border-primary-500/20 rounded-xl px-5 py-3 mb-6">
+                  <span className="text-3xl font-black text-primary-500">ROI 4.3x</span>
+                  <div className="text-xs text-gray-400 leading-tight">
+                    <span className="block text-gray-300 font-semibold">R$3.000 investidos</span>
+                    <span className="block">→ R$13.000 de comissão gerada</span>
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-6 mb-6">
+                  {caseMetrics.map((m, i) => (
+                    <div key={i} className="text-left">
+                      <div className="text-2xl font-black text-primary-500 leading-none mb-1">{m.v}</div>
+                      <div className="text-xs text-gray-500">{m.l}</div>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex flex-wrap gap-x-6 gap-y-2">
+                  {caseChecklist.map((item, i) => (
+                    <div key={i} className="flex items-start gap-2 text-xs text-gray-300">
+                      <CheckCircleIcon className="w-3.5 h-3.5 text-primary-500 flex-shrink-0 mt-0.5" />
+                      {item}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            }
+          >
+            <ShowhomeBrowserFrame />
+          </ContainerScroll>
+        </div>
+
       </section>
 
       {/* ── QUIZ CTA ── */}
