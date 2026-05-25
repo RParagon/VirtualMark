@@ -1,19 +1,12 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Link } from 'react-router-dom'
-import Navbar from '../components/Navbar'
+import { Target, Globe, BarChart2, TrendingUp } from 'lucide-react'
+import { HeroGeometric } from '@/components/ui/shape-landing-hero'
+import { BentoGrid } from '@/components/ui/bento-grid'
+import type { BentoItem } from '@/components/ui/bento-grid'
 import Footer from '../components/Footer'
-import {
-  BuildingOfficeIcon,
-  CurrencyDollarIcon,
-  ChartBarIcon,
-  ChevronDownIcon,
-  CheckCircleIcon,
-  MagnifyingGlassIcon,
-  RocketLaunchIcon,
-  ChartPieIcon,
-  ArrowTrendingUpIcon,
-} from '@heroicons/react/24/outline'
+import { ChevronDownIcon, CheckCircleIcon } from '@heroicons/react/24/outline'
 
 const WPP_BASE = 'https://wa.me/5511992794634'
 
@@ -29,21 +22,18 @@ const itemVariants = {
 
 const painPoints = [
   {
-    icon: BuildingOfficeIcon,
     tag: 'Corretor Tradicional',
     title: '"Meu negócio é olho no olho — não preciso de internet."',
     reality:
       'Enquanto você fecha 3 negócios com indicação, seu concorrente fecha 10 porque aparece primeiro no Google quando o comprador pesquisa.',
   },
   {
-    icon: CurrencyDollarIcon,
     tag: 'Dependente de Portais',
     title: '"Já gasto com portal, não quero mais uma despesa."',
     reality:
       'Você paga caro por leads que chegam para outros 30 corretores ao mesmo tempo. Em 2 anos o custo subiu +40% e a qualidade caiu.',
   },
   {
-    icon: ChartBarIcon,
     tag: 'Tentou e Parou',
     title: '"Já tentei anúncios e joguei dinheiro fora."',
     reality:
@@ -54,41 +44,57 @@ const painPoints = [
 const marketStats = [
   {
     value: '78%',
-    description:
-      'dos compradores de imóveis pesquisam online antes de contatar qualquer corretor',
+    description: 'dos compradores de imóveis pesquisam online antes de contatar qualquer corretor',
   },
   {
     value: '30',
-    description:
-      'corretores disputando o mesmo lead que você recebe de um portal imobiliário',
+    description: 'corretores disputando o mesmo lead que você recebe de um portal imobiliário',
   },
   {
     value: '+40%',
-    description:
-      'de aumento no custo dos portais nos últimos 2 anos, com qualidade caindo',
+    description: 'de aumento no custo dos portais nos últimos 2 anos, com qualidade caindo',
   },
 ]
 
-const pillars = [
+const vmBentoItems: BentoItem[] = [
   {
-    icon: MagnifyingGlassIcon,
     title: 'Campanha Segmentada',
-    desc: 'Anúncios que aparecem para quem já busca imóveis na sua faixa de preço e região — não para qualquer pessoa.',
+    description:
+      'Anúncios que aparecem para quem já busca imóveis na sua faixa de preço e região — não para qualquer pessoa. Segmentação cirúrgica no Google e Meta.',
+    icon: <Target className="w-5 h-5 text-primary-500" />,
+    status: 'Google & Meta',
+    tags: ['leads', 'segmentação'],
+    cta: 'Saber mais →',
+    colSpan: 2,
+    hasPersistentHover: true,
   },
   {
-    icon: RocketLaunchIcon,
     title: 'Landing Pages que Convertem',
-    desc: 'Páginas dedicadas que transformam visitantes em leads qualificados, com formulário e WhatsApp integrados.',
+    description:
+      'Páginas dedicadas com formulário e WhatsApp integrados — criadas para transformar visitantes em leads qualificados com um único CTA.',
+    icon: <Globe className="w-5 h-5 text-primary-500" />,
+    status: 'Alta conversão',
+    tags: ['conversão'],
+    cta: 'Ver exemplo →',
   },
   {
-    icon: ChartPieIcon,
     title: 'Dashboard em Tempo Real',
-    desc: 'Você acompanha CPL, taxa de conversão e ROI por campanha. Dados claros, sem enrolação.',
+    description:
+      'Acompanhe CPL, taxa de conversão e ROI por campanha. Dados claros, relatório semanal e zero enrolação.',
+    icon: <BarChart2 className="w-5 h-5 text-primary-500" />,
+    status: 'Tempo real',
+    tags: ['dados', 'roi'],
+    cta: 'Ver demo →',
   },
   {
-    icon: ArrowTrendingUpIcon,
     title: 'Otimização Contínua',
-    desc: 'Nossa equipe ajusta as campanhas diariamente para reduzir custo por lead e aumentar a qualidade dos contatos.',
+    description:
+      'Nossa equipe ajusta campanhas diariamente para reduzir custo por lead e aumentar a qualidade dos contatos. Sem set-and-forget.',
+    icon: <TrendingUp className="w-5 h-5 text-primary-500" />,
+    status: 'Diário',
+    tags: ['escala', 'otimização', 'cpl'],
+    cta: 'Começar →',
+    colSpan: 2,
   },
 ]
 
@@ -181,105 +187,38 @@ export default function ImobiliariaPage() {
 
   return (
     <div className="min-h-screen bg-background text-white flex flex-col">
-      <Navbar />
+      {/* ── HEADER ── */}
+      <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-center h-16 bg-background/80 backdrop-blur-sm border-b border-white/[0.04]">
+        <span className="text-white font-bold text-lg tracking-wide">VirtualMark</span>
+      </header>
 
       {/* ── HERO ── */}
-      <section className="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background:
-              'radial-gradient(circle at 15% 55%, rgba(239,68,68,0.13), transparent 50%), radial-gradient(circle at 85% 20%, rgba(185,28,28,0.09), transparent 45%)',
-          }}
-        />
-
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.2 }}
-          className="max-w-4xl mx-auto text-center relative z-10"
-        >
-          <motion.span
-            variants={itemVariants}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-500/10 border border-primary-500/20 text-primary-500 text-sm font-semibold mb-6 tracking-widest uppercase"
+      <HeroGeometric
+        badge="Marketing Imobiliário"
+        title1="Sua Imobiliária Está"
+        title2="Perdendo Clientes Para a Concorrência"
+        subtitle="78% dos compradores pesquisam online antes de contatar qualquer corretor. Se você não aparece quando eles buscam, seu concorrente aparece — e fecha o negócio."
+      >
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <Link
+            to="/quiz-imoveis"
+            className="px-8 py-4 rounded-xl bg-primary-600 hover:bg-primary-700 text-white font-bold text-lg transition-all duration-200 shadow-lg shadow-primary-600/30 hover:-translate-y-0.5"
           >
-            Marketing Digital para Imobiliárias
-          </motion.span>
-
-          <motion.h1
-            variants={itemVariants}
-            className="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight mb-6"
+            Fazer Diagnóstico Gratuito →
+          </Link>
+          <a
+            href={`${WPP_BASE}?text=${wppMsg}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-8 py-4 rounded-xl bg-white/[0.06] hover:bg-white/[0.10] border border-white/[0.10] text-white font-bold text-lg transition-all duration-200"
           >
-            Sua Imobiliária Está{' '}
-            <span className="bg-gradient-to-r from-primary-500 to-primary-700 text-transparent bg-clip-text">
-              Perdendo Clientes
-            </span>{' '}
-            Para a Concorrência
-          </motion.h1>
-
-          <motion.p
-            variants={itemVariants}
-            className="text-xl text-gray-400 mb-4 max-w-3xl mx-auto leading-relaxed"
-          >
-            <strong className="text-gray-200">
-              78% dos compradores pesquisam online antes de contatar qualquer corretor.
-            </strong>{' '}
-            Se você não aparece quando eles buscam, seu concorrente aparece — e fecha o negócio.
-          </motion.p>
-
-          <motion.p variants={itemVariants} className="text-gray-500 mb-10">
-            Sem promessas vazias. Só estratégia, dados e leads exclusivos chegando no seu WhatsApp.
-          </motion.p>
-
-          <motion.div
-            variants={itemVariants}
-            className="flex flex-col sm:flex-row gap-4 justify-center"
-          >
-            <Link
-              to="/quiz-imoveis"
-              className="px-8 py-4 rounded-xl bg-primary-600 hover:bg-primary-700 text-white font-bold text-lg transition-all duration-200 shadow-lg shadow-primary-600/30 hover:-translate-y-0.5"
-            >
-              Fazer Diagnóstico Gratuito →
-            </Link>
-            <a
-              href={`${WPP_BASE}?text=${wppMsg}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-8 py-4 rounded-xl bg-gray-900 hover:bg-gray-800 border border-gray-700 text-white font-bold text-lg transition-all duration-200"
-            >
-              💬 Falar com Especialista
-            </a>
-          </motion.div>
-
-          <motion.p variants={itemVariants} className="text-sm text-gray-600 mt-5">
-            ✓ Diagnóstico gratuito · ✓ Resultado em 3 minutos · ✓ Sem compromisso
-          </motion.p>
-        </motion.div>
-
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.2 }}
-          className="max-w-4xl mx-auto mt-14 grid grid-cols-1 sm:grid-cols-3 gap-4"
-        >
-          {[
-            { v: '+R$10 Mi', l: 'faturados para clientes' },
-            { v: '+R$1,5 Mi', l: 'investidos em anúncios' },
-            { v: '+5 Mil', l: 'anúncios criados no Google & Meta' },
-          ].map((s, i) => (
-            <motion.div
-              key={i}
-              variants={itemVariants}
-              className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-xl p-5 text-center hover:border-primary-500/30 transition-colors duration-300 animate-float"
-            >
-              <div className="text-2xl font-bold text-primary-500 mb-1">{s.v}</div>
-              <div className="text-sm text-gray-400">{s.l}</div>
-            </motion.div>
-          ))}
-        </motion.div>
-      </section>
+            💬 Falar com Especialista
+          </a>
+        </div>
+        <p className="text-sm text-white/40 mt-5">
+          ✓ Diagnóstico gratuito · ✓ Resultado em 3 minutos · ✓ Sem compromisso
+        </p>
+      </HeroGeometric>
 
       {/* ── PAIN POINTS ── */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-background to-gray-900/30">
@@ -361,13 +300,13 @@ export default function ImobiliariaPage() {
         </motion.div>
       </section>
 
-      {/* ── SOLUTION PILLARS ── */}
+      {/* ── SOLUTION — BENTO GRID ── */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-gray-900/30 to-background">
         <motion.div
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, amount: 0.12 }}
+          viewport={{ once: true, amount: 0.1 }}
           className="max-w-6xl mx-auto"
         >
           <motion.div variants={itemVariants} className="text-center mb-12">
@@ -383,22 +322,9 @@ export default function ImobiliariaPage() {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {pillars.map((p, i) => (
-              <motion.div
-                key={i}
-                variants={itemVariants}
-                whileHover={{ scale: 1.02, y: -4 }}
-                className="bg-gray-900/70 border border-gray-800 rounded-2xl p-6 hover:border-primary-500/30 transition-all duration-300"
-              >
-                <div className="w-11 h-11 bg-primary-500/10 rounded-xl flex items-center justify-center mb-4">
-                  <p.icon className="w-6 h-6 text-primary-500" />
-                </div>
-                <h3 className="font-bold text-white mb-2">{p.title}</h3>
-                <p className="text-gray-400 text-sm leading-relaxed">{p.desc}</p>
-              </motion.div>
-            ))}
-          </div>
+          <motion.div variants={itemVariants}>
+            <BentoGrid items={vmBentoItems} />
+          </motion.div>
         </motion.div>
       </section>
 
@@ -441,7 +367,7 @@ export default function ImobiliariaPage() {
         </motion.div>
       </section>
 
-      {/* ── CASE HIGHLIGHT ── */}
+      {/* ── CASE HIGHLIGHT — SHOWHOME ── */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-background to-gray-900/30">
         <motion.div
           variants={containerVariants}
@@ -469,20 +395,21 @@ export default function ImobiliariaPage() {
             <div className="grid grid-cols-1 lg:grid-cols-2">
               <div className="p-8 lg:p-10">
                 <span className="inline-block text-xs font-bold bg-primary-500/10 text-primary-500 px-3 py-1 rounded-full mb-4 tracking-wide">
-                  COLONIAL GUARAREMA
+                  SHOWHOME
                 </span>
                 <h3 className="text-2xl font-bold mb-4 text-white">
                   De zero a +800 leads qualificados por mês
                 </h3>
                 <p className="text-gray-400 text-sm leading-relaxed mb-6">
-                  A Colonial precisava potencializar o volume de leads via WhatsApp — canal estratégico
-                  de vendas. A VM implementou campanhas segmentadas no Google e Meta com landing pages
-                  otimizadas, encurtando o ciclo de venda. Resultado em 90 dias: crescimento explosivo
-                  com qualidade alta.
+                  A Showhome, especialista em imóveis de alto padrão, precisava escalar a geração de
+                  leads de forma previsível — sem depender de indicações. A VM implementou campanhas
+                  segmentadas no Google e Meta com landing pages otimizadas para o perfil premium,
+                  integrando WhatsApp Business como canal principal. Resultado em 90 dias: crescimento
+                  explosivo com alta qualidade de contatos.
                 </p>
                 <div className="space-y-3">
                   {[
-                    'Campanha Google + Meta segmentada por perfil de comprador',
+                    'Campanha Google + Meta segmentada por perfil de comprador premium',
                     'Landing pages com CTA direto para WhatsApp Business',
                     'Processo de nutrição de leads automatizado',
                     'Dashboard semanal com CPL e taxa de conversão',
@@ -550,18 +477,13 @@ export default function ImobiliariaPage() {
                 sobre cada um.
               </p>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-8 text-left max-w-md mx-auto">
-                {[
-                  'Gratuito',
-                  'Resultado imediato',
-                  'Sem compromisso',
-                  '8 perguntas',
-                  'Diagnóstico cirúrgico',
-                  'Plano de ação',
-                ].map((item, i) => (
-                  <div key={i} className="flex items-center gap-2 text-sm text-gray-300">
-                    <span className="text-primary-500 font-bold">✓</span> {item}
-                  </div>
-                ))}
+                {['Gratuito', 'Resultado imediato', 'Sem compromisso', '8 perguntas', 'Diagnóstico cirúrgico', 'Plano de ação'].map(
+                  (item, i) => (
+                    <div key={i} className="flex items-center gap-2 text-sm text-gray-300">
+                      <span className="text-primary-500 font-bold">✓</span> {item}
+                    </div>
+                  )
+                )}
               </div>
               <Link
                 to="/quiz-imoveis"
