@@ -27,6 +27,8 @@ import CasesPage from './pages/CasesPage'
 import CaseDetailPage from './pages/CaseDetailPage'
 import ContactPage from './pages/ContactPage'
 import CookieConsent from './components/CookieConsent'
+import ImobiliariaPage from './pages/ImobiliariaPage'
+import QuizImobiliariaPage from './pages/QuizImobiliariaPage'
 
 // Service Pages
 import TrafficManagement from './pages/services/TrafficManagement'
@@ -71,6 +73,8 @@ function App() {
                       <Route path="/cases/:slug" element={<CaseProvider><CaseDetailPage /></CaseProvider>} />
                       <Route path="/contact" element={<ContactPage />} />
                       <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+                      <Route path="/imobiliarias" element={<ImobiliariaPage />} />
+                      <Route path="/quiz-imoveis" element={<QuizImobiliariaPage />} />
                       <Route path="/services/traffic-management" element={<ServiceProvider><TrafficManagement /></ServiceProvider>} />
                       <Route path="/services/performance-marketing" element={<ServiceProvider><PerformanceMarketing /></ServiceProvider>} />
                       <Route path="/services/content-marketing" element={<ServiceProvider><ContentMarketing /></ServiceProvider>} />
