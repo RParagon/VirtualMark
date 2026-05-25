@@ -73,8 +73,7 @@ function mountShinyCSS() {
       white-space: nowrap;
     }
     .vm-shiny-btn::before,
-    .vm-shiny-btn::after,
-    .vm-shiny-btn > span::before {
+    .vm-shiny-btn::after {
       content: "";
       pointer-events: none;
       position: absolute;
@@ -116,15 +115,6 @@ function mountShinyCSS() {
       opacity: 0.6;
     }
     .vm-shiny-btn > span { z-index: 1; position: relative; }
-    .vm-shiny-btn > span::before {
-      --size: calc(100% + 1rem);
-      width: var(--size);
-      height: var(--size);
-      box-shadow: inset 0 -1ex 2rem 4px var(--shiny-hi);
-      opacity: 0;
-      transition: opacity var(--easing);
-      animation: calc(var(--duration) * 1.5) breathe-vm linear infinite;
-    }
     .vm-shiny-btn,
     .vm-shiny-btn::before,
     .vm-shiny-btn::after {
@@ -143,16 +133,11 @@ function mountShinyCSS() {
     .vm-shiny-btn:is(:hover, :focus-visible)::after {
       animation-play-state: running;
     }
-    .vm-shiny-btn:is(:hover, :focus-visible) > span::before { opacity: 1; }
     @keyframes gradient-angle {
       to { --gradient-angle: 360deg; }
     }
     @keyframes shimmer-vm {
       to { rotate: 360deg; }
-    }
-    @keyframes breathe-vm {
-      from, to { scale: 1; }
-      50% { scale: 1.2; }
     }
   `
   document.head.appendChild(el)

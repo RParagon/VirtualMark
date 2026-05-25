@@ -507,21 +507,20 @@ export default function ImobiliariaPage() {
         <p className="text-center text-xs font-semibold tracking-widest text-gray-600 uppercase mb-5">
           O que entregamos
         </p>
-        <div className="relative">
-          <InfiniteSlider duration={35} durationOnHover={70} className="py-1">
-            {services.map((s, i) => (
-              <div key={i} className="flex items-center gap-8 mx-4">
-                <div className="flex items-center gap-2.5 text-gray-500 hover:text-gray-200 transition-colors cursor-default">
-                  <s.Icon className="w-4 h-4 text-primary-500 flex-shrink-0" />
-                  <span className="text-sm font-medium whitespace-nowrap">{s.name}</span>
-                </div>
-                <span className="text-gray-700 select-none">·</span>
+        <InfiniteSlider duration={35} className="py-1">
+          {services.map((s, i) => (
+            <div key={i} className="flex items-center gap-8 mx-4">
+              <div className="flex items-center gap-2.5 text-gray-500 cursor-default">
+                <s.Icon className="w-4 h-4 text-primary-500 flex-shrink-0" />
+                <span className="text-sm font-medium whitespace-nowrap">{s.name}</span>
               </div>
-            ))}
-          </InfiniteSlider>
-          <ProgressiveBlur className="left-0 inset-y-0 w-28" direction="left" blurIntensity={6} />
-          <ProgressiveBlur className="right-0 inset-y-0 w-28" direction="right" blurIntensity={6} />
-        </div>
+              <span className="text-gray-700 select-none">·</span>
+            </div>
+          ))}
+        </InfiniteSlider>
+        {/* Blur anchored to section edges, covers full height including label */}
+        <ProgressiveBlur className="left-0 inset-y-0 w-28" direction="left" blurIntensity={6} />
+        <ProgressiveBlur className="right-0 inset-y-0 w-28" direction="right" blurIntensity={6} />
       </section>
 
       {/* ── PAIN POINTS ── */}
