@@ -215,6 +215,14 @@ const seoSchema = {
       reviewRating: { '@type': 'Rating', ratingValue: '5', bestRating: '5' },
       itemReviewed: { '@id': `${SITE_URL}/#organization` },
     },
+    {
+      '@type': 'CaseStudy',
+      '@id': `${PAGE_URL}#case-showhome`,
+      name: 'Case Showhome — ROI 4.3x com Meta Ads',
+      description: 'A Showhome investiu R$3.000 em Meta Ads com a VirtualMark e gerou 330 contatos qualificados no WhatsApp, 25 visitas agendadas e 1 venda realizada — resultando em R$13.000 de comissão e ROI de 4.3x.',
+      about: { '@id': `${SITE_URL}/#organization` },
+      result: 'ROI de 4.3x: R$3.000 investidos em Meta Ads resultaram em R$13.000 de comissão gerada para a imobiliária Showhome.',
+    },
   ],
 }
 
@@ -332,16 +340,17 @@ const processSteps = [
 ]
 
 const caseMetrics = [
-  { v: '+400%', l: 'Crescimento em leads qualificados' },
-  { v: '30%', l: 'Taxa de conversão em contatos' },
-  { v: '+800', l: 'Mensagens no WhatsApp por mês' },
+  { v: 'R$3K', l: 'Investimento em Meta Ads' },
+  { v: '330', l: 'Contatos gerados no WhatsApp' },
+  { v: '25', l: 'Visitas agendadas' },
+  { v: '1', l: 'Venda realizada' },
 ]
 
 const caseChecklist = [
-  'Campanha Google + Meta segmentada por perfil de comprador premium',
+  'Campanhas Meta Ads segmentadas por perfil de comprador de alto padrão',
   'Landing pages com CTA direto para WhatsApp Business',
-  'Processo de nutrição de leads automatizado',
-  'Dashboard semanal com CPL e taxa de conversão',
+  '330 contatos qualificados gerados diretamente no WhatsApp',
+  'R$13.000 de comissão gerada com R$3.000 investidos em mídia',
 ]
 
 const testimonials = [
@@ -672,14 +681,25 @@ export default function ImobiliariaPage() {
                 SHOWHOME
               </span>
               <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">
-                De zero a +800 leads qualificados por mês
+                R$3.000 investidos. R$13.000 de comissão. ROI de 4.3x.
               </h2>
               <p className="text-gray-400 text-sm leading-relaxed mb-6 max-w-2xl">
-                A Showhome, especialista em imóveis de alto padrão, precisava escalar a geração de
-                leads de forma previsível — sem depender de indicações. A VM implementou campanhas
-                segmentadas no Google e Meta com landing pages otimizadas para o perfil premium,
-                integrando WhatsApp Business como canal principal.
+                A Showhome, especialista em imóveis de alto padrão, precisava gerar leads
+                qualificados de forma previsível. A VM estruturou campanhas no Meta Ads com landing
+                pages otimizadas e WhatsApp Business como canal de conversão. Resultado: 330
+                contatos gerados, 25 visitas agendadas e 1 venda fechada — gerando R$13.000 de
+                comissão com apenas R$3.000 investidos em mídia.
               </p>
+
+              {/* ROI destaque */}
+              <div className="inline-flex items-center gap-3 bg-primary-500/10 border border-primary-500/20 rounded-xl px-5 py-3 mb-6">
+                <span className="text-3xl font-black text-primary-500">ROI 4.3x</span>
+                <div className="text-xs text-gray-400 leading-tight">
+                  <span className="block text-gray-300 font-semibold">R$3.000 investidos</span>
+                  <span className="block">→ R$13.000 de comissão gerada</span>
+                </div>
+              </div>
+
               <div className="flex flex-wrap gap-6 mb-6">
                 {caseMetrics.map((m, i) => (
                   <div key={i} className="text-left">
