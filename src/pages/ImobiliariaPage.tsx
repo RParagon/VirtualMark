@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Link } from 'react-router-dom'
 import { Target, Globe, BarChart2, TrendingUp, Zap, MessageCircle, Mail, Search, Layers, RefreshCw, Users, MousePointer2, MessageSquare, Pen } from 'lucide-react'
 import { Helmet } from 'react-helmet'
 import { HeroGeometric } from '@/components/ui/shape-landing-hero'
@@ -9,6 +8,8 @@ import { ContainerScroll } from '@/components/ui/container-scroll-animation'
 import { GlowCard } from '@/components/ui/spotlight-card'
 import { InfiniteSlider } from '@/components/ui/infinite-slider'
 import { ProgressiveBlur } from '@/components/ui/progressive-blur'
+import { ShinyButton } from '@/components/ui/shiny-button'
+import { TestimonialsSection } from '@/components/ui/testimonial-columns'
 import type { BentoItem } from '@/components/ui/bento-grid'
 import { ChevronDownIcon, CheckCircleIcon } from '@heroicons/react/24/outline'
 
@@ -371,29 +372,6 @@ const caseChecklist = [
   'R$13.000 de comissão gerada com R$3.000 investidos em mídia',
 ]
 
-const testimonials = [
-  {
-    name: 'Fernando',
-    role: 'CEO, Negócio Imobiliário',
-    content:
-      'Completando 5 meses de parceria, foi feito um ótimo trabalho ao otimizar nossas campanhas e melhorar nossa presença online. A equipe foi proativa e ajudou a aumentar nossas vendas nesse curto período. Super recomendo!',
-    rating: 5,
-  },
-  {
-    name: 'Thiago',
-    role: 'Diretor Comercial, Imobiliária',
-    content:
-      'Parceria consolidada a mais de um ano. A Virtual Mark nos ajudou a melhorar nossa estratégia de Google Ads e Meta Ads, resultando em um aumento consistente nas vendas. A equipe foi eficiente em criar campanhas que realmente funcionaram.',
-    rating: 5,
-  },
-  {
-    name: 'Bruno',
-    role: 'Corretor Independente',
-    content:
-      'Ótima empresa, desde 2019 me trazendo um CPA ótimo e novos criativos. Os leads chegam qualificados e o processo de atendimento é muito transparente. Recomendo a todos!',
-    rating: 5,
-  },
-]
 
 const faqs = [
   {
@@ -517,12 +495,7 @@ export default function ImobiliariaPage() {
         subtitle="78% dos compradores pesquisam online antes de contatar qualquer corretor. Se você não aparece quando eles buscam, seu concorrente aparece — e fecha o negócio."
       >
         <div className="flex justify-center">
-          <Link
-            to="/quiz-imoveis"
-            className="px-10 py-4 rounded-xl bg-primary-600 hover:bg-primary-700 text-white font-bold text-lg transition-all duration-200 shadow-lg shadow-primary-600/30 hover:-translate-y-0.5"
-          >
-            Fazer Diagnóstico Gratuito →
-          </Link>
+          <ShinyButton to="/quiz-imoveis">Fazer Diagnóstico Gratuito →</ShinyButton>
         </div>
         <p className="text-sm text-white/40 mt-5">
           ✓ Gratuito · ✓ Resultado em 3 minutos · ✓ Plano personalizado no resultado
@@ -847,66 +820,14 @@ export default function ImobiliariaPage() {
                   )
                 )}
               </div>
-              <Link
-                to="/quiz-imoveis"
-                className="inline-block px-10 py-4 bg-primary-600 hover:bg-primary-700 text-white font-bold text-lg rounded-xl transition-all duration-200 shadow-xl shadow-primary-600/30 hover:-translate-y-0.5"
-              >
-                Fazer Meu Diagnóstico Gratuito →
-              </Link>
+              <ShinyButton to="/quiz-imoveis">Fazer Meu Diagnóstico Gratuito →</ShinyButton>
             </div>
           </motion.div>
         </motion.div>
       </section>
 
-      {/* ── TESTIMONIALS — subtle property background ── */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          <img
-            src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1600&q=80"
-            alt=""
-            className="w-full h-full object-cover opacity-[0.07]"
-          />
-        </div>
-        <div className="absolute inset-0 bg-gradient-to-b from-gray-900/30 to-background z-0 pointer-events-none" />
-
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.1 }}
-          className="relative z-10 max-w-6xl mx-auto"
-        >
-          <motion.div variants={itemVariants} className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-bold">
-              O Que Nossos Clientes{' '}
-              <span className="bg-gradient-to-r from-primary-500 to-primary-700 text-transparent bg-clip-text">
-                Dizem
-              </span>
-            </h2>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {testimonials.map((t, i) => (
-              <motion.div
-                key={i}
-                variants={itemVariants}
-                className="bg-gray-900/80 backdrop-blur-sm border border-gray-800 rounded-2xl p-7 hover:border-primary-500/30 transition-all duration-300"
-              >
-                <div className="flex mb-4">
-                  {Array.from({ length: t.rating }).map((_, j) => (
-                    <span key={j} className="text-primary-500 text-lg">★</span>
-                  ))}
-                </div>
-                <p className="text-gray-300 text-sm leading-relaxed mb-5">"{t.content}"</p>
-                <div className="border-t border-gray-800 pt-4">
-                  <p className="font-semibold text-white">{t.name}</p>
-                  <p className="text-gray-500 text-sm">{t.role}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-      </section>
+      {/* ── TESTIMONIALS ── */}
+      <TestimonialsSection />
 
       {/* ── FAQ ── */}
       <section className="py-20 px-4 sm:px-6 lg:px-8">
@@ -977,12 +898,7 @@ export default function ImobiliariaPage() {
             Responda o diagnóstico gratuito. Em 3 minutos você recebe um plano de ação
             personalizado direto no WhatsApp.
           </p>
-          <Link
-            to="/quiz-imoveis"
-            className="inline-block px-10 py-4 bg-primary-600 hover:bg-primary-700 text-white font-bold text-lg rounded-xl transition-all duration-200 shadow-lg shadow-primary-600/30 hover:-translate-y-0.5"
-          >
-            Começar Diagnóstico Gratuito →
-          </Link>
+          <ShinyButton to="/quiz-imoveis">Começar Diagnóstico Gratuito →</ShinyButton>
           <p className="text-gray-600 text-sm mt-5">Gratuito · 3 minutos · Sem compromisso</p>
         </div>
       </section>
