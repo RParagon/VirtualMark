@@ -213,7 +213,7 @@ function ShowhomeBrowserFrame() {
       {/* Iframe */}
       <div className="flex-1 overflow-hidden">
         <iframe
-          src="https://showhome.com.br"
+          src="https://showhomenow.com.br"
           title="Site Showhome"
           className="w-full h-full border-0"
           loading="lazy"
@@ -317,7 +317,7 @@ export default function ImobiliariaPage() {
             alt=""
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-background/88" />
+          <div className="absolute inset-0 bg-background/68" />
         </div>
 
         <motion.div
@@ -419,24 +419,15 @@ export default function ImobiliariaPage() {
       </section>
 
       {/* ── CASE HIGHLIGHT — SHOWHOME com ContainerScroll ── */}
-      <section className="bg-gradient-to-b from-background to-gray-900/20 overflow-hidden">
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.05 }}
-          className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-16"
-        >
-          <motion.div variants={itemVariants} className="text-center mb-2">
-            <span className="inline-block text-xs font-bold tracking-widest text-primary-500 bg-primary-500/10 px-4 py-2 rounded-full border border-primary-500/20">
-              CASE DE SUCESSO
-            </span>
-          </motion.div>
-        </motion.div>
-
+      <section className="bg-gradient-to-b from-background to-gray-900/20 overflow-hidden pt-20">
         <ContainerScroll
           titleComponent={
             <div className="max-w-4xl mx-auto px-4 text-left">
+              <div className="text-center mb-6">
+                <span className="inline-block text-xs font-bold tracking-widest text-primary-500 bg-primary-500/10 px-4 py-2 rounded-full border border-primary-500/20">
+                  CASE DE SUCESSO
+                </span>
+              </div>
               <span className="inline-block text-xs font-bold bg-primary-500/10 text-primary-500 px-3 py-1 rounded-full mb-4 tracking-wide">
                 SHOWHOME
               </span>

@@ -23,21 +23,21 @@ export const ContainerScroll = ({
     return () => window.removeEventListener('resize', checkMobile)
   }, [])
 
-  const scaleDimensions = () => (isMobile ? [0.7, 0.9] : [1.05, 1])
+  const scaleDimensions = () => (isMobile ? [0.82, 0.97] : [1.35, 1])
 
-  const rotate = useTransform(scrollYProgress, [0, 1], [20, 0])
-  const scale = useTransform(scrollYProgress, [0, 1], scaleDimensions())
-  const translate = useTransform(scrollYProgress, [0, 1], [0, -100])
+  const rotate = useTransform(scrollYProgress, [0, 0.7], [28, 0])
+  const scale = useTransform(scrollYProgress, [0, 0.7], scaleDimensions())
+  const translate = useTransform(scrollYProgress, [0, 0.7], [0, -80])
 
   return (
     <div
       className={cn(
-        'h-[56rem] md:h-[70rem] flex items-center justify-center relative p-2 md:p-20',
+        'h-[58rem] md:h-[74rem] flex items-center justify-center relative p-2 md:p-20',
         className
       )}
       ref={containerRef}
     >
-      <div className="py-10 md:py-40 w-full relative" style={{ perspective: '1000px' }}>
+      <div className="py-12 md:py-44 w-full relative" style={{ perspective: '1200px' }}>
         <ScrollHeader translate={translate} titleComponent={titleComponent} />
         <ScrollCard rotate={rotate} scale={scale}>
           {children}
@@ -76,9 +76,9 @@ function ScrollCard({
         rotateX: rotate,
         scale,
         boxShadow:
-          '0 0 #0000004d, 0 9px 20px #0000004a, 0 37px 37px #00000042, 0 84px 50px #00000026, 0 149px 60px #0000000a, 0 233px 65px #00000003',
+          '0 0 0 1px rgba(239,68,68,0.08), 0 9px 20px rgba(0,0,0,0.55), 0 37px 37px rgba(0,0,0,0.48), 0 84px 50px rgba(0,0,0,0.30), 0 149px 60px rgba(0,0,0,0.12), 0 233px 65px rgba(0,0,0,0.04)',
       }}
-      className="max-w-5xl -mt-12 mx-auto h-[30rem] md:h-[40rem] w-full border-4 border-[#3a3a3a] p-1 bg-[#1a1a1a] rounded-[30px] shadow-2xl"
+      className="max-w-5xl -mt-12 mx-auto h-[30rem] md:h-[42rem] w-full border-2 border-[#2e2e2e] p-1 bg-[#151515] rounded-[30px]"
     >
       <div className="h-full w-full overflow-hidden rounded-2xl bg-[#111]">
         {children}
