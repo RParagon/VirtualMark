@@ -32,6 +32,19 @@ const Results = () => {
   // Novos Cases
   const cases = [
     {
+      // 0) Showhome Now
+      title: 'Showhome',
+      description:
+        'A Showhome, especialista em imóveis de alto padrão, precisava gerar leads qualificados de forma previsível. A Virtual Mark estruturou campanhas no Meta Ads com landing pages otimizadas e WhatsApp Business como canal de conversão principal. Com segmentação cirúrgica por perfil de comprador de alto padrão e ajustes contínuos de CPL, o resultado foi expressivo: 330 contatos qualificados gerados diretamente no WhatsApp, 25 visitas agendadas e 1 venda fechada — gerando R$13.000 de comissão com apenas R$3.000 investidos em mídia, alcançando um ROI de 4.3x.',
+      tools: ['Meta Ads', 'Landing Pages', 'WhatsApp Business'],
+      metrics: [
+        { value: 'ROI 4.3x', label: 'Retorno sobre Investimento' },
+        { value: '330', label: 'Contatos no WhatsApp' },
+        { value: 'R$13K', label: 'Comissão Gerada' },
+      ],
+      image: '/showhome-now.png',
+    },
+    {
       // 1) Game Safari
       title: 'Game Safari',
       // Descrição enfatizando foco em vendas e ROI
