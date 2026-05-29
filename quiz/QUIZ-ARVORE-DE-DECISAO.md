@@ -4,7 +4,7 @@
 > Árvore de decisão **multi-nível**: ramifica em 3 níveis (maturidade → perfil → contexto), com **6 caminhos distintos**, cada um coletando dados relevantes e entregando conteúdo cirúrgico para aquele ICP.
 >
 > **Versão:** 2.0 — árvore profunda · Maio 2026
-> **Status:** especificação completa + implementado em `src/pages/QuizImobiliariaTreePage.tsx` (rota preview `/quiz-imoveis-v2`).
+> **Status:** especificação completa + implementado e EM PRODUÇÃO em `src/pages/QuizImobiliariaTreePage.tsx` (rota oficial `/quiz-imoveis`).
 
 ---
 
@@ -305,7 +305,7 @@ Cada lead salvo em `quiz_leads` (Supabase) com: contato, icp, icp_name, branch, 
 
 ## 9. Especificação técnica
 
-- **Rota:** `/quiz-imoveis-v2` (preview). Após aprovação, promover para `/quiz-imoveis`.
+- **Rota:** `/quiz-imoveis` (oficial). `/quiz-imoveis-v2` redireciona para ela (link de preview legado).
 - **Modelo de dados:** grafo de nós (`NODES: Record<NodeId, QNode>`). Cada opção tem `next: NodeId | 'insight:icpX' | 'open'`. Traversal por `currentNodeId` + histórico (para o botão voltar, futuro).
 - **Marca:** #0a0a0a / vermelho VM, fonte Inter, animações fadeUp.
 - **Persistência:** `supabase.from('quiz_leads').insert([...])` (não-bloqueante).
@@ -315,8 +315,8 @@ Cada lead salvo em `quiz_leads` (Supabase) com: contato, icp, icp_name, branch, 
 
 ## 10. Decisões em aberto / próximos passos
 
-1. 🔲 Validar a árvore profunda em `/quiz-imoveis-v2`.
-2. 🔲 Promover para a rota oficial `/quiz-imoveis` e aposentar a versão antiga.
+1. ✅ Validar a árvore profunda e promover para a rota oficial `/quiz-imoveis` (versão antiga aposentada).
+2. ✅ Rodar `quiz_leads.sql` no Supabase.
 3. 🔲 Exibir `quiz_leads` no painel admin (com a trilha de respostas + roteamento por ICP).
 4. 🔲 Automatizar notificação ao closer por ICP (webhook/WhatsApp interno).
 5. 🔲 Botão "voltar" no quiz (o grafo já guarda histórico — fácil de adicionar).

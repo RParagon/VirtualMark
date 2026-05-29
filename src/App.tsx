@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { motion, useScroll, useSpring } from 'framer-motion'
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom'
 import { PostProvider } from './contexts/PostContext'
 import { CaseProvider } from './contexts/CaseContext'
 import { ContactProvider } from './contexts/ContactContext'
@@ -28,7 +28,6 @@ import CaseDetailPage from './pages/CaseDetailPage'
 import ContactPage from './pages/ContactPage'
 import CookieConsent from './components/CookieConsent'
 import ImobiliariaPage from './pages/ImobiliariaPage'
-import QuizImobiliariaPage from './pages/QuizImobiliariaPage'
 import QuizImobiliariaTreePage from './pages/QuizImobiliariaTreePage'
 
 // Service Pages
@@ -75,8 +74,8 @@ function App() {
                       <Route path="/contact" element={<ContactPage />} />
                       <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
                       <Route path="/imobiliarias" element={<ImobiliariaPage />} />
-                      <Route path="/quiz-imoveis" element={<QuizImobiliariaPage />} />
-                      <Route path="/quiz-imoveis-v2" element={<QuizImobiliariaTreePage />} />
+                      <Route path="/quiz-imoveis" element={<QuizImobiliariaTreePage />} />
+                      <Route path="/quiz-imoveis-v2" element={<Navigate to="/quiz-imoveis" replace />} />
                       <Route path="/services/traffic-management" element={<ServiceProvider><TrafficManagement /></ServiceProvider>} />
                       <Route path="/services/performance-marketing" element={<ServiceProvider><PerformanceMarketing /></ServiceProvider>} />
                       <Route path="/services/content-marketing" element={<ServiceProvider><ContentMarketing /></ServiceProvider>} />
