@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { trackQuiz, getAttribution } from '../lib/quizTracking'
@@ -7,6 +7,8 @@ const WPP_NUMBER = '5511992794634'
 
 type ICPKey = 'icp1' | 'icp2' | 'icp3' | 'icp4' | 'icp5' | 'icp6'
 type Branch = 'A' | 'B' | 'C'
+type NodeId = string
+type NextTarget = NodeId // pode ser id de nó, `insight:icpX`, ou `open`
 
 const ICP_KEYS: ICPKey[] = ['icp1', 'icp2', 'icp3', 'icp4', 'icp5', 'icp6']
 
@@ -15,12 +17,13 @@ type Weights = Partial<Record<ICPKey, number>>
 interface Option {
   text: string
   weights: Weights
-  branch?: Branch // só nas opções da pergunta-raiz
+  next: NextTarget
+  branch?: Branch // só na raiz
   forceICP?: ICPKey // regra dura (equipe 4+)
 }
 
 interface QNode {
-  id: string
+  id: NodeId
   question: (firstName: string) => string
   subtitle?: string
   options: Option[]
@@ -50,7 +53,7 @@ interface Profile {
   cta: string
 }
 
-interface InsightVariant {
+interface Insight {
   eyebrow: string
   title: string
   body: string
@@ -58,178 +61,236 @@ interface InsightVariant {
 
 type Step = 'intro' | 'name_step' | 'question' | 'insight' | 'open' | 'capture' | 'result'
 
-// ════════════════════════════════════════════════════════════════
-//  ÁRVORE DE PERGUNTAS
-// ════════════════════════════════════════════════════════════════
-
-// Q1 — RAIZ: segmenta por maturidade e define o ramo.
-const ROOT: QNode = {
-  id: 'root',
-  question: (n) =>
-    n ? `${n}, de onde vem a maioria dos seus clientes hoje?` : 'De onde vem a maioria dos seus clientes hoje?',
-  subtitle: 'Essa é a pergunta que mais revela onde está sua maior oportunidade.',
-  options: [
-    { text: 'Indicações e networking presencial', branch: 'A', weights: { icp1: 5, icp3: 1 } },
-    { text: 'Portais imobiliários (ZAP, OLX, VivaReal)', branch: 'A', weights: { icp2: 5, icp6: 1 } },
-    { text: 'Instagram / redes sociais orgânicas', branch: 'B', weights: { icp3: 2, icp4: 3 } },
-    { text: 'Já faço anúncios pagos (Google ou Meta)', branch: 'C', weights: { icp5: 4, icp6: 2 } },
-    { text: 'Não tenho uma fonte principal definida', branch: 'B', weights: { icp4: 3, icp3: 2 } },
-  ],
-}
-
-// Perguntas de cada ramo (distinguem os 2 ICPs daquele nível + contexto).
-const BRANCH_QUESTIONS: Record<Branch, QNode[]> = {
-  // RAMO A — "Ainda não digital" (ICP1 vs ICP2)
-  A: [
-    {
-      id: 'a2',
-      question: () => 'Quando você pensa em anúncios online, o que mais te representa?',
-      options: [
-        { text: '"Nunca investi — meu negócio é relacionamento"', weights: { icp1: 5 } },
-        { text: '"Acho que já faço — pago o portal todo mês"', weights: { icp2: 5 } },
-        { text: '"Já pensei, mas acho caro e complexo"', weights: { icp1: 3, icp4: 2 } },
-        { text: '"Pago portal, mas sei que não é a mesma coisa que anunciar"', weights: { icp2: 4, icp5: 1 } },
-      ],
-    },
-    {
-      id: 'a3',
-      question: (n) =>
-        n ? `${n}, há quanto tempo você trabalha com imóveis de alto padrão?` : 'Há quanto tempo você trabalha com imóveis de alto padrão?',
-      options: [
-        { text: 'Mais de 20 anos — conheço todo mundo no mercado', weights: { icp1: 4, icp6: 1 } },
-        { text: '10 a 20 anos — mercado consolidado na minha região', weights: { icp1: 2, icp2: 2 } },
-        { text: '2 a 10 anos — tenho carteira, quero crescer', weights: { icp2: 2, icp5: 1 } },
-        { text: 'Menos de 2 anos — começando ou migrando', weights: { icp4: 3 } },
-      ],
-    },
-  ],
-  // RAMO B — "Presença parcial" (ICP3 vs ICP4) · PRIORIDADE MÁXIMA
-  B: [
-    {
-      id: 'b2',
-      question: () => 'Você já tentou fazer anúncios pagos?',
-      subtitle: 'Aqui mora a diferença entre quem tentou e quem ainda não começou.',
-      options: [
-        { text: 'Nunca — não sei por onde começar', weights: { icp4: 5 } },
-        { text: 'Já impulsionei posts, mas sem resultado claro', weights: { icp3: 5 } },
-        { text: 'Já testei por 1–3 meses e parei porque não funcionou', weights: { icp3: 5 } },
-        { text: 'Consumo muito conteúdo sobre, mas nunca operei de verdade', weights: { icp4: 4 } },
-      ],
-    },
-    {
-      id: 'b3',
-      question: () => 'Quanto você investe por mês em marketing hoje (portais + anúncios + ferramentas)?',
-      options: [
-        { text: 'Nada — começando do zero', weights: { icp4: 4 } },
-        { text: 'Até R$1.000', weights: { icp4: 2, icp3: 1 } },
-        { text: 'R$1.000 a R$3.000', weights: { icp3: 2, icp5: 1 } },
-        { text: 'Mais de R$3.000', weights: { icp5: 2 } },
-      ],
-    },
-  ],
-  // RAMO C — "Já investe" (ICP5 vs ICP6)
-  C: [
-    {
-      id: 'c2',
-      question: (n) => (n ? `${n}, você trabalha solo ou gerencia equipe?` : 'Você trabalha solo ou gerencia equipe?'),
-      options: [
-        { text: 'Trabalho solo', weights: { icp5: 4 } },
-        { text: 'Tenho 1–3 corretores comigo', weights: { icp5: 3, icp6: 1 } },
-        { text: 'Gerencio equipe de 4–10 corretores', weights: { icp6: 6 }, forceICP: 'icp6' },
-        { text: 'Imobiliária com mais de 10 corretores', weights: { icp6: 8 }, forceICP: 'icp6' },
-      ],
-    },
-    {
-      id: 'c3',
-      question: () => 'O que mais te incomoda na sua operação digital hoje?',
-      options: [
-        { text: 'Gasto tempo demais gerenciando campanha sozinho', weights: { icp5: 4 } },
-        { text: 'Meu custo por lead poderia ser bem menor', weights: { icp5: 3 } },
-        { text: 'Preciso de previsibilidade pra alimentar minha equipe', weights: { icp6: 4 } },
-        { text: 'Não consigo medir ROI / atribuir venda à campanha', weights: { icp6: 4 } },
-      ],
-    },
-  ],
-}
-
-// Cauda compartilhada (todos os ramos): tempo de resposta + confirmação.
-const UNIVERSAL: QNode = {
-  id: 'universal',
-  question: () => 'Quando um lead entra em contato, em quanto tempo você (ou sua equipe) responde?',
-  subtitle: 'Leads respondidos em menos de 5 minutos têm 21x mais chance de fechar.',
-  options: [
-    { text: 'Menos de 5 minutos — tenho processo definido', weights: { icp5: 2, icp6: 2 } },
-    { text: 'Até 1 hora', weights: { icp5: 1, icp6: 1 } },
-    { text: 'No mesmo dia, quando dá', weights: { icp1: 1, icp2: 1, icp3: 1 } },
-    { text: 'Pode demorar mais de 24h', weights: { icp1: 2 } },
-    { text: 'Não tenho processo de resposta definido', weights: { icp4: 2, icp3: 1 } },
-  ],
-}
-
-// Confirmação — cada opção = 1 ICP, peso dominante (override suave).
-const CONFIRM: QNode = {
-  id: 'confirm',
-  question: (n) => (n ? `${n}, qual frase mais representa você hoje?` : 'Qual frase mais representa você hoje?'),
-  subtitle: 'Seja honesto — isso personaliza 100% do seu diagnóstico.',
-  options: [
-    { text: '"Meu negócio é olho no olho. Não preciso de internet pra vender."', weights: { icp1: 8 } },
-    { text: '"Já gasto com portal, não quero mais uma despesa que talvez não funcione."', weights: { icp2: 8 } },
-    { text: '"Já tentei anúncios e joguei dinheiro fora. Preciso de prova que funciona."', weights: { icp3: 8 } },
-    { text: '"Sei que preciso de tráfego pago, mas não sei por onde começar sem errar."', weights: { icp4: 8 } },
-    { text: '"Já faço tráfego, mas sei que não estou tirando o máximo."', weights: { icp5: 8 } },
-    { text: '"Preciso de uma operação profissional com números claros e ROI."', weights: { icp6: 8 } },
-  ],
-}
+const TOTAL_QUESTIONS = 5 // raiz + discriminador + 2 contexto + confirmação
 
 // ════════════════════════════════════════════════════════════════
-//  INSIGHTS (1 por ramo, adaptativo ao ICP que lidera entre os 2 candidatos)
+//  GRAFO DE PERGUNTAS (árvore profunda, 6 caminhos)
 // ════════════════════════════════════════════════════════════════
 
-const INSIGHTS: Record<Branch, { candidates: [ICPKey, ICPKey]; by: Record<string, InsightVariant> }> = {
-  A: {
-    candidates: ['icp1', 'icp2'],
-    by: {
-      icp1: {
-        eyebrow: 'UMA VIRADA IMPORTANTE',
-        title: '78% dos compradores de alto padrão pesquisam online antes de falar com um corretor.',
-        body: 'Sua experiência e seus relacionamentos são o seu maior diferencial — mas hoje eles só funcionam se o cliente te encontra primeiro. Enquanto isso, corretores mais novos estão fechando negócios que cairiam no seu colo, só porque aparecem no Google antes de você.',
-      },
-      icp2: {
-        eyebrow: 'UMA VIRADA IMPORTANTE',
-        title: 'Portal não é marketing digital — é aluguel de vitrine compartilhada.',
-        body: 'O custo dos portais subiu mais de 40% em 2 anos enquanto a qualidade caiu. Cada lead que você compra é disputado com 20–30 corretores. Um lead exclusivo via Google custa 30–50% menos e converte 3x mais — porque só liga pra você.',
-      },
-    },
+const NODES: Record<NodeId, QNode> = {
+  // ── RAIZ — segmenta por maturidade ──
+  root: {
+    id: 'root',
+    question: (n) =>
+      n ? `${n}, de onde vem a maioria dos seus clientes hoje?` : 'De onde vem a maioria dos seus clientes hoje?',
+    subtitle: 'Essa é a pergunta que mais revela onde está sua maior oportunidade.',
+    options: [
+      { text: 'Indicações e networking presencial', branch: 'A', weights: { icp1: 5, icp3: 1 }, next: 'a2' },
+      { text: 'Portais imobiliários (ZAP, OLX, VivaReal)', branch: 'A', weights: { icp2: 5 }, next: 'a2' },
+      { text: 'Instagram / redes sociais orgânicas', branch: 'B', weights: { icp3: 2, icp4: 3 }, next: 'b2' },
+      { text: 'Já faço anúncios pagos (Google ou Meta)', branch: 'C', weights: { icp5: 4, icp6: 2 }, next: 'c2' },
+      { text: 'Não tenho uma fonte principal definida', branch: 'B', weights: { icp4: 3, icp3: 2 }, next: 'b2' },
+    ],
   },
-  B: {
-    candidates: ['icp3', 'icp4'],
-    by: {
-      icp3: {
-        eyebrow: 'A VERDADE QUE NINGUÉM TE CONTOU',
-        title: 'Impulsionar post NÃO é tráfego pago. São coisas completamente diferentes.',
-        body: 'Impulsionar é colocar um cartaz na rua e torcer pra alguém parar. Gestão profissional coloca seu anúncio na frente de quem JÁ está procurando um imóvel na sua faixa, na sua região, agora. Você não falhou — a estratégia é que estava errada. Campanha bem estruturada reduz o custo por lead em 60–80% vs. impulsionamento.',
-      },
-      icp4: {
-        eyebrow: 'O QUE TE TRAVA NÃO É DINHEIRO',
-        title: 'Você não precisa de R$10.000/mês pra começar.',
-        body: 'Corretores que iniciam com R$1.500/mês + estratégia certa geram 15–25 leads qualificados no primeiro mês. O que trava não é orçamento — é a ordem das coisas: landing page + pixel + CRM + follow-up, montados ANTES de ligar a campanha. Estrutura primeiro, anúncio depois.',
-      },
-    },
+
+  // ── RAMO A — "Ainda não digital" (icp1 ↔ icp2) ──
+  a2: {
+    id: 'a2',
+    question: () => 'Quando você pensa em anúncios online, o que mais te representa?',
+    options: [
+      { text: '"Nunca investi — meu negócio é relacionamento"', weights: { icp1: 5 }, next: 'a3_icp1' },
+      { text: '"Já pensei, mas acho caro e complexo"', weights: { icp1: 3, icp4: 1 }, next: 'a3_icp1' },
+      { text: '"Acho que já faço — pago o portal todo mês"', weights: { icp2: 5 }, next: 'a3_icp2' },
+      { text: '"Pago portal, mas sei que não é a mesma coisa que anunciar"', weights: { icp2: 4, icp5: 1 }, next: 'a3_icp2' },
+    ],
   },
-  C: {
-    candidates: ['icp5', 'icp6'],
-    by: {
-      icp5: {
-        eyebrow: 'ONDE ESTÁ O DINHEIRO NA MESA',
-        title: 'Sem otimização avançada, seu CPL provavelmente está 30–50% acima do possível.',
-        body: 'Remarketing, públicos lookalike e tracking de conversão offline são o que separam performance boa de performance excepcional. E as 5–10h por semana que você gasta gerenciando campanha poderiam virar 2–3 reuniões a mais com leads qualificados.',
-      },
-      icp6: {
-        eyebrow: 'PENSANDO COMO EMPRESÁRIO',
-        title: 'Imobiliárias com captação estruturada têm 40% menos turnover de corretores.',
-        body: 'Corretor bom fica onde tem lead. O custo de repor um corretor que sai equivale a 3–6 meses de mídia. Operação profissional com tracking permite atribuir cada venda à campanha certa — e decidir onde investir com números, não achismo.',
-      },
-    },
+  a3_icp1: {
+    id: 'a3_icp1',
+    question: (n) =>
+      n ? `${n}, há quanto tempo você atua com imóveis de alto padrão?` : 'Há quanto tempo você atua com imóveis de alto padrão?',
+    options: [
+      { text: 'Mais de 20 anos — conheço todo mundo no mercado', weights: { icp1: 4 }, next: 'a4_icp1' },
+      { text: '10 a 20 anos — mercado consolidado na minha região', weights: { icp1: 3 }, next: 'a4_icp1' },
+      { text: '2 a 10 anos — tenho carteira, quero crescer', weights: { icp1: 1, icp5: 1 }, next: 'a4_icp1' },
+      { text: 'Menos de 2 anos — começando ou migrando', weights: { icp4: 2 }, next: 'a4_icp1' },
+    ],
+  },
+  a4_icp1: {
+    id: 'a4_icp1',
+    question: () => 'Quando alguém quer te indicar, onde a pessoa te encontra antes de ligar?',
+    options: [
+      { text: 'Em lugar nenhum — só por indicação direta', weights: { icp1: 3 }, next: 'insight:icp1' },
+      { text: 'No meu Instagram pessoal, sem muita estratégia', weights: { icp1: 2 }, next: 'insight:icp1' },
+      { text: 'Num site/perfil antigo que quase não atualizo', weights: { icp1: 2 }, next: 'insight:icp1' },
+      { text: 'Ela me acha no Google', weights: { icp1: 1, icp5: 1 }, next: 'insight:icp1' },
+    ],
+  },
+  a3_icp2: {
+    id: 'a3_icp2',
+    question: () => 'Quanto você investe por mês nos portais?',
+    options: [
+      { text: 'Até R$500', weights: { icp2: 3 }, next: 'a4_icp2' },
+      { text: 'R$500 a R$1.500', weights: { icp2: 4 }, next: 'a4_icp2' },
+      { text: 'R$1.500 a R$3.000', weights: { icp2: 4, icp6: 1 }, next: 'a4_icp2' },
+      { text: 'Mais de R$3.000', weights: { icp2: 3, icp6: 2 }, next: 'a4_icp2' },
+    ],
+  },
+  a4_icp2: {
+    id: 'a4_icp2',
+    question: () => 'O que mais te incomoda nos leads que vêm do portal?',
+    options: [
+      { text: 'Vêm disputados com muitos corretores', weights: { icp2: 4 }, next: 'insight:icp2' },
+      { text: 'Qualidade baixa — muito curioso', weights: { icp2: 3 }, next: 'insight:icp2' },
+      { text: 'O custo sobe todo ano', weights: { icp2: 3 }, next: 'insight:icp2' },
+      { text: 'Não consigo medir se vale a pena', weights: { icp2: 2, icp5: 1 }, next: 'insight:icp2' },
+    ],
+  },
+
+  // ── RAMO B — "Presença parcial" (icp3 ↔ icp4) · PRIORIDADE MÁXIMA ──
+  b2: {
+    id: 'b2',
+    question: () => 'Você já tentou fazer anúncios pagos?',
+    subtitle: 'Aqui mora a diferença entre quem tentou e quem ainda não começou.',
+    options: [
+      { text: 'Nunca — não sei por onde começar', weights: { icp4: 5 }, next: 'b3_icp4' },
+      { text: 'Consumo muito conteúdo sobre, mas nunca operei de verdade', weights: { icp4: 4 }, next: 'b3_icp4' },
+      { text: 'Já impulsionei posts, mas sem resultado claro', weights: { icp3: 5 }, next: 'b3_icp3' },
+      { text: 'Já testei por 1–3 meses e parei porque não funcionou', weights: { icp3: 5 }, next: 'b3_icp3' },
+    ],
+  },
+  b3_icp3: {
+    id: 'b3_icp3',
+    question: () => 'O que exatamente você já fez?',
+    options: [
+      { text: 'Só impulsionei posts no Instagram', weights: { icp3: 4 }, next: 'b4_icp3' },
+      { text: 'Rodei Google/Meta Ads por conta própria', weights: { icp3: 4 }, next: 'b4_icp3' },
+      { text: 'Contratei agência ou freelancer', weights: { icp3: 2, icp5: 1 }, next: 'b4_icp3' },
+      { text: 'Um pouco de cada', weights: { icp3: 3 }, next: 'b4_icp3' },
+    ],
+  },
+  b4_icp3: {
+    id: 'b4_icp3',
+    question: () => 'Quanto você chegou a gastar nessas tentativas?',
+    options: [
+      { text: 'Até R$500', weights: { icp3: 3 }, next: 'insight:icp3' },
+      { text: 'R$500 a R$2.000', weights: { icp3: 4 }, next: 'insight:icp3' },
+      { text: 'Mais de R$2.000', weights: { icp3: 3, icp5: 1 }, next: 'insight:icp3' },
+      { text: 'Não lembro / foi pouco', weights: { icp3: 2 }, next: 'insight:icp3' },
+    ],
+  },
+  b3_icp4: {
+    id: 'b3_icp4',
+    question: () => 'Quanto você teria disponível pra investir por mês em anúncios?',
+    options: [
+      { text: 'Ainda não sei', weights: { icp4: 3 }, next: 'b4_icp4' },
+      { text: 'Até R$500', weights: { icp4: 3 }, next: 'b4_icp4' },
+      { text: 'R$500 a R$1.500', weights: { icp4: 4 }, next: 'b4_icp4' },
+      { text: 'Mais de R$1.500', weights: { icp4: 3, icp5: 1 }, next: 'b4_icp4' },
+    ],
+  },
+  b4_icp4: {
+    id: 'b4_icp4',
+    question: () => 'O que você já tem montado da sua estrutura digital?',
+    options: [
+      { text: 'Nada ainda', weights: { icp4: 4 }, next: 'insight:icp4' },
+      { text: 'Só o Instagram', weights: { icp4: 3 }, next: 'insight:icp4' },
+      { text: 'Instagram + um site ou landing', weights: { icp4: 2, icp5: 1 }, next: 'insight:icp4' },
+      { text: 'Tenho CRM/processo, mas não anuncio', weights: { icp4: 2, icp5: 2 }, next: 'insight:icp4' },
+    ],
+  },
+
+  // ── RAMO C — "Já investe" (icp5 ↔ icp6) ──
+  c2: {
+    id: 'c2',
+    question: (n) => (n ? `${n}, você trabalha solo ou gerencia equipe?` : 'Você trabalha solo ou gerencia equipe?'),
+    options: [
+      { text: 'Trabalho solo', weights: { icp5: 4 }, next: 'c3_icp5' },
+      { text: 'Tenho 1–3 corretores comigo', weights: { icp5: 3, icp6: 1 }, next: 'c3_icp5' },
+      { text: 'Gerencio equipe de 4–10 corretores', weights: { icp6: 6 }, forceICP: 'icp6', next: 'c3_icp6' },
+      { text: 'Imobiliária com mais de 10 corretores', weights: { icp6: 8 }, forceICP: 'icp6', next: 'c3_icp6' },
+    ],
+  },
+  c3_icp5: {
+    id: 'c3_icp5',
+    question: () => 'Quanto você investe por mês em mídia hoje?',
+    options: [
+      { text: 'R$1.000 a R$3.000', weights: { icp5: 3 }, next: 'c4_icp5' },
+      { text: 'R$3.000 a R$5.000', weights: { icp5: 4 }, next: 'c4_icp5' },
+      { text: 'R$5.000 a R$10.000', weights: { icp5: 4, icp6: 1 }, next: 'c4_icp5' },
+      { text: 'Mais de R$10.000', weights: { icp5: 3, icp6: 2 }, next: 'c4_icp5' },
+    ],
+  },
+  c4_icp5: {
+    id: 'c4_icp5',
+    question: () => 'Quem cuida das suas campanhas hoje?',
+    options: [
+      { text: 'Eu mesmo, no tempo que sobra', weights: { icp5: 4 }, next: 'insight:icp5' },
+      { text: 'Um freelancer ou gestor', weights: { icp5: 3 }, next: 'insight:icp5' },
+      { text: 'Uma agência, mas não estou satisfeito', weights: { icp5: 2, icp6: 1 }, next: 'insight:icp5' },
+      { text: 'Ninguém fixo — vai e volta', weights: { icp5: 3 }, next: 'insight:icp5' },
+    ],
+  },
+  c3_icp6: {
+    id: 'c3_icp6',
+    question: () => 'Qual o maior desafio de leads pra sua equipe hoje?',
+    options: [
+      { text: 'Volume previsível todo mês', weights: { icp6: 4 }, next: 'c4_icp6' },
+      { text: 'Distribuir leads com critério entre corretores', weights: { icp6: 4 }, next: 'c4_icp6' },
+      { text: 'Medir ROI e atribuir vendas às campanhas', weights: { icp6: 4 }, next: 'c4_icp6' },
+      { text: 'Reduzir dependência dos portais premium', weights: { icp6: 3, icp2: 1 }, next: 'c4_icp6' },
+    ],
+  },
+  c4_icp6: {
+    id: 'c4_icp6',
+    question: () => 'Você já trabalhou com agência de marketing antes?',
+    options: [
+      { text: 'Nunca', weights: { icp6: 3 }, next: 'insight:icp6' },
+      { text: 'Sim, e foi uma experiência ruim', weights: { icp6: 4 }, next: 'insight:icp6' },
+      { text: 'Sim, foi ok mas quero algo melhor', weights: { icp6: 3 }, next: 'insight:icp6' },
+      { text: 'Trabalho com uma hoje, avaliando trocar', weights: { icp6: 3 }, next: 'insight:icp6' },
+    ],
+  },
+
+  // ── CAUDA: confirmação (override) ──
+  confirm: {
+    id: 'confirm',
+    question: (n) => (n ? `${n}, qual frase mais representa você hoje?` : 'Qual frase mais representa você hoje?'),
+    subtitle: 'Seja honesto — isso personaliza 100% do seu diagnóstico.',
+    options: [
+      { text: '"Meu negócio é olho no olho. Não preciso de internet pra vender."', weights: { icp1: 8 }, next: 'open' },
+      { text: '"Já gasto com portal, não quero mais uma despesa que talvez não funcione."', weights: { icp2: 8 }, next: 'open' },
+      { text: '"Já tentei anúncios e joguei dinheiro fora. Preciso de prova que funciona."', weights: { icp3: 8 }, next: 'open' },
+      { text: '"Sei que preciso de tráfego pago, mas não sei por onde começar sem errar."', weights: { icp4: 8 }, next: 'open' },
+      { text: '"Já faço tráfego, mas sei que não estou tirando o máximo."', weights: { icp5: 8 }, next: 'open' },
+      { text: '"Preciso de uma operação profissional com números claros e ROI."', weights: { icp6: 8 }, next: 'open' },
+    ],
+  },
+}
+
+// ════════════════════════════════════════════════════════════════
+//  INSIGHTS (1 por jornada, específico do ICP)
+// ════════════════════════════════════════════════════════════════
+
+const INSIGHTS: Record<ICPKey, Insight> = {
+  icp1: {
+    eyebrow: 'UMA VIRADA IMPORTANTE',
+    title: '78% dos compradores de alto padrão pesquisam online antes de falar com um corretor.',
+    body: 'Sua experiência e seus relacionamentos são o seu maior diferencial — mas hoje eles só funcionam se o cliente te encontra primeiro. Enquanto isso, corretores mais novos estão fechando negócios que cairiam no seu colo, só porque aparecem no Google antes de você. O digital não substitui sua autoridade: ele garante que ela seja encontrada.',
+  },
+  icp2: {
+    eyebrow: 'UMA VIRADA IMPORTANTE',
+    title: 'Portal não é marketing digital — é aluguel de vitrine compartilhada.',
+    body: 'O custo dos portais subiu mais de 40% em 2 anos enquanto a qualidade caiu. Cada lead que você compra é disputado com 20–30 corretores ao mesmo tempo. Um lead exclusivo via Google custa 30–50% menos e converte até 3x mais — porque só liga pra você. A conta é matemática pura.',
+  },
+  icp3: {
+    eyebrow: 'A VERDADE QUE NINGUÉM TE CONTOU',
+    title: 'Impulsionar post NÃO é tráfego pago. São coisas completamente diferentes.',
+    body: 'Impulsionar é colocar um cartaz na rua e torcer pra alguém parar. Gestão profissional coloca seu anúncio na frente de quem JÁ está procurando um imóvel na sua faixa, na sua região, agora. Você não falhou — a estratégia é que estava errada. Campanha bem estruturada reduz o custo por lead em 60–80% vs. impulsionamento.',
+  },
+  icp4: {
+    eyebrow: 'O QUE TE TRAVA NÃO É DINHEIRO',
+    title: 'Você não precisa de R$10.000/mês pra começar.',
+    body: 'Corretores que começam com R$1.500/mês + estratégia certa geram 15–25 leads qualificados no primeiro mês. O que trava não é orçamento — é a ordem das coisas: landing page + pixel + CRM + follow-up, montados ANTES de ligar a campanha. Estrutura primeiro, anúncio depois.',
+  },
+  icp5: {
+    eyebrow: 'ONDE ESTÁ O DINHEIRO NA MESA',
+    title: 'Sem otimização avançada, seu CPL provavelmente está 30–50% acima do possível.',
+    body: 'Remarketing, públicos lookalike e tracking de conversão offline são o que separam performance boa de performance excepcional. E as 5–10h por semana que você gasta gerenciando campanha poderiam virar 2–3 reuniões a mais com leads qualificados. Você não precisa de convencimento — precisa de tempo de volta.',
+  },
+  icp6: {
+    eyebrow: 'PENSANDO COMO EMPRESÁRIO',
+    title: 'Imobiliárias com captação estruturada têm 40% menos turnover de corretores.',
+    body: 'Corretor bom fica onde tem lead. O custo de repor um corretor que sai equivale a 3–6 meses de mídia. Operação profissional com tracking permite atribuir cada venda à campanha certa — e decidir onde investir com números, não achismo. É previsibilidade pra sua operação inteira.',
   },
 }
 
@@ -367,7 +428,7 @@ const profiles: Record<ICPKey, Profile> = {
 }
 
 // ════════════════════════════════════════════════════════════════
-//  LÓGICA DE CLASSIFICAÇÃO
+//  CLASSIFICAÇÃO
 // ════════════════════════════════════════════════════════════════
 
 function sumScores(answers: Answer[]): Record<ICPKey, number> {
@@ -378,10 +439,6 @@ function sumScores(answers: Answer[]): Record<ICPKey, number> {
     })
   })
   return totals
-}
-
-function leaderAmong(totals: Record<ICPKey, number>, candidates: [ICPKey, ICPKey]): ICPKey {
-  return totals[candidates[0]] >= totals[candidates[1]] ? candidates[0] : candidates[1]
 }
 
 function classify(
@@ -404,7 +461,6 @@ function classify(
         key = k
       }
     })
-    // desempate pela confirmação
     if (confirmICP && totals[confirmICP] === max) key = confirmICP
   }
 
@@ -427,10 +483,6 @@ function buildWppMessage(profileKey: ICPKey, userName: string, openAnswer: strin
   }
   return encodeURIComponent(base[profileKey])
 }
-
-// ════════════════════════════════════════════════════════════════
-//  COMPONENTES AUXILIARES
-// ════════════════════════════════════════════════════════════════
 
 function StatBar({ label, value, maxVal, color }: { label: string; value: number; maxVal: number; color: string }) {
   const pct = maxVal > 0 ? Math.min((value / maxVal) * 100, 100) : 0
@@ -456,11 +508,12 @@ export default function QuizImobiliariaTreePage() {
   const [nameInput, setNameInput] = useState('')
   const [firstName, setFirstName] = useState('')
 
-  const [branch, setBranch] = useState<Branch | null>(null)
-  const [qi, setQi] = useState(0) // índice na lista de perguntas
+  const [nodeId, setNodeId] = useState<NodeId>('root')
   const [answers, setAnswers] = useState<Answer[]>([])
+  const [branch, setBranch] = useState<Branch | null>(null)
   const [forcedICP, setForcedICP] = useState<ICPKey | null>(null)
   const [confirmICP, setConfirmICP] = useState<ICPKey | null>(null)
+  const [pendingInsight, setPendingInsight] = useState<ICPKey | null>(null)
 
   const [selected, setSelected] = useState<number | null>(null)
   const [fading, setFading] = useState(false)
@@ -468,21 +521,11 @@ export default function QuizImobiliariaTreePage() {
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
   const [openAnswer, setOpenAnswer] = useState('')
-
-  // Lista ordenada de perguntas: ROOT → 2 do ramo → UNIVERSAL → CONFIRM.
-  const questionList: QNode[] = useMemo(
-    () => (branch ? [ROOT, ...BRANCH_QUESTIONS[branch], UNIVERSAL, CONFIRM] : [ROOT]),
-    [branch]
-  )
-  const totalQuestions = 5 // root + 2 ramo + universal + confirm
-  const INSIGHT_AFTER = 2 // mostra o insight após responder o índice 2 (última pergunta do ramo)
-
-  const currentQuestion = questionList[qi]
-  const result = useMemo(
-    () => (step === 'result' ? classify(answers, forcedICP, confirmICP) : null),
-    [step, answers, forcedICP, confirmICP]
-  )
+  const [result, setResult] = useState<ReturnType<typeof classify> | null>(null)
   const profile = result ? profiles[result.key] : null
+
+  const currentQuestion = NODES[nodeId]
+  const answeredCount = answers.length
 
   function handleNameSubmit() {
     if (!nameInput.trim()) return
@@ -491,28 +534,18 @@ export default function QuizImobiliariaTreePage() {
     trackQuiz({ event: 'quiz_name_submitted', has_name: true })
   }
 
-  function advanceAfterAnswer(nextAnswers: Answer[], answeredIndex: number, pickedBranch: Branch | null) {
-    // raiz → entra no ramo
-    if (answeredIndex === 0) {
-      setBranch(pickedBranch)
-      if (pickedBranch) trackQuiz({ event: 'quiz_branch_entered', branch: pickedBranch })
-      setQi(1)
-      return
-    }
-    // última pergunta do ramo → mostra o insight
-    if (answeredIndex === INSIGHT_AFTER) {
-      const b = (pickedBranch ?? branch) as Branch
-      const leader = leaderAmong(sumScores(nextAnswers), INSIGHTS[b].candidates)
-      trackQuiz({ event: 'quiz_insight_viewed', branch: b, icp: leader })
+  function go(next: NextTarget) {
+    if (next.startsWith('insight:')) {
+      const icp = next.split(':')[1] as ICPKey
+      setPendingInsight(icp)
+      trackQuiz({ event: 'quiz_insight_viewed', branch: branch ?? '', icp })
       setStep('insight')
-      return
-    }
-    // fim da cauda → pergunta aberta
-    if (answeredIndex >= totalQuestions - 1) {
+    } else if (next === 'open') {
       setStep('open')
-      return
+    } else {
+      setNodeId(next)
+      setStep('question')
     }
-    setQi(answeredIndex + 1)
   }
 
   function handleSelect(opt: Option, idx: number) {
@@ -520,17 +553,19 @@ export default function QuizImobiliariaTreePage() {
     setTimeout(() => {
       setFading(true)
       setTimeout(() => {
-        const q = questionList[qi]
-        const answer: Answer = { questionId: q.id, text: opt.text, weights: opt.weights }
-        const next = [...answers, answer]
-        setAnswers(next)
+        const q = NODES[nodeId]
+        setAnswers((prev) => [...prev, { questionId: q.id, text: opt.text, weights: opt.weights }])
+        if (opt.branch) {
+          setBranch(opt.branch)
+          trackQuiz({ event: 'quiz_branch_entered', branch: opt.branch })
+        }
         if (opt.forceICP) setForcedICP(opt.forceICP)
         if (q.id === 'confirm') {
           const picked = (Object.keys(opt.weights) as ICPKey[])[0] ?? null
           setConfirmICP(picked)
         }
         trackQuiz({ event: 'quiz_question_answered', question_id: q.id, branch: branch ?? undefined })
-        advanceAfterAnswer(next, qi, opt.branch ?? null)
+        go(opt.next)
         setSelected(null)
         setFading(false)
       }, 280)
@@ -538,13 +573,14 @@ export default function QuizImobiliariaTreePage() {
   }
 
   function continueFromInsight() {
+    setNodeId('confirm')
     setStep('question')
-    setQi(INSIGHT_AFTER + 1) // segue para a UNIVERSAL
   }
 
   async function handleCapture() {
     if (!email.trim() || !phone.trim()) return
     const r = classify(answers, forcedICP, confirmICP)
+    setResult(r)
     trackQuiz({ event: 'quiz_lead_captured', icp: r.key, adherence: r.adherence })
 
     // Salva no Supabase — não bloqueia a exibição do resultado.
@@ -573,15 +609,14 @@ export default function QuizImobiliariaTreePage() {
     trackQuiz({ event: 'quiz_result_viewed', icp: r.key, adherence: r.adherence })
   }
 
-  // Progresso (intro/name fora; insight conta como uma etapa)
-  const answeredCount = answers.length
+  // Progresso (cada caminho tem TOTAL_QUESTIONS perguntas + insight + aberta)
   const progress =
     step === 'question'
-      ? (answeredCount / (totalQuestions + 2)) * 100
+      ? (answeredCount / (TOTAL_QUESTIONS + 1)) * 100
       : step === 'insight'
-      ? ((INSIGHT_AFTER + 1) / (totalQuestions + 2)) * 100
+      ? ((TOTAL_QUESTIONS - 0.5) / (TOTAL_QUESTIONS + 1)) * 100
       : step === 'open'
-      ? ((totalQuestions + 1) / (totalQuestions + 2)) * 100
+      ? (TOTAL_QUESTIONS / (TOTAL_QUESTIONS + 1)) * 100
       : step === 'capture'
       ? 96
       : 0
@@ -684,9 +719,9 @@ export default function QuizImobiliariaTreePage() {
           </div>
 
           {step === 'question' && currentQuestion && (
-            <div key={`${currentQuestion.id}-${qi}`} style={{ animation: fading ? 'fadeOut .28s ease' : 'fadeUp .4s ease-out' }}>
+            <div key={currentQuestion.id} style={{ animation: fading ? 'fadeOut .28s ease' : 'fadeUp .4s ease-out' }}>
               <div style={{ fontSize: 12, color: '#64748b', fontWeight: 700, marginBottom: 10, letterSpacing: '1.5px' }}>
-                {firstName ? `OLÁ, ${firstName.toUpperCase()}! • ` : ''}PERGUNTA {Math.min(answeredCount + 1, totalQuestions)} DE {totalQuestions}
+                {firstName ? `OLÁ, ${firstName.toUpperCase()}! • ` : ''}PERGUNTA {Math.min(answeredCount + 1, TOTAL_QUESTIONS)} DE {TOTAL_QUESTIONS}
               </div>
               <h2 style={{ fontSize: 22, fontWeight: 700, margin: '0 0 6px', lineHeight: 1.35, color: '#e2e8f0' }}>
                 {currentQuestion.question(firstName)}
@@ -774,34 +809,28 @@ export default function QuizImobiliariaTreePage() {
         </div>
       )}
 
-      {/* ── INSIGHT (1 por ramo, adaptativo) ── */}
-      {step === 'insight' && branch && (
-        (() => {
-          const leader = leaderAmong(sumScores(answers), INSIGHTS[branch].candidates)
-          const ins = INSIGHTS[branch].by[leader]
-          return (
-            <div style={{ maxWidth: 560, width: '100%' }}>
-              <div style={{ height: 5, borderRadius: 3, background: 'rgba(255,255,255,0.08)', marginBottom: 36, overflow: 'hidden' }}>
-                <div style={{ height: '100%', borderRadius: 3, width: `${progress}%`, background: 'linear-gradient(90deg, #dc2626, #ef4444)', transition: 'width 0.5s ease' }} />
-              </div>
-              <div style={{ animation: 'fadeUp .5s ease-out', padding: 28, borderRadius: 18, background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.2)' }}>
-                <div style={{ display: 'inline-block', padding: '5px 14px', borderRadius: 16, background: 'rgba(239,68,68,0.14)', fontSize: 11, fontWeight: 800, color: '#f87171', marginBottom: 16, letterSpacing: '1px' }}>
-                  {ins.eyebrow}
-                </div>
-                <h2 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 14px', lineHeight: 1.3, color: '#f1f5f9' }}>{ins.title}</h2>
-                <p style={{ fontSize: 15, color: '#cbd5e1', lineHeight: 1.7, margin: 0 }}>{ins.body}</p>
-              </div>
-              <button
-                onClick={continueFromInsight}
-                style={{ marginTop: 18, width: '100%', padding: '15px', border: 'none', borderRadius: 12, fontSize: 16, fontWeight: 700, cursor: 'pointer', background: 'linear-gradient(135deg, #dc2626, #ef4444)', color: '#fff', transition: 'transform 0.2s' }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-2px)' }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = '' }}
-              >
-                Faz sentido — continuar →
-              </button>
+      {/* ── INSIGHT (1 por jornada, específico do ICP) ── */}
+      {step === 'insight' && pendingInsight && (
+        <div style={{ maxWidth: 560, width: '100%' }}>
+          <div style={{ height: 5, borderRadius: 3, background: 'rgba(255,255,255,0.08)', marginBottom: 36, overflow: 'hidden' }}>
+            <div style={{ height: '100%', borderRadius: 3, width: `${progress}%`, background: 'linear-gradient(90deg, #dc2626, #ef4444)', transition: 'width 0.5s ease' }} />
+          </div>
+          <div style={{ animation: 'fadeUp .5s ease-out', padding: 28, borderRadius: 18, background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.2)' }}>
+            <div style={{ display: 'inline-block', padding: '5px 14px', borderRadius: 16, background: 'rgba(239,68,68,0.14)', fontSize: 11, fontWeight: 800, color: '#f87171', marginBottom: 16, letterSpacing: '1px' }}>
+              {INSIGHTS[pendingInsight].eyebrow}
             </div>
-          )
-        })()
+            <h2 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 14px', lineHeight: 1.3, color: '#f1f5f9' }}>{INSIGHTS[pendingInsight].title}</h2>
+            <p style={{ fontSize: 15, color: '#cbd5e1', lineHeight: 1.7, margin: 0 }}>{INSIGHTS[pendingInsight].body}</p>
+          </div>
+          <button
+            onClick={continueFromInsight}
+            style={{ marginTop: 18, width: '100%', padding: '15px', border: 'none', borderRadius: 12, fontSize: 16, fontWeight: 700, cursor: 'pointer', background: 'linear-gradient(135deg, #dc2626, #ef4444)', color: '#fff', transition: 'transform 0.2s' }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-2px)' }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = '' }}
+          >
+            Faz sentido — continuar →
+          </button>
+        </div>
       )}
 
       {/* ── RESULT ── */}

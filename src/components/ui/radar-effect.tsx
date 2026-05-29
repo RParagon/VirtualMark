@@ -1,21 +1,23 @@
-import { motion } from "framer-motion";
 import { twMerge } from "tailwind-merge";
 import React from "react";
 
-export const Circle = ({ className, idx, ...rest }: any) => {
-  return (
-    <motion.div
-      {...rest}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ delay: idx * 0.1, duration: 0.2 }}
-      className={twMerge(
-        "absolute inset-0 left-1/2 top-1/2 h-10 w-10 -translate-x-1/2 -translate-y-1/2 transform rounded-full",
-        className
-      )}
-    />
-  );
-};
+// Radar spins: rotate(20deg) → rotate(380deg) in 10s, linear.
+// For each icon at CSS hit angle θ:
+//   hitTime = (θ - 20) / 36   [seconds into cycle]
+//   animationDelay = -(10 - hitTime)s  → first ping fires exactly at hitTime
+//
+// CSS sweep direction at angle θ: (-cos θ, sin θ) in screen-y-down coords.
+// θ = atan2(dy, -dx)  where (dx,dy) = icon pos relative to radar center.
+
+export const Circle = ({ className, idx, ...rest }: any) => (
+  <div
+    {...rest}
+    className={twMerge(
+      "absolute inset-0 left-1/2 top-1/2 h-10 w-10 -translate-x-1/2 -translate-y-1/2 transform rounded-full",
+      className
+    )}
+  />
+);
 
 export const Radar = ({ className }: { className?: string }) => {
   const circles = new Array(8).fill(1);
@@ -34,7 +36,21 @@ export const Radar = ({ className }: { className?: string }) => {
         .animate-radar-spin {
           animation: radar-spin 10s linear infinite;
         }
+
+        /* Icon ping: nearly invisible → red flash → fade back */
+        @keyframes radarPing {
+          0%   { opacity: 1;    box-shadow: 0 0 18px rgba(239,68,68,0.7), 0 0 6px rgba(239,68,68,0.4); border-color: rgba(239,68,68,0.7); }
+          4%   { opacity: 0.75; box-shadow: 0 0 8px rgba(239,68,68,0.25); border-color: rgba(239,68,68,0.3); }
+          18%  { opacity: 0.13; box-shadow: none; border-color: rgba(55,65,81,0.8); }
+          100% { opacity: 0.13; box-shadow: none; border-color: rgba(55,65,81,0.8); }
+        }
+        .radar-ping-box {
+          animation: radarPing 10s linear infinite;
+          opacity: 0.13;
+          border: 1px solid rgba(55,65,81,0.8);
+        }
       `}</style>
+
       {/* Rotating sweep line */}
       <div
         style={{ transformOrigin: "right center" }}
@@ -42,13 +58,14 @@ export const Radar = ({ className }: { className?: string }) => {
       >
         <div className="relative z-40 h-[1px] w-full bg-gradient-to-r from-transparent via-red-500 to-transparent" />
       </div>
+
       {/* Concentric circles */}
       {circles.map((_, idx) => (
         <Circle
           style={{
             height: `${(idx + 1) * 5}rem`,
             width: `${(idx + 1) * 5}rem`,
-            border: `1px solid rgba(239, 68, 68, ${Math.max(0.03, 0.18 - idx * 0.022)})`,
+            border: `1px solid rgba(239, 68, 68, ${Math.max(0.025, 0.16 - idx * 0.02)})`,
           }}
           key={`circle-${idx}`}
           idx={idx}
@@ -61,27 +78,29 @@ export const Radar = ({ className }: { className?: string }) => {
 export const IconContainer = ({
   icon,
   text,
-  delay,
+  hitTime,
 }: {
   icon?: React.ReactNode;
   text?: string;
-  delay?: number;
+  /** Seconds into the 10s radar cycle when the sweep hits this icon (0–10). */
+  hitTime: number;
 }) => {
+  // Negative delay so the first ping fires at exactly hitTime seconds after mount.
+  const delay = -(10 - hitTime);
+
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.2, delay: delay ?? 0 }}
-      className="relative z-50 flex flex-col items-center justify-center space-y-2"
-    >
-      <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-gray-800 bg-gray-900/80 shadow-inner">
+    <div className="relative z-50 flex flex-col items-center justify-center space-y-2">
+      <div
+        className="radar-ping-box flex h-12 w-12 items-center justify-center rounded-2xl bg-gray-900/80"
+        style={{ animationDelay: `${delay}s` }}
+      >
         {icon}
       </div>
-      <div className="hidden rounded-md px-2 py-1 md:block">
-        <div className="text-center text-xs font-bold text-gray-500">
+      <div className="hidden px-2 py-1 md:block">
+        <div className="text-center text-xs font-bold text-gray-600">
           {text}
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 };

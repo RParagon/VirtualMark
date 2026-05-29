@@ -807,53 +807,60 @@ export default function ImobiliariaPage() {
 
           <motion.div variants={itemVariants}>
             <div className="relative flex h-96 w-full max-w-3xl flex-col items-center justify-center space-y-4 overflow-hidden px-4 mx-auto">
-              {/* Row 1 */}
+              {/* Row 1 — upper strip, full width */}
               <div className="mx-auto w-full max-w-3xl">
                 <div className="flex w-full items-center justify-center space-x-10 md:justify-between md:space-x-0">
+                  {/* upper-left  → CSS ≈321°  → hit ≈ 8.36s */}
                   <IconContainer
                     text="Google Ads"
-                    delay={0.2}
-                    icon={<Search className="h-6 w-6 text-primary-500/70" />}
+                    hitTime={8.36}
+                    icon={<Search className="h-6 w-6 text-red-500" />}
                   />
+                  {/* straight up → CSS = 270° → hit = 6.94s */}
                   <IconContainer
-                    delay={0.4}
                     text="Meta Ads"
-                    icon={<Globe className="h-6 w-6 text-primary-500/70" />}
+                    hitTime={6.94}
+                    icon={<Globe className="h-6 w-6 text-red-500" />}
                   />
+                  {/* upper-right → CSS ≈219°  → hit ≈ 5.53s */}
                   <IconContainer
                     text="Tráfego Pago"
-                    delay={0.3}
-                    icon={<MousePointer2 className="h-6 w-6 text-primary-500/70" />}
+                    hitTime={5.53}
+                    icon={<MousePointer2 className="h-6 w-6 text-red-500" />}
                   />
                 </div>
               </div>
-              {/* Row 2 */}
+              {/* Row 2 — mid strip, narrower */}
               <div className="mx-auto w-full max-w-md">
                 <div className="flex w-full items-center justify-center space-x-10 md:justify-between md:space-x-0">
+                  {/* left-center → CSS = 315° → hit = 8.19s */}
                   <IconContainer
                     text="Leads"
-                    delay={0.5}
-                    icon={<Users className="h-6 w-6 text-primary-500/70" />}
+                    hitTime={8.19}
+                    icon={<Users className="h-6 w-6 text-red-500" />}
                   />
+                  {/* right-center→ CSS = 225° → hit = 5.69s */}
                   <IconContainer
                     text="WhatsApp"
-                    delay={0.8}
-                    icon={<MessageCircle className="h-6 w-6 text-primary-500/70" />}
+                    hitTime={5.69}
+                    icon={<MessageCircle className="h-6 w-6 text-red-500" />}
                   />
                 </div>
               </div>
-              {/* Row 3 */}
+              {/* Row 3 — lower strip, full width */}
               <div className="mx-auto w-full max-w-3xl">
                 <div className="flex w-full items-center justify-center space-x-10 md:justify-between md:space-x-0">
+                  {/* lower-left  → CSS ≈342°  → hit ≈ 8.94s */}
                   <IconContainer
-                    delay={0.6}
                     text="Analytics"
-                    icon={<BarChart2 className="h-6 w-6 text-primary-500/70" />}
+                    hitTime={8.94}
+                    icon={<BarChart2 className="h-6 w-6 text-red-500" />}
                   />
+                  {/* lower-right → CSS ≈198°  → hit ≈ 4.94s */}
                   <IconContainer
-                    delay={0.7}
                     text="ROI"
-                    icon={<TrendingUp className="h-6 w-6 text-primary-500/70" />}
+                    hitTime={4.94}
+                    icon={<TrendingUp className="h-6 w-6 text-red-500" />}
                   />
                 </div>
               </div>
