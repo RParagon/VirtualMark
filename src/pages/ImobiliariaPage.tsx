@@ -10,6 +10,7 @@ import { InfiniteSlider } from '@/components/ui/infinite-slider'
 import { ProgressiveBlur } from '@/components/ui/progressive-blur'
 import { ShinyButton } from '@/components/ui/shiny-button'
 import { TestimonialsSection } from '@/components/ui/testimonial-columns'
+import { Radar, IconContainer } from '@/components/ui/radar-effect'
 import type { BentoItem } from '@/components/ui/bento-grid'
 import { ChevronDownIcon, CheckCircleIcon } from '@heroicons/react/24/outline'
 
@@ -777,6 +778,91 @@ export default function ImobiliariaPage() {
           </ContainerScroll>
         </div>
 
+      </section>
+
+      {/* ── RADAR / LEAD TRACKING ── */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-gray-900/20 to-background overflow-hidden">
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.12 }}
+          className="max-w-5xl mx-auto"
+        >
+          <motion.div variants={itemVariants} className="text-center mb-10">
+            <span className="inline-block text-xs font-bold tracking-widest text-primary-500 bg-primary-500/10 px-4 py-2 rounded-full border border-primary-500/20 mb-5">
+              RASTREAMENTO EM TEMPO REAL
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4">
+              Cada Lead Rastreado,{' '}
+              <span className="bg-gradient-to-r from-primary-500 to-primary-700 text-transparent bg-clip-text">
+                Nenhum Negócio Perdido
+              </span>
+            </h2>
+            <p className="text-gray-400 max-w-xl mx-auto speakable-content">
+              Nossa tecnologia monitora cada clique, lead gerado e conversão — em tempo real,
+              por campanha e por canal, para você saber exatamente onde está seu dinheiro.
+            </p>
+          </motion.div>
+
+          <motion.div variants={itemVariants}>
+            <div className="relative flex h-96 w-full max-w-3xl flex-col items-center justify-center space-y-4 overflow-hidden px-4 mx-auto">
+              {/* Row 1 */}
+              <div className="mx-auto w-full max-w-3xl">
+                <div className="flex w-full items-center justify-center space-x-10 md:justify-between md:space-x-0">
+                  <IconContainer
+                    text="Google Ads"
+                    delay={0.2}
+                    icon={<Search className="h-6 w-6 text-primary-500/70" />}
+                  />
+                  <IconContainer
+                    delay={0.4}
+                    text="Meta Ads"
+                    icon={<Globe className="h-6 w-6 text-primary-500/70" />}
+                  />
+                  <IconContainer
+                    text="Tráfego Pago"
+                    delay={0.3}
+                    icon={<MousePointer2 className="h-6 w-6 text-primary-500/70" />}
+                  />
+                </div>
+              </div>
+              {/* Row 2 */}
+              <div className="mx-auto w-full max-w-md">
+                <div className="flex w-full items-center justify-center space-x-10 md:justify-between md:space-x-0">
+                  <IconContainer
+                    text="Leads"
+                    delay={0.5}
+                    icon={<Users className="h-6 w-6 text-primary-500/70" />}
+                  />
+                  <IconContainer
+                    text="WhatsApp"
+                    delay={0.8}
+                    icon={<MessageCircle className="h-6 w-6 text-primary-500/70" />}
+                  />
+                </div>
+              </div>
+              {/* Row 3 */}
+              <div className="mx-auto w-full max-w-3xl">
+                <div className="flex w-full items-center justify-center space-x-10 md:justify-between md:space-x-0">
+                  <IconContainer
+                    delay={0.6}
+                    text="Analytics"
+                    icon={<BarChart2 className="h-6 w-6 text-primary-500/70" />}
+                  />
+                  <IconContainer
+                    delay={0.7}
+                    text="ROI"
+                    icon={<TrendingUp className="h-6 w-6 text-primary-500/70" />}
+                  />
+                </div>
+              </div>
+
+              <Radar className="absolute -bottom-12" />
+              <div className="absolute bottom-0 z-[41] h-px w-full bg-gradient-to-r from-transparent via-primary-500/20 to-transparent" />
+            </div>
+          </motion.div>
+        </motion.div>
       </section>
 
       {/* ── QUIZ CTA ── */}
