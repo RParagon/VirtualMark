@@ -20,7 +20,7 @@ const T = {
   inkFaint: '#5b554c',
   red: '#dc2626', // vermelho VM (ação)
   redSoft: '#f0857f',
-  gold: '#c2a36b', // champagne — assinatura premium
+  gold: '#c2a36b', // champagne, assinatura premium
   goldSoft: '#d8c094',
   green: '#1f9d57',
   rSm: 10,
@@ -28,7 +28,7 @@ const T = {
   rLg: 18,
 } as const
 
-// Ícones SVG de traço fino (substituem emojis — visual sério/premium)
+// Ícones SVG de traço fino (substituem emojis, visual sério/premium)
 function Icon({ name, size = 22, color = 'currentColor', stroke = 1.6 }: { name: string; size?: number; color?: string; stroke?: number }) {
   const c = { width: size, height: size, viewBox: '0 0 24 24', fill: 'none', stroke: color, strokeWidth: stroke, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const }
   switch (name) {
@@ -112,7 +112,7 @@ const TOTAL_QUESTIONS = 5 // raiz + discriminador + 2 contexto + confirmação
 // ════════════════════════════════════════════════════════════════
 
 const NODES: Record<NodeId, QNode> = {
-  // ── RAIZ — segmenta por maturidade ──
+  // ── RAIZ, segmenta por maturidade ──
   root: {
     id: 'root',
     question: (n) =>
@@ -127,14 +127,14 @@ const NODES: Record<NodeId, QNode> = {
     ],
   },
 
-  // ── RAMO A — "Ainda não digital" (icp1 ↔ icp2) ──
+  // ── RAMO A, "Ainda não digital" (icp1 ↔ icp2) ──
   a2: {
     id: 'a2',
     question: () => 'Quando você pensa em anúncios online, o que mais te representa?',
     options: [
-      { text: '"Nunca investi — meu negócio é relacionamento"', weights: { icp1: 5 }, next: 'a3_icp1' },
+      { text: '"Nunca investi, meu negócio é relacionamento"', weights: { icp1: 5 }, next: 'a3_icp1' },
       { text: '"Já pensei, mas acho caro e complexo"', weights: { icp1: 3, icp4: 1 }, next: 'a3_icp1' },
-      { text: '"Acho que já faço — pago o portal todo mês"', weights: { icp2: 5 }, next: 'a3_icp2' },
+      { text: '"Acho que já faço, pago o portal todo mês"', weights: { icp2: 5 }, next: 'a3_icp2' },
       { text: '"Pago portal, mas sei que não é a mesma coisa que anunciar"', weights: { icp2: 4, icp5: 1 }, next: 'a3_icp2' },
     ],
   },
@@ -143,17 +143,17 @@ const NODES: Record<NodeId, QNode> = {
     question: (n) =>
       n ? `${n}, há quanto tempo você atua com imóveis de alto padrão?` : 'Há quanto tempo você atua com imóveis de alto padrão?',
     options: [
-      { text: 'Mais de 20 anos — conheço todo mundo no mercado', weights: { icp1: 4 }, next: 'a4_icp1' },
-      { text: '10 a 20 anos — mercado consolidado na minha região', weights: { icp1: 3 }, next: 'a4_icp1' },
-      { text: '2 a 10 anos — tenho carteira, quero crescer', weights: { icp1: 1, icp5: 1 }, next: 'a4_icp1' },
-      { text: 'Menos de 2 anos — começando ou migrando', weights: { icp4: 2 }, next: 'a4_icp1' },
+      { text: 'Mais de 20 anos, conheço todo mundo no mercado', weights: { icp1: 4 }, next: 'a4_icp1' },
+      { text: '10 a 20 anos, mercado consolidado na minha região', weights: { icp1: 3 }, next: 'a4_icp1' },
+      { text: '2 a 10 anos, tenho carteira, quero crescer', weights: { icp1: 1, icp5: 1 }, next: 'a4_icp1' },
+      { text: 'Menos de 2 anos, começando ou migrando', weights: { icp4: 2 }, next: 'a4_icp1' },
     ],
   },
   a4_icp1: {
     id: 'a4_icp1',
     question: () => 'Quando alguém quer te indicar, onde a pessoa te encontra antes de ligar?',
     options: [
-      { text: 'Em lugar nenhum — só por indicação direta', weights: { icp1: 3 }, next: 'insight:icp1' },
+      { text: 'Em lugar nenhum, só por indicação direta', weights: { icp1: 3 }, next: 'insight:icp1' },
       { text: 'No meu Instagram pessoal, sem muita estratégia', weights: { icp1: 2 }, next: 'insight:icp1' },
       { text: 'Num site/perfil antigo que quase não atualizo', weights: { icp1: 2 }, next: 'insight:icp1' },
       { text: 'Ela me acha no Google', weights: { icp1: 1, icp5: 1 }, next: 'insight:icp1' },
@@ -174,19 +174,19 @@ const NODES: Record<NodeId, QNode> = {
     question: () => 'O que mais te incomoda nos leads que vêm do portal?',
     options: [
       { text: 'Vêm disputados com muitos corretores', weights: { icp2: 4 }, next: 'insight:icp2' },
-      { text: 'Qualidade baixa — muito curioso', weights: { icp2: 3 }, next: 'insight:icp2' },
+      { text: 'Qualidade baixa, muito curioso', weights: { icp2: 3 }, next: 'insight:icp2' },
       { text: 'O custo sobe todo ano', weights: { icp2: 3 }, next: 'insight:icp2' },
       { text: 'Não consigo medir se vale a pena', weights: { icp2: 2, icp5: 1 }, next: 'insight:icp2' },
     ],
   },
 
-  // ── RAMO B — "Presença parcial" (icp3 ↔ icp4) · PRIORIDADE MÁXIMA ──
+  // ── RAMO B, "Presença parcial" (icp3 ↔ icp4) · PRIORIDADE MÁXIMA ──
   b2: {
     id: 'b2',
     question: () => 'Você já tentou fazer anúncios pagos?',
     subtitle: 'Aqui mora a diferença entre quem tentou e quem ainda não começou.',
     options: [
-      { text: 'Nunca — não sei por onde começar', weights: { icp4: 5 }, next: 'b3_icp4' },
+      { text: 'Nunca, não sei por onde começar', weights: { icp4: 5 }, next: 'b3_icp4' },
       { text: 'Consumo muito conteúdo sobre, mas nunca operei de verdade', weights: { icp4: 4 }, next: 'b3_icp4' },
       { text: 'Já impulsionei posts, mas sem resultado claro', weights: { icp3: 5 }, next: 'b3_icp3' },
       { text: 'Já testei por 1–3 meses e parei porque não funcionou', weights: { icp3: 5 }, next: 'b3_icp3' },
@@ -233,7 +233,7 @@ const NODES: Record<NodeId, QNode> = {
     ],
   },
 
-  // ── RAMO C — "Já investe" (icp5 ↔ icp6) ──
+  // ── RAMO C, "Já investe" (icp5 ↔ icp6) ──
   c2: {
     id: 'c2',
     question: (n) => (n ? `${n}, você trabalha solo ou gerencia equipe?` : 'Você trabalha solo ou gerencia equipe?'),
@@ -261,7 +261,7 @@ const NODES: Record<NodeId, QNode> = {
       { text: 'Eu mesmo, no tempo que sobra', weights: { icp5: 4 }, next: 'insight:icp5' },
       { text: 'Um freelancer ou gestor', weights: { icp5: 3 }, next: 'insight:icp5' },
       { text: 'Uma agência, mas não estou satisfeito', weights: { icp5: 2, icp6: 1 }, next: 'insight:icp5' },
-      { text: 'Ninguém fixo — vai e volta', weights: { icp5: 3 }, next: 'insight:icp5' },
+      { text: 'Ninguém fixo, vai e volta', weights: { icp5: 3 }, next: 'insight:icp5' },
     ],
   },
   c3_icp6: {
@@ -289,7 +289,7 @@ const NODES: Record<NodeId, QNode> = {
   confirm: {
     id: 'confirm',
     question: (n) => (n ? `${n}, qual frase mais representa você hoje?` : 'Qual frase mais representa você hoje?'),
-    subtitle: 'Seja honesto — isso personaliza 100% do seu diagnóstico.',
+    subtitle: 'Seja honesto, isso personaliza 100% do seu diagnóstico.',
     options: [
       { text: '"Meu negócio é olho no olho. Não preciso de internet pra vender."', weights: { icp1: 8 }, next: 'open' },
       { text: '"Já gasto com portal, não quero mais uma despesa que talvez não funcione."', weights: { icp2: 8 }, next: 'open' },
@@ -309,32 +309,32 @@ const INSIGHTS: Record<ICPKey, Insight> = {
   icp1: {
     eyebrow: 'UMA VIRADA IMPORTANTE',
     title: '78% dos compradores de alto padrão pesquisam online antes de falar com um corretor.',
-    body: 'Sua experiência e seus relacionamentos são o seu maior diferencial — mas hoje eles só funcionam se o cliente te encontra primeiro. Enquanto isso, corretores mais novos estão fechando negócios que cairiam no seu colo, só porque aparecem no Google antes de você. O digital não substitui sua autoridade: ele garante que ela seja encontrada.',
+    body: 'Sua experiência e seus relacionamentos são o seu maior diferencial, mas hoje eles só funcionam se o cliente te encontra primeiro. Enquanto isso, corretores mais novos estão fechando negócios que cairiam no seu colo, só porque aparecem no Google antes de você. O digital não substitui sua autoridade: ele garante que ela seja encontrada.',
   },
   icp2: {
     eyebrow: 'UMA VIRADA IMPORTANTE',
-    title: 'Portal não é marketing digital — é aluguel de vitrine compartilhada.',
-    body: 'O custo dos portais subiu mais de 40% em 2 anos enquanto a qualidade caiu. Cada lead que você compra é disputado com 20–30 corretores ao mesmo tempo. Um lead exclusivo via Google custa 30–50% menos e converte até 3x mais — porque só liga pra você. A conta é matemática pura.',
+    title: 'Portal não é marketing digital, é aluguel de vitrine compartilhada.',
+    body: 'O custo dos portais subiu mais de 40% em 2 anos enquanto a qualidade caiu. Cada lead que você compra é disputado com 20–30 corretores ao mesmo tempo. Um lead exclusivo via Google custa 30–50% menos e converte até 3x mais, porque só liga pra você. A conta é matemática pura.',
   },
   icp3: {
     eyebrow: 'A VERDADE QUE NINGUÉM TE CONTOU',
     title: 'Impulsionar post NÃO é tráfego pago. São coisas completamente diferentes.',
-    body: 'Impulsionar é colocar um cartaz na rua e torcer pra alguém parar. Gestão profissional coloca seu anúncio na frente de quem JÁ está procurando um imóvel na sua faixa, na sua região, agora. Você não falhou — a estratégia é que estava errada. Campanha bem estruturada reduz o custo por lead em 60–80% vs. impulsionamento.',
+    body: 'Impulsionar é colocar um cartaz na rua e torcer pra alguém parar. Gestão profissional coloca seu anúncio na frente de quem JÁ está procurando um imóvel na sua faixa, na sua região, agora. Você não falhou, a estratégia é que estava errada. Campanha bem estruturada reduz o custo por lead em 60–80% vs. impulsionamento.',
   },
   icp4: {
     eyebrow: 'O QUE TE TRAVA NÃO É DINHEIRO',
     title: 'Você não precisa de R$10.000/mês pra começar.',
-    body: 'Corretores que começam com R$1.500/mês + estratégia certa geram 15–25 leads qualificados no primeiro mês. O que trava não é orçamento — é a ordem das coisas: landing page + pixel + CRM + follow-up, montados ANTES de ligar a campanha. Estrutura primeiro, anúncio depois.',
+    body: 'Corretores que começam com R$1.500/mês + estratégia certa geram 15–25 leads qualificados no primeiro mês. O que trava não é orçamento, é a ordem das coisas: landing page + pixel + CRM + follow-up, montados ANTES de ligar a campanha. Estrutura primeiro, anúncio depois.',
   },
   icp5: {
     eyebrow: 'ONDE ESTÁ O DINHEIRO NA MESA',
     title: 'Sem otimização avançada, seu CPL provavelmente está 30–50% acima do possível.',
-    body: 'Remarketing, públicos lookalike e tracking de conversão offline são o que separam performance boa de performance excepcional. E as 5–10h por semana que você gasta gerenciando campanha poderiam virar 2–3 reuniões a mais com leads qualificados. Você não precisa de convencimento — precisa de tempo de volta.',
+    body: 'Remarketing, públicos lookalike e tracking de conversão offline são o que separam performance boa de performance excepcional. E as 5–10h por semana que você gasta gerenciando campanha poderiam virar 2–3 reuniões a mais com leads qualificados. Você não precisa de convencimento, precisa de tempo de volta.',
   },
   icp6: {
     eyebrow: 'PENSANDO COMO EMPRESÁRIO',
     title: 'Imobiliárias com captação estruturada têm 40% menos turnover de corretores.',
-    body: 'Corretor bom fica onde tem lead. O custo de repor um corretor que sai equivale a 3–6 meses de mídia. Operação profissional com tracking permite atribuir cada venda à campanha certa — e decidir onde investir com números, não achismo. É previsibilidade pra sua operação inteira.',
+    body: 'Corretor bom fica onde tem lead. O custo de repor um corretor que sai equivale a 3–6 meses de mídia. Operação profissional com tracking permite atribuir cada venda à campanha certa, e decidir onde investir com números, não achismo. É previsibilidade pra sua operação inteira.',
   },
 }
 
@@ -358,9 +358,9 @@ const profiles: Record<ICPKey, Profile> = {
       { value: '21x', label: 'mais chance de fechar quando o cliente te encontra primeiro no Google' },
     ],
     actions: [
-      'Criar sua vitrine digital — uma landing page que transmita sua autoridade e experiência de 15+ anos',
+      'Criar sua vitrine digital, uma landing page que transmita sua autoridade e experiência de 15+ anos',
       'Garantir presença no Google para buscas como "corretor alto padrão [sua região]"',
-      'Manter o relacionamento como base e adicionar o digital como amplificador — não substituto',
+      'Manter o relacionamento como base e adicionar o digital como amplificador, não substituto',
     ],
     cta: 'Agende uma conversa de 15 min. Vamos mostrar como proteger seu território digital sem mudar o que você faz de melhor.',
   },
@@ -372,7 +372,7 @@ const profiles: Record<ICPKey, Profile> = {
     gradient: 'linear-gradient(135deg, #8c734a, #c2a36b)',
     headline: 'Você Está Pagando Caro Por Leads Que Não São Seus',
     description:
-      'Cada lead que chega pelo portal é disputado por 20-30 corretores simultaneamente. Você precisa ligar em 2 minutos ou perde. E o pior: o portal fica mais caro todo ano enquanto a qualidade cai. Isso não é marketing digital — é aluguel de vitrine compartilhada.',
+      'Cada lead que chega pelo portal é disputado por 20-30 corretores simultaneamente. Você precisa ligar em 2 minutos ou perde. E o pior: o portal fica mais caro todo ano enquanto a qualidade cai. Isso não é marketing digital, é aluguel de vitrine compartilhada.',
     stats: [
       { value: '+40%', label: 'de aumento no custo dos portais nos últimos 2 anos' },
       { value: '30', label: 'corretores disputando o mesmo lead que você recebe do portal' },
@@ -380,7 +380,7 @@ const profiles: Record<ICPKey, Profile> = {
     ],
     actions: [
       'Comparar custo real: quanto paga por lead no portal vs. lead exclusivo que só chega pra você',
-      'Iniciar campanha de captação própria mantendo o portal como backup — transição gradual',
+      'Iniciar campanha de captação própria mantendo o portal como backup, transição gradual',
       'Em 90 dias, ter dados reais para decidir: manter, reduzir ou eliminar portais',
     ],
     cta: 'Receba uma planilha comparativa personalizada: Portal vs. Lead Exclusivo. Os números vão falar por si.',
@@ -391,9 +391,9 @@ const profiles: Record<ICPKey, Profile> = {
     icon: 'III',
     color: '#c2a36b',
     gradient: 'linear-gradient(135deg, #8c734a, #c2a36b)',
-    headline: 'Você Não Falhou — A Estratégia É Que Estava Errada',
+    headline: 'Você Não Falhou, A Estratégia É Que Estava Errada',
     description:
-      'O que você fez não foi gestão de tráfego — foi impulsionamento. São coisas completamente diferentes. Impulsionar um post é como colocar um cartaz na rua e torcer pra alguém parar. Gestão profissional coloca seu anúncio na frente de quem JÁ está procurando um imóvel na sua faixa.',
+      'O que você fez não foi gestão de tráfego, foi impulsionamento. São coisas completamente diferentes. Impulsionar um post é como colocar um cartaz na rua e torcer pra alguém parar. Gestão profissional coloca seu anúncio na frente de quem JÁ está procurando um imóvel na sua faixa.',
     stats: [
       { value: '80%', label: 'de redução no CPL ao migrar de impulsionamento para gestão profissional' },
       { value: '0', label: 'leads qualificados é o resultado típico de impulsionamento sem estratégia' },
@@ -412,18 +412,18 @@ const profiles: Record<ICPKey, Profile> = {
     icon: 'IV',
     color: '#c2a36b',
     gradient: 'linear-gradient(135deg, #8c734a, #c2a36b)',
-    headline: 'Você Tem a Mentalidade Certa — Só Falta a Estrutura',
+    headline: 'Você Tem a Mentalidade Certa, Só Falta a Estrutura',
     description:
-      'Você já entende que o digital é o caminho. O que te trava não é falta de vontade — é falta de estrutura e medo de errar com dinheiro que não pode perder. A boa notícia: você não precisa de orçamento alto pra começar. Precisa de estratégia certa.',
+      'Você já entende que o digital é o caminho. O que te trava não é falta de vontade, é falta de estrutura e medo de errar com dinheiro que não pode perder. A boa notícia: você não precisa de orçamento alto pra começar. Precisa de estratégia certa.',
     stats: [
       { value: '15-25', label: 'leads qualificados no primeiro mês com apenas R$1.500 de investimento' },
       { value: 'R$50', label: 'por dia é o mínimo para validar o canal com estratégia profissional' },
-      { value: '∞', label: 'é o custo de não começar — cada mês sem digital é market share cedido' },
+      { value: '∞', label: 'é o custo de não começar, cada mês sem digital é market share cedido' },
     ],
     actions: [
       'Montar infraestrutura mínima: landing page + pixel + CRM gratuito + processo de follow-up',
       'Iniciar com R$50/dia em Meta Ads focado na sua região e faixa de preço',
-      'Em 30 dias ter dados reais: quantos leads, qual custo, qual qualidade — decidir com informação',
+      'Em 30 dias ter dados reais: quantos leads, qual custo, qual qualidade, decidir com informação',
     ],
     cta: 'Plano de lançamento personalizado: investimento mínimo, timeline de 30 dias, projeção de resultados. Sem surpresas.',
   },
@@ -433,9 +433,9 @@ const profiles: Record<ICPKey, Profile> = {
     icon: 'V',
     color: '#c2a36b',
     gradient: 'linear-gradient(135deg, #8c734a, #c2a36b)',
-    headline: 'Seus Resultados Estão Bons — Mas Você Está Deixando Dinheiro na Mesa',
+    headline: 'Seus Resultados Estão Bons, Mas Você Está Deixando Dinheiro na Mesa',
     description:
-      'Você já investe, já gera leads, já sabe que funciona. O problema é que gerencia tudo sozinho — e isso custa tempo que deveria estar vendendo. Sem otimização avançada, seu CPL provavelmente é 30-50% maior do que poderia ser.',
+      'Você já investe, já gera leads, já sabe que funciona. O problema é que gerencia tudo sozinho, e isso custa tempo que deveria estar vendendo. Sem otimização avançada, seu CPL provavelmente é 30-50% maior do que poderia ser.',
     stats: [
       { value: '-40%', label: 'redução média no CPL nos primeiros 60 dias com gestão especializada' },
       { value: '5-10h', label: 'por semana gastas gerenciando campanhas em vez de vendendo' },
@@ -443,7 +443,7 @@ const profiles: Record<ICPKey, Profile> = {
     ],
     actions: [
       'Auditoria completa da sua operação atual: onde estão os gaps que você não está vendo',
-      'Transição suave: assumimos a operação sem pausar campanhas — zero downtime',
+      'Transição suave: assumimos a operação sem pausar campanhas, zero downtime',
       'Dashboard personalizado com CPL, taxa de conversão e ROI por campanha',
     ],
     cta: 'Auditoria gratuita: identificamos os 3 maiores gaps de otimização e quanto você está deixando na mesa.',
@@ -518,12 +518,12 @@ function buildWppMessage(profileKey: ICPKey, userName: string, openAnswer: strin
   const challenge = openAnswer.trim() || 'melhorar a geração de leads qualificados para imóveis'
   const firstName = userName.split(' ')[0]
   const base: Record<ICPKey, string> = {
-    icp1: `Olá, Virtual Mark! 🤝\n\nMeu nome é ${firstName} e fiz o diagnóstico — meu perfil é *${profile.name}*.\n\nTenho anos de mercado imobiliário e trabalho com indicações e relacionamento presencial, mas percebi que preciso de presença digital para não perder território.\n\nMeu maior desafio: ${challenge}\n\nGostaria de conversar com um especialista.`,
-    icp2: `Olá, Virtual Mark! 🧭\n\nMeu nome é ${firstName} e fiz o diagnóstico — meu perfil é *${profile.name}*.\n\nHoje invisto em portais imobiliários, mas pago caro por leads disputados com dezenas de outros corretores.\n\nMeu maior desafio: ${challenge}\n\nQuero entender como ter leads exclusivos com custo menor.`,
-    icp3: `Olá, Virtual Mark! 🧪\n\nMeu nome é ${firstName} e fiz o diagnóstico — meu perfil é *${profile.name}*.\n\nJá tentei impulsionar posts e rodar anúncios, mas não vi resultado claro.\n\nMeu maior desafio: ${challenge}\n\nQuero entender o que deu errado e como fazer gestão de tráfego de verdade.`,
-    icp4: `Olá, Virtual Mark! 🚀\n\nMeu nome é ${firstName} e fiz o diagnóstico — meu perfil é *${profile.name}*.\n\nSei que o marketing digital é o caminho, mas ainda não dei o primeiro passo porque não sei como começar.\n\nMeu maior desafio: ${challenge}\n\nQuero um plano de lançamento com investimento mínimo.`,
-    icp5: `Olá, Virtual Mark! 📈\n\nMeu nome é ${firstName} e fiz o diagnóstico — meu perfil é *${profile.name}*.\n\nJá faço tráfego pago e gero leads, mas gerencio tudo sozinho e sei que poderia otimizar mais.\n\nMeu maior desafio: ${challenge}\n\nQuero uma auditoria gratuita das minhas campanhas.`,
-    icp6: `Olá, Virtual Mark! 🏢\n\nMeu nome é ${firstName} e fiz o diagnóstico — meu perfil é *${profile.name}*.\n\nTenho equipe de corretores e preciso de leads qualificados mensalmente. Preciso de operação profissional.\n\nMeu maior desafio: ${challenge}\n\nGostaria de receber uma proposta personalizada.`,
+    icp1: `Olá, Virtual Mark! 🤝\n\nMeu nome é ${firstName} e fiz o diagnóstico, meu perfil é *${profile.name}*.\n\nTenho anos de mercado imobiliário e trabalho com indicações e relacionamento presencial, mas percebi que preciso de presença digital para não perder território.\n\nMeu maior desafio: ${challenge}\n\nGostaria de conversar com um especialista.`,
+    icp2: `Olá, Virtual Mark! 🧭\n\nMeu nome é ${firstName} e fiz o diagnóstico, meu perfil é *${profile.name}*.\n\nHoje invisto em portais imobiliários, mas pago caro por leads disputados com dezenas de outros corretores.\n\nMeu maior desafio: ${challenge}\n\nQuero entender como ter leads exclusivos com custo menor.`,
+    icp3: `Olá, Virtual Mark! 🧪\n\nMeu nome é ${firstName} e fiz o diagnóstico, meu perfil é *${profile.name}*.\n\nJá tentei impulsionar posts e rodar anúncios, mas não vi resultado claro.\n\nMeu maior desafio: ${challenge}\n\nQuero entender o que deu errado e como fazer gestão de tráfego de verdade.`,
+    icp4: `Olá, Virtual Mark! 🚀\n\nMeu nome é ${firstName} e fiz o diagnóstico, meu perfil é *${profile.name}*.\n\nSei que o marketing digital é o caminho, mas ainda não dei o primeiro passo porque não sei como começar.\n\nMeu maior desafio: ${challenge}\n\nQuero um plano de lançamento com investimento mínimo.`,
+    icp5: `Olá, Virtual Mark! 📈\n\nMeu nome é ${firstName} e fiz o diagnóstico, meu perfil é *${profile.name}*.\n\nJá faço tráfego pago e gero leads, mas gerencio tudo sozinho e sei que poderia otimizar mais.\n\nMeu maior desafio: ${challenge}\n\nQuero uma auditoria gratuita das minhas campanhas.`,
+    icp6: `Olá, Virtual Mark! 🏢\n\nMeu nome é ${firstName} e fiz o diagnóstico, meu perfil é *${profile.name}*.\n\nTenho equipe de corretores e preciso de leads qualificados mensalmente. Preciso de operação profissional.\n\nMeu maior desafio: ${challenge}\n\nGostaria de receber uma proposta personalizada.`,
   }
   return encodeURIComponent(base[profileKey])
 }
@@ -627,7 +627,7 @@ export default function QuizImobiliariaTreePage() {
     setResult(r)
     trackQuiz({ event: 'quiz_lead_captured', icp: r.key, adherence: r.adherence })
 
-    // Salva no Supabase — não bloqueia a exibição do resultado.
+    // Salva no Supabase, não bloqueia a exibição do resultado.
     try {
       const attribution = getAttribution()
       await supabase.from('quiz_leads').insert([
@@ -810,7 +810,7 @@ export default function QuizImobiliariaTreePage() {
                 {firstName ? `${firstName}, se` : 'Se'} pudéssemos resolver um problema do seu marketing, qual seria?
               </h2>
               <p style={{ fontSize: 14, color: T.inkMute, margin: '0 0 22px', lineHeight: 1.5 }}>
-                Seja específico — isso personaliza seu plano de ação e a mensagem para nosso especialista.
+                Seja específico, isso personaliza seu plano de ação e a mensagem para nosso especialista.
               </p>
               <textarea
                 value={openAnswer}
@@ -885,7 +885,7 @@ export default function QuizImobiliariaTreePage() {
             onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-2px)' }}
             onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = '' }}
           >
-            Faz sentido — continuar <Icon name="arrow" size={18} />
+            Faz sentido, continuar <Icon name="arrow" size={18} />
           </button>
         </div>
       )}

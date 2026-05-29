@@ -92,7 +92,7 @@ const seoSchema = {
     {
       '@type': ['LocalBusiness', 'ProfessionalService'],
       '@id': `${PAGE_URL}#business`,
-      name: 'VirtualMark — Marketing Digital para Imobiliárias',
+      name: 'VirtualMark: Marketing Digital para Imobiliárias',
       description: 'Especialistas em geração de leads para imobiliárias e corretores. Campanhas Google Ads e Meta Ads com segmentação por perfil de comprador, landing pages de alta conversão e relatórios de CPL em tempo real.',
       url: PAGE_URL,
       telephone: '+5511992794634',
@@ -191,7 +191,7 @@ const seoSchema = {
           name: 'O marketing digital para imobiliárias funciona em qualquer cidade do Brasil?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Sim. A segmentação geográfica permite impactar compradores que pesquisam imóveis especificamente na área de atuação da imobiliária — cidade, bairro ou condomínio, de Norte a Sul do Brasil.',
+            text: 'Sim. A segmentação geográfica permite impactar compradores que pesquisam imóveis especificamente na área de atuação da imobiliária, cidade, bairro ou condomínio, de Norte a Sul do Brasil.',
           },
         },
         {
@@ -199,7 +199,7 @@ const seoSchema = {
           name: 'Preciso ter site próprio para gerar leads com marketing digital?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Não. A VirtualMark cria landing pages dedicadas para cada campanha — sem necessidade de site completo. A landing page tem um único objetivo: converter o visitante em lead qualificado para a imobiliária.',
+            text: 'Não. A VirtualMark cria landing pages dedicadas para cada campanha, sem necessidade de site completo. A landing page tem um único objetivo: converter o visitante em lead qualificado para a imobiliária.',
           },
         },
         {
@@ -223,8 +223,8 @@ const seoSchema = {
     {
       '@type': 'CaseStudy',
       '@id': `${PAGE_URL}#case-showhome`,
-      name: 'Case Showhome — ROI 4.3x com Meta Ads',
-      description: 'A Showhome investiu R$3.000 em Meta Ads com a VirtualMark e gerou 330 contatos qualificados no WhatsApp, 25 visitas agendadas e 1 venda realizada — resultando em R$13.000 de comissão e ROI de 4.3x.',
+      name: 'Case Showhome: ROI 4.3x com Meta Ads',
+      description: 'A Showhome investiu R$3.000 em Meta Ads com a VirtualMark e gerou 330 contatos qualificados no WhatsApp, 25 visitas agendadas e 1 venda realizada, resultando em R$13.000 de comissão e ROI de 4.3x.',
       about: { '@id': `${SITE_URL}/#organization` },
       result: 'ROI de 4.3x: R$3.000 investidos em Meta Ads resultaram em R$13.000 de comissão gerada para a imobiliária Showhome.',
     },
@@ -246,7 +246,7 @@ const itemVariants = {
 const painPoints = [
   {
     tag: 'Corretor Tradicional',
-    title: '"Meu negócio é olho no olho — não preciso de internet."',
+    title: '"Meu negócio é olho no olho, não preciso de internet."',
     reality:
       'Enquanto você fecha 3 negócios com indicação, seu concorrente fecha 10 porque aparece primeiro no Google quando o comprador pesquisa.',
   },
@@ -260,7 +260,7 @@ const painPoints = [
     tag: 'Tentou e Parou',
     title: '"Já tentei anúncios e joguei dinheiro fora."',
     reality:
-      'Você não falhou — a estratégia estava errada. Impulsionar post não é gestão de tráfego. São coisas completamente diferentes.',
+      'Você não falhou, a estratégia estava errada. Impulsionar post não é gestão de tráfego. São coisas completamente diferentes.',
   },
 ]
 
@@ -298,7 +298,7 @@ const vmBentoItems: BentoItem[] = [
   {
     title: 'Campanha Segmentada',
     description:
-      'Anúncios que aparecem para quem já busca imóveis na sua faixa de preço e região — não para qualquer pessoa. Segmentação cirúrgica no Google e Meta.',
+      'Anúncios que aparecem para quem já busca imóveis na sua faixa de preço e região, não para qualquer pessoa. Segmentação cirúrgica no Google e Meta.',
     icon: <Target className="w-5 h-5 text-primary-500" />,
     status: 'Google & Meta',
     tags: ['leads', 'segmentação'],
@@ -309,7 +309,7 @@ const vmBentoItems: BentoItem[] = [
   {
     title: 'Landing Pages que Convertem',
     description:
-      'Páginas dedicadas com formulário e WhatsApp integrados — criadas para transformar visitantes em leads qualificados com um único CTA.',
+      'Páginas dedicadas com formulário e WhatsApp integrados, criadas para transformar visitantes em leads qualificados com um único CTA.',
     icon: <Globe className="w-5 h-5 text-primary-500" />,
     status: 'Alta conversão',
     tags: ['conversão'],
@@ -381,11 +381,11 @@ const faqs = [
   },
   {
     q: 'Em quanto tempo vejo os primeiros resultados?',
-    a: 'Com uma campanha bem estruturada, os primeiros leads qualificados chegam em 7 a 15 dias. Em 30 dias você já tem dados reais de CPL e pode tomar decisões com informação — não no escuro.',
+    a: 'Com uma campanha bem estruturada, os primeiros leads qualificados chegam em 7 a 15 dias. Em 30 dias você já tem dados reais de CPL e pode tomar decisões com informação, não no escuro.',
   },
   {
     q: 'É melhor que investir em portal imobiliário?',
-    a: 'Não é ou/ou — é estratégia. Em portais você disputa o mesmo lead com 30 corretores. Com captação própria, o lead chegou exclusivamente para você. Em 90 dias você tem dados para decidir o que faz mais sentido para o seu negócio.',
+    a: 'Não é ou/ou, é estratégia. Em portais você disputa o mesmo lead com 30 corretores. Com captação própria, o lead chegou exclusivamente para você. Em 90 dias você tem dados para decidir o que faz mais sentido para o seu negócio.',
   },
   {
     q: 'Funciona para minha região específica?',
@@ -393,11 +393,11 @@ const faqs = [
   },
   {
     q: 'Preciso de site ou posso começar sem?',
-    a: 'Criamos landing pages dedicadas para as campanhas — você não precisa de site completo para começar. A landing page tem um único objetivo: transformar o visitante em lead qualificado.',
+    a: 'Criamos landing pages dedicadas para as campanhas, você não precisa de site completo para começar. A landing page tem um único objetivo: transformar o visitante em lead qualificado.',
   },
   {
     q: 'Posso cancelar quando quiser?',
-    a: 'Trabalhamos com contratos mensais renováveis. Não amarramos ninguém — acreditamos que os resultados criam a fidelidade. Se em 60 dias não houver evolução clara, revisamos a estratégia juntos sem custo.',
+    a: 'Trabalhamos com contratos mensais renováveis. Não amarramos ninguém, acreditamos que os resultados criam a fidelidade. Se em 60 dias não houver evolução clara, revisamos a estratégia juntos sem custo.',
   },
 ]
 
@@ -469,7 +469,7 @@ export default function ImobiliariaPage() {
         <meta property="og:image" content={OG_IMAGE} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
-        <meta property="og:image:alt" content="Imóvel de alto padrão — VirtualMark Marketing Digital para Imobiliárias" />
+        <meta property="og:image:alt" content="Imóvel de alto padrão | VirtualMark Marketing Digital para Imobiliárias" />
         <meta property="og:locale" content="pt_BR" />
         <meta property="og:site_name" content="VirtualMark" />
 
@@ -493,7 +493,7 @@ export default function ImobiliariaPage() {
         badge="Marketing Imobiliário"
         title1="Sua Imobiliária Está"
         title2="Perdendo Clientes Para a Concorrência"
-        subtitle="78% dos compradores pesquisam online antes de contatar qualquer corretor. Se você não aparece quando eles buscam, seu concorrente aparece — e fecha o negócio."
+        subtitle="78% dos compradores pesquisam online antes de contatar qualquer corretor. Se você não aparece quando eles buscam, seu concorrente aparece, e fecha o negócio."
       >
         <div className="flex justify-center">
           <ShinyButton to="/quiz-imoveis">Fazer Diagnóstico Gratuito →</ShinyButton>
@@ -569,7 +569,7 @@ export default function ImobiliariaPage() {
         </motion.div>
       </section>
 
-      {/* ── MARKET STATS — property background image ── */}
+      {/* ── MARKET STATS, property background image ── */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img
@@ -611,7 +611,7 @@ export default function ImobiliariaPage() {
         </motion.div>
       </section>
 
-      {/* ── SOLUTION — BENTO GRID ── */}
+      {/* ── SOLUTION, BENTO GRID ── */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-gray-900/30 to-background">
         <motion.div
           variants={containerVariants}
@@ -678,7 +678,7 @@ export default function ImobiliariaPage() {
         </motion.div>
       </section>
 
-      {/* ── CASE HIGHLIGHT — SHOWHOME ── */}
+      {/* ── CASE HIGHLIGHT, SHOWHOME ── */}
       <section className="bg-gradient-to-b from-background to-gray-900/20 overflow-hidden pt-20">
 
         {/* Mobile: simple card layout, no iframe */}
@@ -745,7 +745,7 @@ export default function ImobiliariaPage() {
                   A Showhome, especialista em imóveis de alto padrão, precisava gerar leads
                   qualificados de forma previsível. A VM estruturou campanhas no Meta Ads com landing
                   pages otimizadas e WhatsApp Business como canal de conversão. Resultado: 330
-                  contatos gerados, 25 visitas agendadas e 1 venda fechada — gerando R$13.000 de
+                  contatos gerados, 25 visitas agendadas e 1 venda fechada, gerando R$13.000 de
                   comissão com apenas R$3.000 investidos em mídia.
                 </p>
                 <div className="inline-flex items-center gap-3 bg-primary-500/10 border border-primary-500/20 rounded-xl px-5 py-3 mb-6">
@@ -800,14 +800,14 @@ export default function ImobiliariaPage() {
               </span>
             </h2>
             <p className="text-gray-400 max-w-xl mx-auto speakable-content">
-              Nossa tecnologia monitora cada clique, lead gerado e conversão — em tempo real,
+              Nossa tecnologia monitora cada clique, lead gerado e conversão, em tempo real,
               por campanha e por canal, para você saber exatamente onde está seu dinheiro.
             </p>
           </motion.div>
 
           <motion.div variants={itemVariants}>
             <div className="relative flex h-96 w-full max-w-3xl flex-col items-center justify-center space-y-4 overflow-hidden px-4 mx-auto">
-              {/* Row 1 — upper strip, full width */}
+              {/* Row 1, upper strip, full width */}
               <div className="mx-auto w-full max-w-3xl">
                 <div className="flex w-full items-center justify-center space-x-10 md:justify-between md:space-x-0">
                   {/* upper-left  → CSS ≈321°  → hit ≈ 8.36s */}
@@ -830,7 +830,7 @@ export default function ImobiliariaPage() {
                   />
                 </div>
               </div>
-              {/* Row 2 — mid strip, narrower */}
+              {/* Row 2, mid strip, narrower */}
               <div className="mx-auto w-full max-w-md">
                 <div className="flex w-full items-center justify-center space-x-10 md:justify-between md:space-x-0">
                   {/* left-center → CSS = 315° → hit = 8.19s */}
@@ -847,7 +847,7 @@ export default function ImobiliariaPage() {
                   />
                 </div>
               </div>
-              {/* Row 3 — lower strip, full width */}
+              {/* Row 3, lower strip, full width */}
               <div className="mx-auto w-full max-w-3xl">
                 <div className="flex w-full items-center justify-center space-x-10 md:justify-between md:space-x-0">
                   {/* lower-left  → CSS ≈342°  → hit ≈ 8.94s */}
@@ -900,7 +900,7 @@ export default function ImobiliariaPage() {
               </h2>
               <p className="text-gray-400 mb-8 max-w-xl mx-auto leading-relaxed speakable-content">
                 Identificamos 6 perfis de imobiliárias. Em 3 minutos você descobre exatamente
-                quais são os gargalos que travam seu crescimento — e recebe um plano de ação
+                quais são os gargalos que travam seu crescimento, e recebe um plano de ação
                 direto no WhatsApp.
               </p>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-8 text-left max-w-md mx-auto">
