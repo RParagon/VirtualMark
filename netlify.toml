@@ -1,3 +1,10 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# SPA fallback: só se aplica a caminhos SEM arquivo correspondente no dist.
+# As rotas prerenderizadas (dist/<rota>/index.html) e os arquivos estáticos
+# (robots.txt, sitemap.xml) são servidos diretamente e NÃO caem aqui.
 [[redirects]]
   from = "/*"
   to = "/index.html"
