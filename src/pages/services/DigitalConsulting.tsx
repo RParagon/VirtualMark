@@ -2,6 +2,7 @@ import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import Navbar from '../../components/Navbar'
 import Footer from '../../components/Footer'
+import Seo from '../../components/Seo'
 import {
   ChartBarIcon,
   LightBulbIcon,
@@ -57,6 +58,11 @@ const DigitalConsulting = () => {
 
   return (
     <div className="min-h-screen bg-gradient-custom flex flex-col relative">
+      <Seo
+        title="Consultoria Digital | Estratégia de Marketing e Vendas | VirtualMark"
+        description="Consultoria digital para estruturar aquisição de clientes: diagnóstico, planejamento de canais e processos de marketing e vendas orientados a crescimento."
+        path="/services/digital-consulting"
+      />
       {/* Fundo radial animado */}
       <motion.div
         className="absolute inset-0 pointer-events-none z-0"

@@ -2,6 +2,7 @@ import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import Navbar from '../../components/Navbar'
 import Footer from '../../components/Footer'
+import Seo from '../../components/Seo'
 import {
   ChartBarIcon,
   ArrowTrendingUpIcon,
@@ -66,6 +67,11 @@ const PerformanceMarketing = () => {
 
   return (
     <div className="min-h-screen bg-gradient-custom flex flex-col relative">
+      <Seo
+        title="Marketing de Performance | Campanhas Orientadas a ROI | VirtualMark"
+        description="Marketing de performance focado em resultado: cada real investido é medido por leads, vendas e retorno sobre o investimento (ROI). Decisões guiadas por dados."
+        path="/services/performance-marketing"
+      />
       {/* Fundo radial animado */}
       <motion.div
         className="absolute inset-0 pointer-events-none z-0"

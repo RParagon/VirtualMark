@@ -2,6 +2,7 @@ import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import Navbar from '../../components/Navbar'
 import Footer from '../../components/Footer'
+import Seo from '../../components/Seo'
 import {
   DocumentTextIcon,
   GlobeAltIcon,
@@ -107,6 +108,11 @@ const ContentMarketing = () => {
 
   return (
     <div className="min-h-screen bg-gradient-custom flex flex-col relative">
+      <Seo
+        title="Marketing de Conteúdo | Estratégia e Produção | VirtualMark"
+        description="Marketing de conteúdo que atrai, educa e converte: estratégia editorial, SEO e produção alinhadas à jornada de compra para gerar autoridade e demanda."
+        path="/services/content-marketing"
+      />
       {/* Fundo radial animado adicional */}
       <motion.div
         className="absolute inset-0 pointer-events-none z-0"

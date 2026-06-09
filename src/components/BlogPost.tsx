@@ -2,7 +2,10 @@ import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { usePosts } from '../contexts/PostContext'
+import Seo from './Seo'
 import { ArrowLeftIcon, ClockIcon, UserIcon, CalendarIcon, ShareIcon } from '@heroicons/react/24/outline'
+
+const SITE_URL = 'https://virtualmark.com.br'
 
 interface BlogPost {
   id: string
@@ -69,8 +72,32 @@ const BlogPost = () => {
     }
   }
 
+  const postUrl = `${SITE_URL}/blog/${post.id}`
+  const blogPostingSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: post.title,
+    description: post.excerpt,
+    image: post.imageUrl,
+    datePublished: post.date,
+    dateModified: post.date,
+    articleSection: post.category,
+    inLanguage: 'pt-BR',
+    mainEntityOfPage: { '@type': 'WebPage', '@id': postUrl },
+    author: { '@type': 'Person', name: post.author },
+    publisher: { '@id': `${SITE_URL}/#organization` },
+  }
+
   return (
     <div className="min-h-screen bg-gradient-custom py-20 px-4 sm:px-6 lg:px-8">
+      <Seo
+        title={`${post.title} | Blog VirtualMark`}
+        description={post.excerpt}
+        path={`/blog/${post.id}`}
+        image={post.imageUrl}
+        type="article"
+        jsonLd={blogPostingSchema}
+      />
       <div className="max-w-4xl mx-auto">
         {/* Back to blog link */}
         <Link

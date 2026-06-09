@@ -8,6 +8,7 @@ import { ServiceProvider } from './contexts/ServiceContext'
 import { AuthProvider } from './contexts/AuthContext'
 import { CookieProvider } from './contexts/CookieContext'
 import ScrollToTop from './components/ScrollToTop'
+import Seo from './components/Seo'
 
 // Components will be imported here as they are created
 import Navbar from './components/Navbar'
@@ -82,6 +83,11 @@ function App() {
                       <Route path="/services/digital-consulting" element={<ServiceProvider><DigitalConsulting /></ServiceProvider>} />
                       <Route path="/" element={
                         <main className="relative">
+                          <Seo
+                            title="VirtualMark | Marketing Digital e Geração de Leads que Viram Vendas"
+                            description="Agência de marketing digital orientada a performance: Google Ads, Meta Ads e landing pages que geram leads qualificados e vendas reais. Diagnóstico gratuito."
+                            path="/"
+                          />
                           <Navbar />
                           <Hero />
                           <Results />

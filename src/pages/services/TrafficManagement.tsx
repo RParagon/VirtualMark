@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { useEffect } from 'react'
 import Navbar from '../../components/Navbar'
 import Footer from '../../components/Footer'
+import Seo from '../../components/Seo'
 import { useService } from '../../contexts/ServiceContext'
 import { useContact } from '../../contexts/ContactContext'
 import {
@@ -164,6 +165,11 @@ const TrafficManagement = () => {
 
   return (
     <div className="min-h-screen bg-gradient-custom flex flex-col relative">
+      <Seo
+        title="Gestão de Tráfego Pago | Google Ads e Meta Ads | VirtualMark"
+        description="Gestão profissional de tráfego pago no Google Ads e Meta Ads: campanhas otimizadas para reduzir o custo por lead e escalar vendas com previsibilidade."
+        path="/services/traffic-management"
+      />
       {/* Fundo animado adicional (opcional) */}
       <motion.div
         className="absolute inset-0 pointer-events-none z-0"
