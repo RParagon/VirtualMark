@@ -88,6 +88,11 @@ const seoSchema = {
         availableLanguage: 'Portuguese',
         areaServed: 'BR',
       },
+      sameAs: [
+        'https://www.instagram.com/virtualmarkgroup/',
+        'https://br.linkedin.com/company/vmredot',
+        'https://share.google/NTHC3oQU1wFCMkVh5',
+      ],
     },
     {
       '@type': ['LocalBusiness', 'ProfessionalService'],

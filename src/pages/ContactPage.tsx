@@ -143,7 +143,7 @@ const ContactPage = () => {
                     <FaInstagram className="h-6 w-6 text-primary-500" />
                   </a>
                   <a
-                    href="https://wa.me/5511913345769"
+                    href="https://wa.me/5511992794634"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-12 h-12 bg-primary-500/10 rounded-xl flex items-center justify-center hover:bg-primary-500/20 transition-colors"

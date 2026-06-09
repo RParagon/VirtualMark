@@ -260,7 +260,7 @@ const PrivacyPolicyPage = () => {
               </p>
               <ul>
                 <li>E-mail: contato@virtualmark.com.br</li>
-                <li>Telefone: (11) 91334-5769</li>
+                <li>Telefone: (11) 99279-4634</li>
                 <li>Endereço: São Paulo, SP</li>
               </ul>
               <p>

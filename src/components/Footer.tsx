@@ -32,7 +32,7 @@ const Footer = () => {
 
   // Função para abrir WhatsApp
   const handleContactClick = () => {
-    const phoneNumber = '5511913345769' // Número correto do WhatsApp
+    const phoneNumber = '5511992794634' // Número oficial do WhatsApp
     const message = 'Olá! Gostaria de saber mais sobre os serviços da VirtualMark.'
     const whatsappURL = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${encodeURIComponent(message)}`
     window.open(whatsappURL, '_blank')
@@ -156,7 +156,7 @@ const Footer = () => {
           <motion.div variants={itemVariants}>
             <h4 className="text-lg font-semibold mb-4 text-white">Contato</h4>
             <ul className="space-y-2">
-              <li className="text-gray-400">(11) 91334-5769</li>
+              <li className="text-gray-400">(11) 99279-4634</li>
               <li className="text-gray-400">contato@virtualmark.com.br</li>
               <li className="text-gray-400">São Paulo, SP</li>
             </ul>

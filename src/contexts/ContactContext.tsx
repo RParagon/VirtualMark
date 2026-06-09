@@ -19,8 +19,8 @@ interface ContactContextType {
 }
 
 const defaultContactInfo: ContactInfo = {
-  phoneNumber: '(11) 91334-5769',
-  whatsappNumber: '5511913345769',
+  phoneNumber: '(11) 99279-4634',
+  whatsappNumber: '5511992794634',
   address: {
     street: 'Av. Paulista',
     neighborhood: 'Bela Vista',
