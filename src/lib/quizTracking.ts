@@ -19,7 +19,9 @@ declare global {
   }
 }
 
-export function trackQuiz(payload: QuizEvent): void {
+// `vertical` distingue o funil de origem nos relatórios do GTM/GA4
+// ('imobiliaria' é o default histórico — o quiz imobiliário não envia o campo).
+export function trackQuiz(payload: QuizEvent & { vertical?: 'imobiliaria' | 'ecommerce' }): void {
   if (typeof window === 'undefined') return
   window.dataLayer = window.dataLayer || []
   window.dataLayer.push({ ...payload })

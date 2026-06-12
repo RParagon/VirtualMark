@@ -34,6 +34,8 @@ const SEED_ROUTES = [
   '/',
   '/imobiliarias',
   '/quiz-imoveis',
+  '/ecommerce',
+  '/quiz-ecommerce',
   '/contact',
   '/cases',
   '/blog',
@@ -108,7 +110,7 @@ async function prerender() {
 
   // Rotas críticas: se renderizarem vazias, o build falha (canário contra
   // deploy em branco — ex.: env do Supabase ausente derruba o bundle inteiro).
-  const CRITICAL = new Set(['/', '/imobiliarias'])
+  const CRITICAL = new Set(['/', '/imobiliarias', '/ecommerce'])
   const MIN_TEXT = 200
 
   const queue = [...SEED_ROUTES]
@@ -188,7 +190,8 @@ async function prerender() {
 
 async function writeSitemap(routes) {
   const today = new Date().toISOString().slice(0, 10)
-  const priorityFor = (r) => (r === '/' ? '1.0' : r === '/imobiliarias' ? '0.9' : '0.7')
+  const priorityFor = (r) =>
+    r === '/' ? '1.0' : r === '/imobiliarias' || r === '/ecommerce' ? '0.9' : '0.7'
   const urls = [...new Set(routes)]
     .filter((r) => !EXCLUDE.some((re) => re.test(r)))
     .sort()
