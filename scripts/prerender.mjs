@@ -17,6 +17,7 @@
  */
 
 import http from 'node:http'
+import { execSync } from 'node:child_process'
 import { createReadStream, existsSync, statSync } from 'node:fs'
 import { mkdir, writeFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
@@ -101,12 +102,27 @@ function outFileFor(route) {
   return path.join(DIST, route.replace(/^\/+/, ''), 'index.html')
 }
 
-async function prerender() {
-  const server = await startServer()
-  const browser = await puppeteer.launch({
+// No CI (Netlify), o node_modules pode vir do cache sem que o postinstall do
+// puppeteer tenha rodado — o Chrome não está em ~/.cache/puppeteer e o launch
+// falha. Nesse caso, baixa o navegador e tenta de novo.
+async function launchBrowser() {
+  const opts = {
     headless: 'new',
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
-  })
+  }
+  try {
+    return await puppeteer.launch(opts)
+  } catch (err) {
+    if (!/Could not find Chrome/i.test(String(err))) throw err
+    console.log('Chrome do Puppeteer ausente — instalando (npx puppeteer browsers install chrome)...')
+    execSync('npx puppeteer browsers install chrome', { stdio: 'inherit' })
+    return await puppeteer.launch(opts)
+  }
+}
+
+async function prerender() {
+  const server = await startServer()
+  const browser = await launchBrowser()
 
   // Rotas críticas: se renderizarem vazias, o build falha (canário contra
   // deploy em branco — ex.: env do Supabase ausente derruba o bundle inteiro).
