@@ -32,6 +32,7 @@ import ImobiliariaPage from './pages/ImobiliariaPage'
 import QuizImobiliariaTreePage from './pages/QuizImobiliariaTreePage'
 import EcommercePage from './pages/EcommercePage'
 import QuizEcommerceTreePage from './pages/QuizEcommerceTreePage'
+import SimuladorPage from './pages/SimuladorPage'
 
 // Service Pages
 import TrafficManagement from './pages/services/TrafficManagement'
@@ -81,6 +82,8 @@ function App() {
                       <Route path="/quiz-imoveis-v2" element={<Navigate to="/quiz-imoveis" replace />} />
                       <Route path="/ecommerce" element={<EcommercePage />} />
                       <Route path="/quiz-ecommerce" element={<QuizEcommerceTreePage />} />
+                      <Route path="/simulador-imoveis" element={<SimuladorPage />} />
+                      <Route path="/simulador" element={<Navigate to="/simulador-imoveis" replace />} />
                       <Route path="/services/traffic-management" element={<ServiceProvider><TrafficManagement /></ServiceProvider>} />
                       <Route path="/services/performance-marketing" element={<ServiceProvider><PerformanceMarketing /></ServiceProvider>} />
                       <Route path="/services/content-marketing" element={<ServiceProvider><ContentMarketing /></ServiceProvider>} />

@@ -12,6 +12,7 @@ type QuizEvent =
   | { event: 'quiz_lead_captured'; icp: string; adherence: number }
   | { event: 'quiz_result_viewed'; icp: string; adherence: number }
   | { event: 'quiz_cta_whatsapp'; icp: string }
+  | { event: 'quiz_cta_simulador'; icp: string }
 
 declare global {
   interface Window {

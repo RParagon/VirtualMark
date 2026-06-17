@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { trackQuiz, getAttribution } from '../lib/quizTracking'
+import SimuladorVM from '../components/SimuladorVM'
 
 const WPP_NUMBER = '5511992794634'
 
@@ -933,6 +934,29 @@ export default function QuizImobiliariaTreePage() {
                 <p style={{ margin: 0, fontSize: 14, color: T.inkSoft, lineHeight: 1.55 }}>{a}</p>
               </div>
             ))}
+          </div>
+
+          {/* ── Simulador de cenários (valor antes do pitch) ── */}
+          <div style={{ marginBottom: 16, padding: 22, borderRadius: T.rLg, background: T.surface, border: `1px solid ${T.line}` }}>
+            <div style={{ textAlign: 'center', marginBottom: 20 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: T.gold, letterSpacing: '2px', marginBottom: 10 }}>SIMULADOR DE CENÁRIOS</div>
+              <h3 style={{ margin: '0 0 8px', fontFamily: FONT_DISPLAY, fontSize: 20, fontWeight: 600, color: T.ink, letterSpacing: '-0.01em', lineHeight: 1.25 }}>
+                Veja na prática quanto está em jogo
+              </h3>
+              <p style={{ margin: '0 auto', fontSize: 13.5, color: T.inkSoft, lineHeight: 1.55, maxWidth: 460 }}>
+                Ajuste o valor do imóvel e a comissão e veja o lucro líquido real da operação em cada perfil.
+              </p>
+            </div>
+            <SimuladorVM embedded />
+            <div style={{ textAlign: 'center', marginTop: 18 }}>
+              <Link
+                to="/simulador-imoveis"
+                onClick={() => trackQuiz({ event: 'quiz_cta_simulador', icp: result.key })}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 8, textDecoration: 'none', fontSize: 13, fontWeight: 700, color: T.gold, letterSpacing: '0.5px' }}
+              >
+                Abrir simulador em tela cheia <Icon name="arrow" size={15} />
+              </Link>
+            </div>
           </div>
 
           <div style={{ textAlign: 'center', padding: '30px 26px', borderRadius: T.rLg, background: '#0f0d0d', border: `1px solid ${T.line}` }}>

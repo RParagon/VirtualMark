@@ -35,6 +35,7 @@ const SEED_ROUTES = [
   '/',
   '/imobiliarias',
   '/quiz-imoveis',
+  '/simulador-imoveis',
   '/ecommerce',
   '/quiz-ecommerce',
   '/contact',
