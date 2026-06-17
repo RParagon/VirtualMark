@@ -37,6 +37,17 @@ export interface Attribution {
   utm_content: string | null
   referrer: string | null
   landing_page: string | null
+  // Atribuição do Traffic Source Analytics (cookies definidos pelo t.js).
+  // Permite cruzar cada lead com o visitante/sessão no painel do Traffic Source.
+  ts_visitor_id: string | null
+  ts_session_id: string | null
+}
+
+// Lê um cookie pelo nome (retorna null se não existir).
+function readCookie(name: string): string | null {
+  if (typeof document === 'undefined') return null
+  const match = document.cookie.match(new RegExp('(?:^|; )' + name.replace(/([.$?*|{}()[\]\\/+^])/g, '\\$1') + '=([^;]*)'))
+  return match ? decodeURIComponent(match[1]) : null
 }
 
 export function getAttribution(): Attribution {
@@ -44,6 +55,7 @@ export function getAttribution(): Attribution {
     return {
       utm_source: null, utm_medium: null, utm_campaign: null,
       utm_term: null, utm_content: null, referrer: null, landing_page: null,
+      ts_visitor_id: null, ts_session_id: null,
     }
   }
   const params = new URLSearchParams(window.location.search)
@@ -56,5 +68,7 @@ export function getAttribution(): Attribution {
     utm_content: get('utm_content'),
     referrer: document.referrer || null,
     landing_page: window.location.pathname + window.location.search,
+    ts_visitor_id: readCookie('_ts_vid'),
+    ts_session_id: readCookie('_ts_sid'),
   }
 }

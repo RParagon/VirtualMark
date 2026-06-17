@@ -24,6 +24,13 @@ type Lead = {
   status: 'new' | 'contacted' | 'qualified' | 'converted' | 'closed'
   notes: string | null
   contacted_at: string | null
+  utm_source?: string | null
+  utm_medium?: string | null
+  utm_campaign?: string | null
+  referrer?: string | null
+  landing_page?: string | null
+  ts_visitor_id?: string | null
+  ts_session_id?: string | null
 }
 
 const LeadsAdmin = () => {
@@ -115,7 +122,7 @@ const LeadsAdmin = () => {
       const aValue = sortConfig?.key ? a[sortConfig.key] : null;
       const bValue = sortConfig?.key ? b[sortConfig.key] : null;
       
-      if (aValue === null || bValue === null) return 0;
+      if (aValue == null || bValue == null) return 0;
       
       if (aValue < bValue) {
         return sortConfig.direction === 'ascending' ? -1 : 1;
@@ -566,6 +573,22 @@ const LeadsAdmin = () => {
                 <div>
                   <span className="text-gray-400">Status:</span>
                   <p className="text-white"><StatusBadge status={selectedLead.status} /></p>
+                </div>
+                <div>
+                  <span className="text-gray-400">Origem (utm_source):</span>
+                  <p className="text-white">{selectedLead.utm_source || '-'}</p>
+                </div>
+                <div>
+                  <span className="text-gray-400">Campanha:</span>
+                  <p className="text-white">{selectedLead.utm_campaign || '-'}</p>
+                </div>
+                <div>
+                  <span className="text-gray-400">Visitor ID (Traffic Source):</span>
+                  <p className="text-white break-all">{selectedLead.ts_visitor_id || '-'}</p>
+                </div>
+                <div>
+                  <span className="text-gray-400">Landing page:</span>
+                  <p className="text-white break-all">{selectedLead.landing_page || '-'}</p>
                 </div>
               </div>
             </div>

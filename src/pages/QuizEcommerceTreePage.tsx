@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { supabase } from '../lib/supabase'
 import { trackQuiz, getAttribution } from '../lib/quizTracking'
+import { insertLeadWithFallback } from '../lib/leadCapture'
 
 const WPP_NUMBER = '5511992794634'
 
@@ -634,8 +634,8 @@ export default function QuizEcommerceTreePage() {
 
     // Salva no Supabase, não bloqueia a exibição do resultado.
     try {
-      const attribution = getAttribution()
-      const lead = {
+      const { ts_visitor_id, ts_session_id, ...utmAttr } = getAttribution()
+      const base = {
         name: firstName || nameInput.trim() || 'Visitante',
         email: email.trim(),
         phone: phone.trim(),
@@ -646,14 +646,17 @@ export default function QuizEcommerceTreePage() {
         scores: r.totals,
         answers,
         open_answer: openAnswer.trim() || null,
-        ...attribution,
+        ...utmAttr,
       }
-      const { error } = await supabase.from('quiz_leads').insert([{ ...lead, vertical: 'ecommerce' }])
-      if (error) {
-        // Coluna `vertical` pode não existir ainda (migração quiz_leads_vertical.sql
-        // pendente) — não perde o lead por isso.
-        await supabase.from('quiz_leads').insert([lead])
-      }
+      // Candidatos em ordem decrescente de colunas opcionais: primeiro completo,
+      // depois sem os ids do Traffic Source (migração quiz_leads_ts.sql pendente),
+      // por fim sem `vertical` (migração quiz_leads_vertical.sql pendente).
+      // Mantém `vertical` o máximo possível para não rotular o lead errado.
+      await insertLeadWithFallback('quiz_leads', [
+        { ...base, vertical: 'ecommerce', ts_visitor_id, ts_session_id },
+        { ...base, vertical: 'ecommerce' },
+        base,
+      ])
     } catch (err) {
       console.error('Erro ao salvar quiz_lead:', err)
     }

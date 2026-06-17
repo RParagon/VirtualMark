@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { supabase } from '../lib/supabase'
 import { trackQuiz, getAttribution } from '../lib/quizTracking'
+import { insertLeadWithFallback } from '../lib/leadCapture'
 import SimuladorVM from '../components/SimuladorVM'
 
 const WPP_NUMBER = '5511992794634'
@@ -630,21 +630,25 @@ export default function QuizImobiliariaTreePage() {
 
     // Salva no Supabase, não bloqueia a exibição do resultado.
     try {
-      const attribution = getAttribution()
-      await supabase.from('quiz_leads').insert([
-        {
-          name: firstName || nameInput.trim() || 'Visitante',
-          email: email.trim(),
-          phone: phone.trim(),
-          icp: r.key,
-          icp_name: profiles[r.key].name,
-          branch,
-          adherence: r.adherence,
-          scores: r.totals,
-          answers,
-          open_answer: openAnswer.trim() || null,
-          ...attribution,
-        },
+      const { ts_visitor_id, ts_session_id, ...utmAttr } = getAttribution()
+      const base = {
+        name: firstName || nameInput.trim() || 'Visitante',
+        email: email.trim(),
+        phone: phone.trim(),
+        icp: r.key,
+        icp_name: profiles[r.key].name,
+        branch,
+        adherence: r.adherence,
+        scores: r.totals,
+        answers,
+        open_answer: openAnswer.trim() || null,
+        ...utmAttr,
+      }
+      // Fallback sem os ids do Traffic Source caso a migração quiz_leads_ts.sql
+      // ainda não tenha rodado.
+      await insertLeadWithFallback('quiz_leads', [
+        { ...base, ts_visitor_id, ts_session_id },
+        base,
       ])
     } catch (err) {
       console.error('Erro ao salvar quiz_lead:', err)

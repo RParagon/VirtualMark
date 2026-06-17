@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { supabase } from '../lib/supabase'
+import { getAttribution } from '../lib/quizTracking'
+import { insertLeadWithFallback } from '../lib/leadCapture'
 import {
   UserIcon,
   PhoneIcon,
@@ -132,19 +133,25 @@ const MultiStepContactForm = () => {
     if (validateStep()) {
       setIsSubmitting(true)
       try {
-        const { error } = await supabase.from('leads').insert([
-          {
-            name: formData.name,
-            phone: formData.phone,
-            email: formData.email,
-            instagram: formData.instagram || null,
-            business_category: formData.business_category,
-            monthly_revenue: formData.monthly_revenue
-          }
+        const base = {
+          name: formData.name,
+          phone: formData.phone,
+          email: formData.email,
+          instagram: formData.instagram || null,
+          business_category: formData.business_category,
+          monthly_revenue: formData.monthly_revenue,
+        }
+        const attribution = getAttribution()
+
+        // Tenta com atribuição completa; se as colunas ainda não existirem no
+        // banco (migração leads_attribution.sql pendente), grava só o lead.
+        const ok = await insertLeadWithFallback('leads', [
+          { ...base, ...attribution },
+          base,
         ])
 
-        if (error) throw error
-        
+        if (!ok) throw new Error('Falha ao gravar o lead')
+
         // Show success message
         setIsSubmitted(true)
       } catch (error) {

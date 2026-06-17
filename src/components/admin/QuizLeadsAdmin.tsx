@@ -43,6 +43,8 @@ type QuizLead = {
   utm_content: string | null
   referrer: string | null
   landing_page: string | null
+  ts_visitor_id: string | null
+  ts_session_id: string | null
   status: QuizStatus
   assigned_to: string | null
   notes: string | null
@@ -543,7 +545,9 @@ const QuizLeadsAdmin = () => {
                                       ['Termo', lead.utm_term],
                                       ['Conteúdo', lead.utm_content],
                                       ['Referrer', lead.referrer],
-                                      ['Landing', lead.landing_page]
+                                      ['Landing', lead.landing_page],
+                                      ['Visitor ID', lead.ts_visitor_id],
+                                      ['Session ID', lead.ts_session_id]
                                     ].map(([label, val]) => (
                                       <div key={label as string} className="flex justify-between gap-3">
                                         <dt className="text-gray-400">{label}</dt>
