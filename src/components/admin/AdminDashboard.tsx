@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import BlogAdmin from './BlogAdmin'
 import CaseAdmin from './CaseAdmin'
-import LeadsAdmin from './LeadsAdmin'
+import LeadsManager from './LeadsManager'
 import GoogleTagsAdmin from './GoogleTagsAdmin'
 import { useAuth } from '../../contexts/AuthContext'
 import { supabase } from '../../lib/supabase'
@@ -64,16 +64,21 @@ const AdminDashboard = () => {
           .from('newsletter_subscriptions')
           .select('id', { count: 'exact' })
           
-        // Fetch leads count
+        // Fetch leads count (formulário de contato)
         const { count: leadsCount } = await supabase
           .from('leads')
+          .select('id', { count: 'exact' })
+
+        // Fetch quiz leads count (diagnóstico por ICP)
+        const { count: quizLeadsCount } = await supabase
+          .from('quiz_leads')
           .select('id', { count: 'exact' })
 
         setStats([
           { name: 'Total Posts', value: String(postsCount || 0), icon: DocumentTextIcon },
           { name: 'Total Cases', value: String(casesCount || 0), icon: PhotoIcon },
           { name: 'Newsletter Subs', value: String(subsCount || 0), icon: ChartBarIcon },
-          { name: 'Total Leads', value: String(leadsCount || 0), icon: UserGroupIcon }
+          { name: 'Total Leads', value: String((leadsCount || 0) + (quizLeadsCount || 0)), icon: UserGroupIcon }
         ])
       } catch (error) {
         console.error('Error fetching stats:', error)
@@ -89,6 +94,7 @@ const AdminDashboard = () => {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'cases' }, fetchStats)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'newsletter_subscriptions' }, fetchStats)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'leads' }, fetchStats)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'quiz_leads' }, fetchStats)
       .subscribe()
 
     return () => {
@@ -174,10 +180,10 @@ const AdminDashboard = () => {
             </div>
           </div>
           <div className="p-6">
-            {activeTab === 'blog' ? <BlogAdmin /> : 
-             activeTab === 'cases' ? <CaseAdmin /> : 
+            {activeTab === 'blog' ? <BlogAdmin /> :
+             activeTab === 'cases' ? <CaseAdmin /> :
              activeTab === 'google_tags' ? <GoogleTagsAdmin /> :
-             <LeadsAdmin />}
+             <LeadsManager />}
           </div>
         </div>
       </div>
