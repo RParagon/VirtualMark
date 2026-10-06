@@ -6,6 +6,9 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        display: ['"Bricolage Grotesque"', 'Inter', 'sans-serif'],
+      },
       colors: {
         background: '#0a0a0a',
         primary: {

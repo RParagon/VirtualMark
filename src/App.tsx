@@ -8,19 +8,10 @@ import { ServiceProvider } from './contexts/ServiceContext'
 import { AuthProvider } from './contexts/AuthContext'
 import { CookieProvider } from './contexts/CookieContext'
 import ScrollToTop from './components/ScrollToTop'
-import Seo from './components/Seo'
 
 // Components will be imported here as they are created
-import Navbar from './components/Navbar'
-import Hero from './components/Hero'
-import Results from './components/Results'
-import Qualification from './components/Qualification'
-import Services from './components/Services'
-import Expertise from './components/Expertise'
-import Assessment from './components/Assessment'
-import Testimonials from './components/Testimonials'
-import CallToAction from './components/CallToAction'
-import Footer from './components/Footer'
+import HomePage from './pages/HomePage'
+import HomeLegacy from './pages/HomeLegacy'
 import BlogPage from './pages/BlogPage'
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage'
 import AdminPage from './pages/AdminPage'
@@ -88,25 +79,8 @@ function App() {
                       <Route path="/services/performance-marketing" element={<ServiceProvider><PerformanceMarketing /></ServiceProvider>} />
                       <Route path="/services/content-marketing" element={<ServiceProvider><ContentMarketing /></ServiceProvider>} />
                       <Route path="/services/digital-consulting" element={<ServiceProvider><DigitalConsulting /></ServiceProvider>} />
-                      <Route path="/" element={
-                        <main className="relative">
-                          <Seo
-                            title="VirtualMark | Marketing Digital e Geração de Leads que Viram Vendas"
-                            description="Agência de marketing digital orientada a performance: Google Ads, Meta Ads e landing pages que geram leads qualificados e vendas reais. Diagnóstico gratuito."
-                            path="/"
-                          />
-                          <Navbar />
-                          <Hero />
-                          <Results />
-                          <Qualification />
-                          <Services />
-                          <Expertise />
-                          <Assessment />
-                          <Testimonials />
-                          <CallToAction />
-                          <Footer />
-                        </main>
-                      } />
+                      <Route path="/" element={<HomePage />} />
+                      <Route path="/home-antiga" element={<HomeLegacy />} />
                     </Routes>
                     <CookieConsent />
                   </div>

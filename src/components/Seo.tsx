@@ -13,6 +13,8 @@ interface SeoProps {
   type?: 'website' | 'article'
   /** JSON-LD adicional específico da página (ex.: BlogPosting). */
   jsonLd?: object | object[]
+  /** Mantém a página fora dos buscadores (ex.: versões arquivadas). */
+  noindex?: boolean
 }
 
 /**
@@ -20,7 +22,7 @@ interface SeoProps {
  * e JSON-LD opcional. Renderiza via react-helmet — o prerender (Puppeteer)
  * captura essas tags no HTML estático, tornando-as visíveis para buscadores e IA.
  */
-const Seo = ({ title, description, path = '', image, type = 'website', jsonLd }: SeoProps) => {
+const Seo = ({ title, description, path = '', image, type = 'website', jsonLd, noindex }: SeoProps) => {
   const url = `${SITE_URL}${path}`
   const ogImage = image || DEFAULT_IMAGE
   const schemas = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : []
@@ -30,6 +32,7 @@ const Seo = ({ title, description, path = '', image, type = 'website', jsonLd }:
       <title>{title}</title>
       <meta name="description" content={description} />
       <link rel="canonical" href={url} />
+      {noindex && <meta name="robots" content="noindex, nofollow" />}
 
       <meta property="og:type" content={type} />
       <meta property="og:site_name" content="VirtualMark" />

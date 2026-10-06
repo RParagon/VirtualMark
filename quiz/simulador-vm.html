@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulador de Cenários — VirtualMark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #000000;
+  --surface: #0D0D0D;
+  --surface-2: #161616;
+  --surface-3: #1E1E1E;
+  --red: #E8243C;
+  --red-dark: #C41A30;
+  --red-light: #FF3050;
+  --red-rose: #FF2D55;
+  --red-glow: rgba(232,36,60,0.12);
+  --red-glow-strong: rgba(232,36,60,0.25);
+  --green: #00E676;
+  --green-dark: #00C853;
+  --green-glow: rgba(0,230,118,0.1);
+  --text: #FFFFFF;
+  --text-muted: #9E9E9E;
+  --text-dim: #5A5A5A;
+  --border: rgba(255,255,255,0.06);
+  --border-light: rgba(255,255,255,0.1);
+  --radius: 16px;
+  --radius-sm: 10px;
+  --font: 'Montserrat', sans-serif;
+}
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 4rem;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.logo-svg { margin-bottom: 1.25rem; }
+
+header h1 {
+  font-size: clamp(1.5rem, 3.5vw, 2.1rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(135deg, #fff 0%, #bbb 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+header p {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.controls-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 2rem;
+  margin-bottom: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.controls-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--red-dark), var(--red), var(--red-rose));
+}
+
+.slider-group { margin-bottom: 1.75rem; }
+.slider-group:last-child { margin-bottom: 0; }
+
+.slider-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.75rem;
+}
+
+.slider-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+}
+
+.slider-value {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+input[type=range] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 5px;
+  border-radius: 3px;
+  background: var(--surface-3);
+  outline: none;
+  cursor: pointer;
+}
+
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--red-dark), var(--red-rose));
+  border: 3px solid var(--bg);
+  box-shadow: 0 0 14px var(--red-glow-strong), 0 2px 6px rgba(0,0,0,0.5);
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+input[type=range]::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 22px var(--red-glow-strong), 0 2px 8px rgba(0,0,0,0.6);
+}
+
+input[type=range]::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--red-dark), var(--red-rose));
+  border: 3px solid var(--bg);
+  box-shadow: 0 0 14px var(--red-glow-strong);
+  cursor: pointer;
+}
+
+.profile-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 7px 14px;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  border: 1px solid;
+}
+
+.profile-alto {
+  background: var(--red-glow);
+  color: var(--red-rose);
+  border-color: rgba(232,36,60,0.25);
+}
+.profile-medio {
+  background: rgba(255,152,0,0.08);
+  color: #FFB74D;
+  border-color: rgba(255,152,0,0.2);
+}
+.profile-baixo {
+  background: rgba(66,165,245,0.08);
+  color: #64B5F6;
+  border-color: rgba(66,165,245,0.2);
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+  margin-bottom: 2rem;
+}
+
+.metric-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 1.2rem;
+  transition: border-color 0.2s;
+}
+
+.metric-card:hover { border-color: var(--border-light); }
+
+.metric-card.highlight {
+  border-color: rgba(0,230,118,0.15);
+  background: linear-gradient(160deg, var(--surface) 0%, rgba(0,230,118,0.03) 100%);
+}
+
+.metric-card.cost-hl {
+  border-color: rgba(232,36,60,0.15);
+  background: linear-gradient(160deg, var(--surface) 0%, rgba(232,36,60,0.03) 100%);
+}
+
+.metric-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+}
+
+.metric-value {
+  font-size: 1.4rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.metric-value.pos { color: var(--green); }
+.metric-value.neg { color: var(--red-rose); }
+
+.breakdown-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.75rem 2rem;
+  margin-bottom: 2.5rem;
+}
+
+.section-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  margin-bottom: 1.25rem;
+}
+
+.bd-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.88rem;
+}
+
+.bd-row:last-of-type { border-bottom: none; }
+.bd-row .lbl { color: var(--text-muted); }
+.bd-row .cost { color: var(--red-rose); font-weight: 600; }
+
+.bd-row.total {
+  border-top: 2px solid var(--red);
+  border-bottom: none;
+  padding-top: 1.2rem;
+  margin-top: 0.5rem;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.bd-row .profit { color: var(--green); font-weight: 800; font-size: 1.1rem; }
+
+.bar-wrap { margin: 1.5rem 0 0.5rem; }
+
+.bar-track {
+  background: var(--surface-3);
+  border-radius: 8px;
+  height: 34px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  border-radius: 8px;
+  background: linear-gradient(90deg, var(--green-dark), var(--green));
+  transition: width 0.5s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #000;
+  min-width: 65px;
+}
+
+.bar-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.68rem;
+  color: var(--text-dim);
+  margin-top: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+.sc-title-row {
+  font-size: 1.25rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  letter-spacing: -0.02em;
+}
+
+.sc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 10px;
+}
+
+.sc-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 1.4rem;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+.sc-card:hover { border-color: var(--border-light); transform: translateY(-2px); }
+
+.sc-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+}
+
+.sc-card.alto::before { background: linear-gradient(90deg, var(--red-dark), var(--red-rose)); }
+.sc-card.medio::before { background: linear-gradient(90deg, #E65100, #FFB74D); }
+.sc-card.baixo::before { background: linear-gradient(90deg, #1565C0, #64B5F6); }
+
+.sc-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.9rem;
+}
+
+.sc-name { font-weight: 700; font-size: 0.92rem; }
+.sc-name.alto { color: var(--red-rose); }
+.sc-name.medio { color: #FFB74D; }
+.sc-name.baixo { color: #64B5F6; }
+
+.sc-val-label {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  font-weight: 600;
+}
+
+.sc-line {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  padding: 3px 0;
+  color: var(--text-muted);
+}
+
+.sc-line span:last-child { color: var(--text); font-weight: 600; }
+
+.sc-div {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 0.7rem 0;
+}
+
+.sc-result {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: 0.4rem;
+}
+
+.sc-result-label { font-size: 0.78rem; font-weight: 700; color: var(--text-muted); }
+.sc-result-value { font-size: 1.25rem; font-weight: 800; }
+
+.sc-margin {
+  text-align: right;
+  font-size: 0.68rem;
+  margin-top: 4px;
+  font-weight: 600;
+}
+
+footer {
+  text-align: center;
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+@media (max-width: 640px) {
+  .container { padding: 1.5rem 1rem; }
+  .controls-card { padding: 1.25rem; }
+  .metrics-grid { grid-template-columns: 1fr 1fr; }
+  .sc-grid { grid-template-columns: 1fr; }
+  .breakdown-card { padding: 1.25rem; }
+  .slider-value { font-size: 1.2rem; }
+  header h1 { font-size: 1.3rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <div class="logo-svg">
+      <svg width="120" height="44" viewBox="0 0 120 44" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="vmGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#C41A30"/>
+            <stop offset="50%" stop-color="#E8243C"/>
+            <stop offset="100%" stop-color="#FF2D55"/>
+          </linearGradient>
+        </defs>
+        <text x="0" y="34" font-family="Montserrat, sans-serif" font-weight="800" font-size="38" fill="url(#vmGrad)" letter-spacing="-2">VM</text>
+        <circle cx="95" cy="30" r="5.5" fill="#FF2D55"/>
+      </svg>
+    </div>
+    <h1>Simulador de cenários</h1>
+    <p>Visualize na prática os custos e o lucro líquido da imobiliária em cada perfil de imóvel</p>
+  </header>
+
+  <div class="controls-card">
+    <div class="slider-group">
+      <div class="slider-header">
+        <span class="slider-label">Valor do imóvel</span>
+        <span class="slider-value" id="outVal">R$ 830.000</span>
+      </div>
+      <input type="range" min="50000" max="20000000" step="50000" value="830000" id="slVal">
+    </div>
+    <div class="slider-group">
+      <div class="slider-header">
+        <span class="slider-label">Comissão da imobiliária</span>
+        <span class="slider-value" id="outCom">6%</span>
+      </div>
+      <input type="range" min="1" max="10" step="0.5" value="6" id="slCom">
+    </div>
+  </div>
+
+  <div id="profileTag"></div>
+  <div class="metrics-grid" id="metricsArea"></div>
+
+  <div class="breakdown-card">
+    <div class="section-label">Detalhamento do cálculo</div>
+    <div id="breakdownRows"></div>
+    <div class="bar-wrap">
+      <div class="bar-track"><div class="bar-fill" id="barProfit">86%</div></div>
+      <div class="bar-labels"><span>Custos</span><span>Lucro líquido</span></div>
+    </div>
+  </div>
+
+  <div class="sc-title-row">Cenários comparativos</div>
+  <div class="sc-grid" id="scenariosArea"></div>
+
+  <footer>
+    <div>* A verba de anúncios é investida na divulgação do imóvel e não compõe o lucro da imobiliária.</div>
+    <svg width="80" height="30" viewBox="0 0 120 44" xmlns="http://www.w3.org/2000/svg" style="opacity:0.5">
+      <defs>
+        <linearGradient id="vmGrad2" x1="0%" y1="100%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#C41A30"/>
+          <stop offset="50%" stop-color="#E8243C"/>
+          <stop offset="100%" stop-color="#FF2D55"/>
+        </linearGradient>
+      </defs>
+      <text x="0" y="34" font-family="Montserrat, sans-serif" font-weight="800" font-size="38" fill="url(#vmGrad2)" letter-spacing="-2">VM</text>
+      <circle cx="95" cy="30" r="5.5" fill="#FF2D55"/>
+    </svg>
+  </footer>
+</div>
+
+<script>
+var fmt = function(v) { return 'R$ ' + Math.round(v).toLocaleString('pt-BR'); };
+var pct = function(v, t) { return t === 0 ? '0%' : ((v / t) * 100).toFixed(1) + '%'; };
+
+function getProfile(val) {
+  if (val >= 800000) return { name: 'Alto padrão', tag: 'alto', range: 'Acima de R$ 800 mil', gestao: 800, gestaoVenda: 0.003, anuncios: 0.005 };
+  if (val >= 300000) return { name: 'Médio padrão', tag: 'medio', range: 'R$ 300 mil a R$ 800 mil', gestao: 800, gestaoVenda: 0.003, anuncios: 0.01 };
+  return { name: 'Baixo padrão', tag: 'baixo', range: 'Abaixo de R$ 300 mil', gestao: 800, gestaoVenda: 0.005, anuncios: 0.015 };
+}
+
+function calc(val, comPct) {
+  var p = getProfile(val);
+  var comissao = val * (comPct / 100);
+  var anuncios = val * p.anuncios;
+  var gestaoFixa = p.gestao;
+  var gestaoVar = val * p.gestaoVenda;
+  var custoTotal = anuncios + gestaoFixa + gestaoVar;
+  var lucro = comissao - custoTotal;
+  return { name: p.name, tag: p.tag, range: p.range, gestao: p.gestao, gestaoVenda: p.gestaoVenda, anuncios_pct: p.anuncios, comissao: comissao, anuncios: anuncios, gestaoFixa: gestaoFixa, gestaoVar: gestaoVar, custoTotal: custoTotal, lucro: lucro };
+}
+
+function render() {
+  var val = +document.getElementById('slVal').value;
+  var comPct = +document.getElementById('slCom').value;
+  document.getElementById('outVal').textContent = fmt(val);
+  document.getElementById('outCom').textContent = comPct + '%';
+
+  var r = calc(val, comPct);
+
+  document.getElementById('profileTag').innerHTML =
+    '<span class="profile-tag profile-' + r.tag + '">' + r.name + ' \u2014 ' + r.range + '</span>';
+
+  document.getElementById('metricsArea').innerHTML =
+    '<div class="metric-card"><div class="metric-label">Comiss\u00e3o bruta</div><div class="metric-value">' + fmt(r.comissao) + '</div></div>' +
+    '<div class="metric-card cost-hl"><div class="metric-label">Custos totais</div><div class="metric-value neg">' + fmt(r.custoTotal) + '</div></div>' +
+    '<div class="metric-card highlight"><div class="metric-label">Lucro l\u00edquido</div><div class="metric-value pos">' + fmt(r.lucro) + '</div></div>' +
+    '<div class="metric-card"><div class="metric-label">Margem de lucro</div><div class="metric-value">' + pct(r.lucro, r.comissao) + '</div></div>';
+
+  document.getElementById('breakdownRows').innerHTML =
+    '<div class="bd-row"><span class="lbl">Comiss\u00e3o bruta (' + comPct + '% de ' + fmt(val) + ')</span><span>' + fmt(r.comissao) + '</span></div>' +
+    '<div class="bd-row"><span class="lbl">Verba de an\u00fancios (' + (r.anuncios / val * 100).toFixed(1) + '% do im\u00f3vel)</span><span class="cost">\u2013 ' + fmt(r.anuncios) + '</span></div>' +
+    '<div class="bd-row"><span class="lbl">Taxa de gest\u00e3o fixa</span><span class="cost">\u2013 ' + fmt(r.gestaoFixa) + '</span></div>' +
+    '<div class="bd-row"><span class="lbl">Taxa vari\u00e1vel na venda (' + (r.gestaoVenda * 100).toFixed(1) + '%)</span><span class="cost">\u2013 ' + fmt(r.gestaoVar) + '</span></div>' +
+    '<div class="bd-row total"><span>Lucro final da imobili\u00e1ria</span><span class="profit">' + fmt(r.lucro) + '</span></div>';
+
+  var margin = r.comissao > 0 ? Math.max(5, Math.min(95, (r.lucro / r.comissao) * 100)) : 0;
+  var bar = document.getElementById('barProfit');
+  bar.style.width = Math.round(margin) + '%';
+  bar.textContent = pct(r.lucro, r.comissao) + ' lucro';
+
+  var scenarios = [
+    { label: 'Alto padr\u00e3o', val: 2500000, tag: 'alto' },
+    { label: 'M\u00e9dio padr\u00e3o', val: 400000, tag: 'medio' },
+    { label: 'Baixo padr\u00e3o', val: 200000, tag: 'baixo' }
+  ];
+
+  document.getElementById('scenariosArea').innerHTML = scenarios.map(function(s) {
+    var sc = calc(s.val, comPct);
+    var lc = sc.lucro >= 0 ? 'var(--green)' : 'var(--red-rose)';
+    return '<div class="sc-card ' + s.tag + '">' +
+      '<div class="sc-head">' +
+        '<span class="sc-name ' + s.tag + '">' + s.label + '</span>' +
+        '<span class="sc-val-label">' + fmt(s.val) + '</span>' +
+      '</div>' +
+      '<div class="sc-line"><span>Comiss\u00e3o bruta</span><span>' + fmt(sc.comissao) + '</span></div>' +
+      '<div class="sc-line"><span>Verba de an\u00fancios</span><span>\u2013 ' + fmt(sc.anuncios) + '</span></div>' +
+      '<div class="sc-line"><span>Taxa de gest\u00e3o</span><span>\u2013 ' + fmt(sc.gestaoFixa + sc.gestaoVar) + '</span></div>' +
+      '<hr class="sc-div">' +
+      '<div class="sc-result">' +
+        '<span class="sc-result-label">Lucro l\u00edquido</span>' +
+        '<span class="sc-result-value" style="color:' + lc + '">' + fmt(sc.lucro) + '</span>' +
+      '</div>' +
+      '<div class="sc-margin" style="color:' + lc + '">Margem: ' + pct(sc.lucro, sc.comissao) + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+document.getElementById('slVal').addEventListener('input', render);
+document.getElementById('slCom').addEventListener('input', render);
+render();
+</script>
+
+</body>
+</html>

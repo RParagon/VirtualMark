@@ -33,3 +33,6 @@ lerna-debug.log*
 # Cache
 .cache/
 .eslintcache
+
+# Material bruto da nova home (vídeo 15MB etc.); versões otimizadas ficam em public/home
+arquivos-novahome/

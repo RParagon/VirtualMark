@@ -39,3 +39,25 @@
     @apply bg-gradient-to-r from-primary-500 to-primary-700 text-transparent bg-clip-text;
   }
 }
+
+/* Superfícies do navegador na paleta da marca */
+::selection {
+  background: #dc2626;
+  color: #fff;
+}
+
+:focus-visible {
+  outline: 2px solid #ef4444;
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+html {
+  scrollbar-color: #3a1212 #0a0a0a;
+}
