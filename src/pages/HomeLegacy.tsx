@@ -1,7 +1,3 @@
-/**
- * Home v1 (arquivada). Mantida em /home-antiga, fora dos buscadores, para
- * consulta e comparação (A/B) com a nova home.
- */
 import Seo from '../components/Seo'
 import Navbar from '../components/Navbar'
 import Hero from '../components/Hero'
@@ -14,13 +10,12 @@ import Testimonials from '../components/Testimonials'
 import CallToAction from '../components/CallToAction'
 import Footer from '../components/Footer'
 
-const HomeLegacy = () => (
+const HomePage = () => (
   <main className="relative">
     <Seo
-      title="VirtualMark | Home v1 (arquivo)"
-      description="Versão anterior da home da VirtualMark."
-      path="/home-antiga"
-      noindex
+      title="VirtualMark | Marketing Digital e Geração de Leads que Viram Vendas"
+      description="Agência de marketing digital orientada a performance: Google Ads, Meta Ads e landing pages que geram leads qualificados e vendas reais. Diagnóstico gratuito."
+      path="/"
     />
     <Navbar />
     <Hero />
@@ -35,4 +30,4 @@ const HomeLegacy = () => (
   </main>
 )
 
-export default HomeLegacy
+export default HomePage

@@ -10,8 +10,8 @@ import { CookieProvider } from './contexts/CookieContext'
 import ScrollToTop from './components/ScrollToTop'
 
 // Components will be imported here as they are created
-import HomePage from './pages/HomePage'
-import HomeLegacy from './pages/HomeLegacy'
+import HomePage from './pages/HomeLegacy'
+import PortfolioPage from './pages/PortfolioPage'
 import BlogPage from './pages/BlogPage'
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage'
 import AdminPage from './pages/AdminPage'
@@ -80,7 +80,7 @@ function App() {
                       <Route path="/services/content-marketing" element={<ServiceProvider><ContentMarketing /></ServiceProvider>} />
                       <Route path="/services/digital-consulting" element={<ServiceProvider><DigitalConsulting /></ServiceProvider>} />
                       <Route path="/" element={<HomePage />} />
-                      <Route path="/home-antiga" element={<HomeLegacy />} />
+                      <Route path="/portfolio" element={<PortfolioPage />} />
                     </Routes>
                     <CookieConsent />
                   </div>

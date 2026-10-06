@@ -33,6 +33,7 @@ const MAX_PAGES = 80
 // Rotas-semente garantidas (mesmo que não estejam linkadas em algum ponto).
 const SEED_ROUTES = [
   '/',
+  '/portfolio',
   '/imobiliarias',
   '/quiz-imoveis',
   '/simulador-imoveis',

@@ -24,18 +24,18 @@ const faqSchema = {
 }
 
 /**
- * THESIS: a home é a máquina que descreve: o X é o ponto onde atenção vira venda. Recusa a home de agência (hero, 3 números, cards de serviço).
+ * THESIS: a página é a máquina que descreve: o X é o ponto onde atenção vira venda. Recusa a home de agência (hero, 3 números, cards de serviço).
  * OWN-WORLD: preto #0a0a0a com vermelho como fonte de luz (rim, brilho) e uma seção drenched em vermelho; Bricolage Grotesque grande, linhas finas, sem cards cinza.
  * STORY: entende que não é só tráfego, vê o sistema e provas reais (caso WB, vídeo Miyagui), escolhe o ponto de partida e pede consultoria.
  * FIRST VIEWPORT: título gigante à esquerda, X 3D em obsidiana com partículas atravessando à direita, CTA vermelho abaixo do texto.
  * FORM: palco editorial com seções de scroll fixo (pinned), seed: ajuste direto do briefing (direction pinned pelo usuário).
  */
-const HomePage = () => (
+const PortfolioPage = () => (
   <main className="relative bg-background text-white">
     <Seo
-      title="VirtualMark | Você chega com uma ideia. Sai com o negócio no ar."
+      title="Portfólio VirtualMark | Do zero ao ar: sites, criativos e campanhas"
       description="Marca, site, criativos em vídeo com IA, tráfego pago e rastreio do clique à venda. Estrutura completa no ar em poucos dias. Peça sua consultoria."
-      path="/"
+      path="/portfolio"
       jsonLd={faqSchema}
     />
     <HomeNav />
@@ -54,4 +54,4 @@ const HomePage = () => (
   </main>
 )
 
-export default HomePage
+export default PortfolioPage

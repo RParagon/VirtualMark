@@ -4,9 +4,9 @@ import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 import { ArrowRight, waLink } from './shared'
 
 const links = [
-  { label: 'Processo', href: '/#processo' },
-  { label: 'Casos', href: '/#casos' },
-  { label: 'Criativos', href: '/#criativos' },
+  { label: 'Processo', href: '#processo' },
+  { label: 'Casos', href: '#casos' },
+  { label: 'Criativos', href: '#criativos' },
   { label: 'Blog', href: '/blog' },
 ]
 
@@ -34,7 +34,7 @@ const HomeNav = () => {
 
         <nav className="hidden items-center gap-9 md:flex" aria-label="Principal">
           {links.map((l) =>
-            l.href.startsWith('/#') ? (
+            l.href.startsWith('#') ? (
               <a key={l.label} href={l.href} className="text-sm text-white/70 transition-colors hover:text-white">
                 {l.label}
               </a>
@@ -48,7 +48,7 @@ const HomeNav = () => {
 
         <div className="hidden md:block">
           <a
-            href="/#caminhos"
+            href="#caminhos"
             className="group inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-black transition-colors hover:bg-primary-500 hover:text-white"
           >
             Pedir consultoria
@@ -77,7 +77,7 @@ const HomeNav = () => {
           </div>
           <div className="mt-4 flex flex-col gap-3">
             <a
-              href="/#caminhos"
+              href="#caminhos"
               onClick={() => setOpen(false)}
               className="inline-flex items-center justify-center gap-2 rounded-full bg-primary-600 px-6 py-3.5 font-semibold text-white"
             >
