@@ -1,8 +1,5 @@
-import { lazy, Suspense } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import { ArrowRight, EASE, waLink } from './shared'
-
-const XScene = lazy(() => import('./XScene'))
 
 const Line = ({ children, delay }: { children: React.ReactNode; delay: number }) => {
   const reduce = useReducedMotion()
@@ -30,21 +27,23 @@ const HomeHero = () => {
       : { initial: { opacity: 0, y: 16 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.9, ease: EASE, delay } }
 
   return (
-    <section className="relative isolate min-h-[100svh] overflow-hidden px-5 sm:px-8">
+    <section id="hero" className="relative isolate min-h-[100svh] overflow-hidden px-5 sm:px-8">
       {/* luz: o vermelho é fonte de luz, não preenchimento */}
       <div
         className="absolute inset-0 -z-20"
         style={{
           background:
-            'radial-gradient(60% 55% at 74% 46%, rgba(220,38,38,0.30) 0%, rgba(220,38,38,0.08) 42%, transparent 70%), radial-gradient(40% 40% at 8% 100%, rgba(220,38,38,0.10), transparent 70%)',
+            'radial-gradient(55% 55% at 76% 42%, rgba(220,38,38,0.16) 0%, rgba(220,38,38,0.04) 45%, transparent 70%)',
         }}
       />
+
+      <div className="absolute inset-y-0 left-0 -z-10 hidden w-[58%] bg-gradient-to-r from-background/85 via-background/45 to-transparent lg:block" aria-hidden />
 
       <div className="mx-auto flex min-h-[100svh] max-w-[88rem] flex-col justify-center pb-24 pt-28">
         <h1
           className="font-display font-bold text-white"
           style={{
-            fontSize: 'clamp(2.7rem, 7.4vw, 6rem)',
+            fontSize: 'clamp(2.7rem, 6.4vw, 6rem)',
             lineHeight: 0.98,
             letterSpacing: '-0.035em',
             textWrap: 'balance',
@@ -58,19 +57,12 @@ const HomeHero = () => {
           </Line>
         </h1>
 
-        {/* cena 3D: bloco próprio no mobile, fundo da seção no desktop */}
-        <div
-          className="relative -mx-5 my-2 h-[19rem] sm:-mx-8 sm:h-[24rem] lg:absolute lg:inset-y-0 lg:right-0 lg:z-[-10] lg:mx-0 lg:my-0 lg:h-auto lg:w-[72%]"
-          style={{ WebkitMaskImage: 'linear-gradient(to right, transparent 0%, #000 30%)', maskImage: 'linear-gradient(to right, transparent 0%, #000 30%)' }}
-        >
-          <Suspense fallback={null}>
-            <XScene />
-          </Suspense>
-        </div>
+        {/* faixa reservada para a cena 3D no celular e no tablet em pé */}
+        <div id="hero-scene" className="my-1 h-[30svh] lg:hidden" aria-hidden />
 
         <motion.p
           {...fade(0.55)}
-          className="mt-7 max-w-[46ch] text-lg leading-relaxed text-white/75 sm:text-xl"
+          className="mt-7 max-w-[40ch] text-lg leading-relaxed text-white/75 sm:text-xl"
         >
           Marca, site, criativos, tráfego pago e rastreio do clique até a venda. Tudo com a mesma
           equipe.

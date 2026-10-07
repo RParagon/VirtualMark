@@ -1,6 +1,7 @@
 import Seo from '../components/Seo'
 import Footer from '../components/home/HomeFooter'
 import HomeNav from '../components/home/HomeNav'
+import PipelineCanvas from '../components/home/PipelineCanvas'
 import HomeHero from '../components/home/HomeHero'
 import Statement from '../components/home/Statement'
 import Thesis from '../components/home/Thesis'
@@ -34,7 +35,9 @@ const faqSchema = {
  * FORM: palco editorial com seções de scroll fixo (pinned), seed: ajuste direto do briefing (direction pinned pelo usuário).
  */
 const PortfolioPage = () => (
-  <main className="relative bg-background text-white">
+  <div className="relative bg-background text-white">
+    <PipelineCanvas />
+    <main className="relative z-10">
     <Seo
       title="Portfólio VirtualMark | Do zero ao ar: sites, criativos e campanhas"
       description="Marca, site, criativos em vídeo com IA, tráfego pago e rastreio do clique à venda. Peça sua consultoria."
@@ -57,7 +60,8 @@ const PortfolioPage = () => (
     <Paths />
     <FinalCta />
     <Footer />
-  </main>
+    </main>
+  </div>
 )
 
 export default PortfolioPage

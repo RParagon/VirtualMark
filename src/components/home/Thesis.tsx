@@ -1,6 +1,5 @@
 import { useRef, useState } from 'react'
-import { motion, useMotionValueEvent, useScroll, AnimatePresence } from 'framer-motion'
-import { EASE } from './shared'
+import { useMotionValueEvent, useScroll } from 'framer-motion'
 
 /* ───────── Quatro frentes, um sistema ───────── */
 
@@ -128,14 +127,13 @@ const Thesis = () => {
   useMotionValueEvent(scrollYProgress, 'change', (p) => {
     setActive(Math.min(stages.length - 1, Math.floor(p * stages.length)))
   })
-  const Visual = stages[active].visual
-
   return (
     <section id="processo" className="relative">
       {/* Desktop: palco fixo que troca conforme o scroll */}
       <div ref={ref} className="hidden h-[360vh] lg:block">
         <div className="sticky top-0 flex h-screen items-center">
-          <div className="mx-auto grid w-full max-w-[88rem] grid-cols-12 items-center gap-12 px-8">
+          <div className="pointer-events-none absolute inset-y-0 left-0 w-[52%] bg-gradient-to-r from-background/90 via-background/65 to-transparent" aria-hidden />
+          <div className="relative mx-auto grid w-full max-w-[88rem] grid-cols-12 items-center gap-12 px-8">
             <div className="col-span-5">
               <h2
                 className="font-display font-bold text-white"
@@ -178,27 +176,8 @@ const Thesis = () => {
               </ul>
             </div>
 
-            <div className="col-span-7">
-              <div className="relative aspect-[5/4] overflow-hidden rounded-[2rem] border border-white/10 bg-[radial-gradient(80%_70%_at_70%_0%,rgba(220,38,38,0.16),transparent_70%),#0d0d0d]">
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={active}
-                    className="absolute inset-0"
-                    initial={{ opacity: 0, y: 18, filter: 'blur(6px)' }}
-                    animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                    exit={{ opacity: 0, y: -12, filter: 'blur(4px)' }}
-                    transition={{ duration: 0.5, ease: EASE }}
-                  >
-                    <Visual />
-                  </motion.div>
-                </AnimatePresence>
-              </div>
-              <div className="mt-5 flex gap-2" aria-hidden>
-                {stages.map((_, i) => (
-                  <span key={i} className={`h-[3px] flex-1 rounded-full transition-colors duration-500 ${i <= active ? 'bg-primary-500' : 'bg-white/15'}`} />
-                ))}
-              </div>
-            </div>
+            {/* a cena 3D fica por trás desta área (PipelineCanvas) */}
+            <div className="col-span-7" aria-hidden />
           </div>
         </div>
       </div>
