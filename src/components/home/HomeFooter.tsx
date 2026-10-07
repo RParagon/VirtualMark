@@ -28,7 +28,7 @@ const HomeFooter = () => (
       <div className="grid gap-14 lg:grid-cols-12">
         <div className="lg:col-span-5">
           <Link to="/" aria-label="VirtualMark, página inicial">
-            <img src="/vm-logo.svg" alt="VirtualMark" className="h-12 w-auto" width={96} height={48} loading="lazy" />
+            <img src="/vm-logo.png" alt="VirtualMark" className="h-12 w-auto" width={142} height={48} loading="lazy" />
           </Link>
           <p className="mt-6 max-w-[34ch] font-display text-2xl font-bold leading-tight tracking-tight text-white">
             Você chega com uma ideia. Sai com o negócio no ar.

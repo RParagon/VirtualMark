@@ -7,6 +7,7 @@ const links = [
   { label: 'Processo', href: '#processo' },
   { label: 'Casos', href: '#casos' },
   { label: 'Criativos', href: '#criativos' },
+  { label: 'Planos', href: '#planos' },
   { label: 'Blog', href: '/blog' },
 ]
 
@@ -29,7 +30,7 @@ const HomeNav = () => {
     >
       <div className="mx-auto flex h-16 max-w-[88rem] items-center justify-between">
         <Link to="/" aria-label="VirtualMark, página inicial" className="flex items-center">
-          <img src="/vm-logo.svg" alt="VirtualMark" className="h-9 w-auto" width={72} height={36} />
+          <img src="/vm-logo.png" alt="VirtualMark" className="h-8 w-auto" width={94} height={32} />
         </Link>
 
         <nav className="hidden items-center gap-9 md:flex" aria-label="Principal">

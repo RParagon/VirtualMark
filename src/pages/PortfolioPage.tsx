@@ -8,7 +8,10 @@ import CaseWB from '../components/home/CaseWB'
 import CreativeAnatomy from '../components/home/CreativeAnatomy'
 import Works from '../components/home/Works'
 import Lab from '../components/home/Lab'
-import Leader from '../components/home/Leader'
+import Cases from '../components/home/Cases'
+import Plans from '../components/home/Plans'
+import Process from '../components/home/Process'
+import Team from '../components/home/Team'
 import HomeFaq, { faqs } from '../components/home/HomeFaq'
 import Paths from '../components/home/Paths'
 import FinalCta from '../components/home/FinalCta'
@@ -43,10 +46,13 @@ const PortfolioPage = () => (
     <Statement />
     <Thesis />
     <CaseWB />
+    <Cases />
     <CreativeAnatomy />
     <Works />
+    <Plans />
+    <Process />
     <Lab />
-    <Leader />
+    <Team />
     <HomeFaq />
     <Paths />
     <FinalCta />

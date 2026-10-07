@@ -1,63 +1,90 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight, Reveal } from './shared'
+import { AnimatePresence, motion } from 'framer-motion'
+import { ArrowRight, BrowserFrame, EASE, Reveal } from './shared'
+import { works, type Client } from './portfolioData'
 
-type Work = { name: string; what: string; href: string; internal?: boolean }
+const all: Client[] = works.flatMap((g) => g.items)
+const withImg = all.filter((c) => c.img)
 
-const works: Work[] = [
-  { name: 'WB Soluções Elétricas', what: 'Branding · Site · Google Ads', href: '#caso-wb' },
-  { name: 'Ópticas Miyagui', what: 'Criativos em vídeo com IA', href: '#criativos' },
-  { name: 'CAIG', what: 'Site', href: '/cases', internal: true },
-  { name: 'Quiro', what: 'Site', href: '/cases', internal: true },
-  { name: 'Maré e Sabor', what: 'Site (em desenvolvimento)', href: '/cases', internal: true },
-  { name: 'Showhome', what: 'Imobiliária · Site e geração de leads', href: '/cases', internal: true },
-  { name: 'Colonial Guararema', what: 'Imobiliária · Site e geração de leads', href: '/cases', internal: true },
-  { name: 'Game Safari', what: 'Marketing digital', href: '/cases', internal: true },
-]
-
-const Row = ({ w }: { w: Work }) => {
+const Row = ({ c, active, onEnter }: { c: Client; active: boolean; onEnter: () => void }) => {
   const inner = (
     <>
-      <span className="font-display text-[clamp(1.7rem,4.2vw,3.6rem)] font-bold leading-none tracking-[-0.03em] text-white transition-transform duration-500 ease-out group-hover:translate-x-3 group-hover:text-primary-400">
-        {w.name}
+      <span
+        className={`font-display text-[clamp(1.5rem,3vw,2.6rem)] font-bold leading-none tracking-[-0.03em] transition-[color,transform] duration-500 ease-out ${
+          active ? 'translate-x-2 text-primary-400' : 'text-white'
+        }`}
+      >
+        {c.name}
       </span>
-      <span className="flex items-center gap-4 text-sm text-white/55 sm:text-base">
-        <span className="text-right sm:text-left">{w.what}</span>
-        <ArrowRight className="h-5 w-5 shrink-0 -translate-x-2 text-primary-500 opacity-0 transition-all duration-500 group-hover:translate-x-0 group-hover:opacity-100" />
-      </span>
+      <span className="text-sm text-white/55 sm:text-right sm:text-base">{c.what}</span>
     </>
   )
-  const cls = 'group flex flex-col gap-3 border-t border-white/10 py-6 sm:flex-row sm:items-center sm:justify-between sm:py-8'
-  return w.internal ? (
-    <Link to={w.href} className={cls}>{inner}</Link>
+  const cls = 'flex flex-col gap-2 border-t border-white/10 py-5 sm:flex-row sm:items-center sm:justify-between sm:gap-6 sm:py-6'
+  return c.href ? (
+    <a href={c.href} onMouseEnter={onEnter} onFocus={onEnter} className={cls}>{inner}</a>
   ) : (
-    <a href={w.href} className={cls}>{inner}</a>
+    <div onMouseEnter={onEnter} className={cls}>{inner}</div>
   )
 }
 
-const Works = () => (
-  <section id="casos" className="relative px-5 py-24 sm:px-8 sm:py-36">
-    <div className="mx-auto max-w-[88rem]">
-      <Reveal>
-        <h2
-          className="max-w-[18ch] font-display font-bold text-white"
-          style={{ fontSize: 'clamp(2.2rem, 5vw, 4.4rem)', lineHeight: 1.02, letterSpacing: '-0.03em', textWrap: 'balance' }}
-        >
-          O que a gente já colocou no ar.
-        </h2>
-      </Reveal>
-      <div className="mt-14 border-b border-white/10">
-        {works.map((w) => (
-          <Row key={w.name} w={w} />
-        ))}
+const Works = () => {
+  const [slug, setSlug] = useState(withImg[0].slug)
+  const current = withImg.find((c) => c.slug === slug) ?? withImg[0]
+
+  return (
+    <section id="casos" className="relative px-5 py-24 sm:px-8 sm:py-36">
+      <div className="mx-auto max-w-[88rem]">
+        <Reveal>
+          <h2
+            className="max-w-[18ch] font-display font-bold text-white"
+            style={{ fontSize: 'clamp(2.2rem, 5vw, 4.4rem)', lineHeight: 1.02, letterSpacing: '-0.03em', textWrap: 'balance' }}
+          >
+            O que a gente já colocou no ar.
+          </h2>
+        </Reveal>
+
+        <div className="mt-14 grid gap-12 lg:grid-cols-12">
+          <div className="lg:col-span-7">
+            {works.map((g) => (
+              <div key={g.group} className="mb-12 last:mb-0">
+                <h3 className="mb-2 text-sm text-white/45">{g.group}</h3>
+                <div className="border-b border-white/10">
+                  {g.items.map((c) => (
+                    <Row key={c.slug} c={c} active={c.slug === slug} onEnter={() => c.img && setSlug(c.slug)} />
+                  ))}
+                </div>
+              </div>
+            ))}
+            <Link
+              to="/cases"
+              className="mt-2 inline-flex items-center gap-2 text-base font-medium text-white underline decoration-white/30 underline-offset-[6px] transition-colors hover:decoration-primary-500"
+            >
+              Ver todos os cases <ArrowRight />
+            </Link>
+          </div>
+
+          {/* Prévia: acompanha o item sob o mouse (desktop) */}
+          <div className="hidden lg:col-span-5 lg:block">
+            <div className="sticky top-28">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={current.slug}
+                  initial={{ opacity: 0, y: 14 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.35, ease: EASE }}
+                >
+                  <BrowserFrame src={`/home/cases/${current.img}.webp`} alt={`Site ${current.name}`} ratio={current.ratio} />
+                  <p className="mt-4 text-sm text-white/50">{current.domain ?? current.name}</p>
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          </div>
+        </div>
       </div>
-      <Link
-        to="/cases"
-        className="mt-10 inline-flex items-center gap-2 text-base font-medium text-white underline decoration-white/30 underline-offset-[6px] transition-colors hover:decoration-primary-500"
-      >
-        Ver todos os cases <ArrowRight />
-      </Link>
-    </div>
-  </section>
-)
+    </section>
+  )
+}
 
 export default Works

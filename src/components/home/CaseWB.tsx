@@ -1,6 +1,6 @@
 import { useRef } from 'react'
 import { motion, useScroll, useSpring, useReducedMotion } from 'framer-motion'
-import { EASE } from './shared'
+import { BrowserFrame, EASE } from './shared'
 
 const steps = [
   { t: 'A necessidade', d: 'Um engenheiro de energia e eletricista queria prestar serviços e alcançar mais gente. Não tinha site, logo nem presença online.' },
@@ -49,6 +49,7 @@ const CaseWB = () => {
               O cliente chegou sem nada e recebeu a estrutura completa, de ponta a ponta, sem precisar
               se envolver em cada etapa.
             </p>
+            <BrowserFrame className="mt-8 max-w-[34rem]" src="/home/cases/wb.webp" alt="Site da WB Soluções Elétricas" />
           </div>
         </div>
 
