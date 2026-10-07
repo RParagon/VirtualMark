@@ -41,7 +41,7 @@ const CaseWB = () => {
           <div className="lg:sticky lg:top-28">
             <h2
               className="font-display font-bold text-white"
-              style={{ fontSize: 'clamp(2.2rem, 4.8vw, 4.2rem)', lineHeight: 1.02, letterSpacing: '-0.03em', textWrap: 'balance' }}
+              style={{ fontSize: 'clamp(2.2rem, min(4.8vw, 8.6vh), 4.2rem)', lineHeight: 1.02, letterSpacing: '-0.03em', textWrap: 'balance' }}
             >
               Do zero ao ar: o caso da WB Soluções Elétricas.
             </h2>
@@ -49,7 +49,7 @@ const CaseWB = () => {
               O cliente chegou sem nada e recebeu a estrutura completa, de ponta a ponta, sem precisar
               se envolver em cada etapa.
             </p>
-            <BrowserFrame className="mt-8 max-w-[34rem]" src="/home/cases/wb.webp" alt="Site da WB Soluções Elétricas" />
+            <BrowserFrame className="mt-6 max-w-[min(34rem,48vh)]" src="/home/cases/wb.webp" alt="Site da WB Soluções Elétricas" />
           </div>
         </div>
 

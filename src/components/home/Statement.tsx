@@ -27,12 +27,12 @@ const Statement = () => {
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start 0.85', 'end 0.55'] })
 
   return (
-    <section className="relative px-5 py-28 sm:px-8 sm:py-40">
-      <div className="mx-auto max-w-[88rem]">
+    <section className="relative px-5 py-28 sm:px-8 sm:py-40 lg:flex lg:min-h-[100svh] lg:flex-col lg:justify-center lg:py-[clamp(4rem,10vh,8rem)]">
+      <div className="w-full mx-auto max-w-[88rem]">
         <p
           ref={ref}
           className="max-w-[24ch] font-display font-bold sm:max-w-[26ch]"
-          style={{ fontSize: 'clamp(2rem, 5.2vw, 4.6rem)', lineHeight: 1.04, letterSpacing: '-0.03em', textWrap: 'balance' }}
+          style={{ fontSize: 'clamp(2rem, min(5.2vw, 9.6vh), 4.6rem)', lineHeight: 1.04, letterSpacing: '-0.03em', textWrap: 'balance' }}
         >
           {words.map((w, i) => (
             <Word key={i} w={w} i={i} n={words.length} p={scrollYProgress} reduce={reduce} />

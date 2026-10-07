@@ -9,9 +9,9 @@ const fronts = [
 ]
 
 const Team = () => (
-  <section className="relative isolate overflow-hidden px-5 py-24 sm:px-8 sm:py-36">
+  <section className="relative isolate overflow-hidden px-5 py-24 sm:px-8 sm:py-36 lg:flex lg:min-h-[100svh] lg:flex-col lg:justify-center lg:py-[clamp(4rem,10vh,8rem)]">
     <Shards className="-z-10 opacity-80" />
-    <div className="mx-auto grid max-w-[88rem] items-center gap-14 lg:grid-cols-12 lg:gap-16">
+    <div className="w-full mx-auto grid max-w-[88rem] items-center gap-14 lg:grid-cols-12 lg:gap-16">
       <Reveal className="lg:col-span-5">
         <img
           src="/vm-logo.png"
@@ -23,7 +23,7 @@ const Team = () => (
         />
         <h2
           className="mt-8 font-display font-bold text-white"
-          style={{ fontSize: 'clamp(2.2rem, 4.6vw, 4rem)', lineHeight: 1.02, letterSpacing: '-0.03em', textWrap: 'balance' }}
+          style={{ fontSize: 'clamp(2.2rem, min(4.6vw, 8.2vh), 4rem)', lineHeight: 1.02, letterSpacing: '-0.03em', textWrap: 'balance' }}
         >
           Quem cuida do seu projeto: a VirtualMark inteira.
         </h2>

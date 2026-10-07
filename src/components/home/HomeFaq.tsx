@@ -28,13 +28,13 @@ export const faqs = [
 ]
 
 const HomeFaq = () => (
-  <section className="relative px-5 py-24 sm:px-8 sm:py-36">
-    <div className="mx-auto grid max-w-[88rem] gap-12 lg:grid-cols-12">
+  <section className="relative px-5 py-24 sm:px-8 sm:py-36 lg:flex lg:min-h-[100svh] lg:flex-col lg:justify-center lg:py-[clamp(4rem,10vh,8rem)]">
+    <div className="w-full mx-auto grid max-w-[88rem] gap-12 lg:grid-cols-12">
       <div className="lg:col-span-4">
         <Reveal>
           <h2
             className="font-display font-bold text-white"
-            style={{ fontSize: 'clamp(2.2rem, 4.2vw, 3.6rem)', lineHeight: 1.02, letterSpacing: '-0.03em', textWrap: 'balance' }}
+            style={{ fontSize: 'clamp(2.2rem, min(4.2vw, 7.4vh), 3.6rem)', lineHeight: 1.02, letterSpacing: '-0.03em', textWrap: 'balance' }}
           >
             Perguntas diretas, respostas diretas.
           </h2>

@@ -34,7 +34,7 @@ const Cases = () => {
             <div className="col-span-5">
               <h2
                 className="font-display font-bold text-white"
-                style={{ fontSize: 'clamp(2.2rem, 4.2vw, 3.8rem)', lineHeight: 1.02, letterSpacing: '-0.03em', textWrap: 'balance' }}
+                style={{ fontSize: 'clamp(2.2rem, min(4.2vw, 7.6vh), 3.8rem)', lineHeight: 1.02, letterSpacing: '-0.03em', textWrap: 'balance' }}
               >
                 O que a gente fez, caso a caso.
               </h2>

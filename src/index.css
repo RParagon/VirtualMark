@@ -61,3 +61,11 @@
 html {
   scrollbar-color: #3a1212 #0a0a0a;
 }
+
+/* /portfolio em telas grandes: tudo é rem, então escalar a raiz amplia texto, espaços e largura máxima juntos */
+@media (min-width: 1920px) {
+  html.vm-wide { font-size: 112.5%; }
+}
+@media (min-width: 2400px) {
+  html.vm-wide { font-size: 128%; }
+}

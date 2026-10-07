@@ -16,11 +16,11 @@ const Process = () => {
   const fill = useSpring(scrollYProgress, { stiffness: 120, damping: 28, restDelta: 0.001 })
 
   return (
-    <section id="comecar" className="relative px-5 pb-12 pt-24 sm:px-8 sm:pb-16 sm:pt-36">
-      <div className="mx-auto max-w-[88rem]">
+    <section id="comecar" className="relative px-5 py-24 sm:px-8 sm:py-32 lg:flex lg:min-h-[100svh] lg:flex-col lg:justify-center lg:py-[clamp(4rem,10vh,8rem)]">
+      <div className="w-full mx-auto max-w-[88rem]">
         <h2
           className="max-w-[16ch] font-display font-bold text-white"
-          style={{ fontSize: 'clamp(2.4rem, 6vw, 5.2rem)', lineHeight: 1, letterSpacing: '-0.035em', textWrap: 'balance' }}
+          style={{ fontSize: 'clamp(2.4rem, min(6vw, 10vh), 5.2rem)', lineHeight: 1, letterSpacing: '-0.035em', textWrap: 'balance' }}
         >
           Como a gente começa com você.
         </h2>

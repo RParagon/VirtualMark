@@ -137,7 +137,7 @@ const Thesis = () => {
             <div className="col-span-5">
               <h2
                 className="font-display font-bold text-white"
-                style={{ fontSize: 'clamp(2.2rem, 4.4vw, 4rem)', lineHeight: 1.02, letterSpacing: '-0.03em', textWrap: 'balance' }}
+                style={{ fontSize: 'clamp(2.2rem, min(4.4vw, 8vh), 4rem)', lineHeight: 1.02, letterSpacing: '-0.03em', textWrap: 'balance' }}
               >
                 Quatro frentes. Um sistema só.
               </h2>

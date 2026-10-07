@@ -9,13 +9,13 @@ const Plans = () => {
   const group = plans.find((p) => p.id === id) ?? plans[0]
 
   return (
-    <section id="planos" className="relative isolate overflow-hidden px-5 py-24 sm:px-8 sm:py-36">
+    <section id="planos" className="relative isolate overflow-hidden px-5 py-24 sm:px-8 sm:py-36 lg:flex lg:min-h-[100svh] lg:flex-col lg:justify-center lg:py-[clamp(4rem,10vh,8rem)]">
       <Shards className="-z-10 opacity-70" />
-      <div className="mx-auto max-w-[88rem]">
+      <div className="w-full mx-auto max-w-[88rem]">
         <Reveal>
           <h2
             className="max-w-[20ch] font-display font-bold text-white"
-            style={{ fontSize: 'clamp(2.2rem, 5vw, 4.4rem)', lineHeight: 1.02, letterSpacing: '-0.03em', textWrap: 'balance' }}
+            style={{ fontSize: 'clamp(2.2rem, min(5vw, 9vh), 4.4rem)', lineHeight: 1.02, letterSpacing: '-0.03em', textWrap: 'balance' }}
           >
             Planos para cada momento do negócio.
           </h2>

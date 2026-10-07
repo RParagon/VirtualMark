@@ -39,11 +39,11 @@ const HomeHero = () => {
 
       <div className="absolute inset-y-0 left-0 -z-10 hidden w-[58%] bg-gradient-to-r from-background/85 via-background/45 to-transparent lg:block" aria-hidden />
 
-      <div className="mx-auto flex min-h-[100svh] max-w-[88rem] flex-col justify-center pb-24 pt-28">
+      <div className="mx-auto flex min-h-[100svh] max-w-[88rem] flex-col justify-center pb-[clamp(1.5rem,5vh,5rem)] pt-[clamp(4.5rem,11vh,7.5rem)]">
         <h1
           className="font-display font-bold text-white"
           style={{
-            fontSize: 'clamp(2.7rem, 6.4vw, 6rem)',
+            fontSize: 'clamp(2.7rem, min(6.4vw, 11vh), 6rem)',
             lineHeight: 0.98,
             letterSpacing: '-0.035em',
             textWrap: 'balance',
@@ -62,13 +62,13 @@ const HomeHero = () => {
 
         <motion.p
           {...fade(0.55)}
-          className="mt-7 max-w-[40ch] text-lg leading-relaxed text-white/75 sm:text-xl"
+          className="mt-[clamp(1rem,3.2vh,1.75rem)] max-w-[40ch] text-lg leading-relaxed text-white/75 sm:text-xl"
         >
           Marca, site, criativos, tráfego pago e rastreio do clique até a venda. Tudo com a mesma
           equipe.
         </motion.p>
 
-        <motion.div {...fade(0.7)} className="mt-9 flex flex-wrap items-center gap-x-8 gap-y-4">
+        <motion.div {...fade(0.7)} className="mt-[clamp(1.25rem,4.4vh,2.25rem)] flex flex-wrap items-center gap-x-8 gap-y-4">
           <a
             href="#caminhos"
             className="group inline-flex items-center gap-3 rounded-full bg-primary-600 py-3.5 pl-7 pr-3.5 text-base font-semibold text-white shadow-[0_10px_30px_-8px_rgba(220,38,38,0.7)] transition-colors hover:bg-primary-500"
@@ -86,7 +86,7 @@ const HomeHero = () => {
           </a>
         </motion.div>
 
-        <motion.div {...fade(0.9)} className="mt-14 max-w-3xl">
+        <motion.div {...fade(0.9)} className="mt-[clamp(1.25rem,6vh,3.5rem)] max-w-3xl">
           <p className="text-sm text-white/55">No ar recentemente</p>
           <ul className="mt-2 flex flex-wrap gap-x-6 gap-y-1 font-display text-base font-semibold text-white/85">
             {recent.map((n) => (
@@ -96,7 +96,7 @@ const HomeHero = () => {
         </motion.div>
       </div>
 
-      <div className="absolute inset-x-0 bottom-0 -z-0 h-32 bg-gradient-to-t from-background to-transparent" />
+      <div className="absolute inset-x-0 bottom-0 -z-10 h-[clamp(8rem,30vh,18rem)] bg-gradient-to-t from-background via-background/70 to-transparent" />
     </section>
   )
 }

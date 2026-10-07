@@ -33,12 +33,12 @@ const Works = () => {
   const current = withImg.find((c) => c.slug === slug) ?? withImg[0]
 
   return (
-    <section id="casos" className="relative px-5 py-24 sm:px-8 sm:py-36">
-      <div className="mx-auto max-w-[88rem]">
+    <section id="casos" className="relative px-5 py-24 sm:px-8 sm:py-36 lg:flex lg:min-h-[100svh] lg:flex-col lg:justify-center lg:py-[clamp(4rem,10vh,8rem)]">
+      <div className="w-full mx-auto max-w-[88rem]">
         <Reveal>
           <h2
             className="max-w-[18ch] font-display font-bold text-white"
-            style={{ fontSize: 'clamp(2.2rem, 5vw, 4.4rem)', lineHeight: 1.02, letterSpacing: '-0.03em', textWrap: 'balance' }}
+            style={{ fontSize: 'clamp(2.2rem, min(5vw, 9vh), 4.4rem)', lineHeight: 1.02, letterSpacing: '-0.03em', textWrap: 'balance' }}
           >
             O que a gente já colocou no ar.
           </h2>

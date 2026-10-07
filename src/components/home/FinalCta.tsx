@@ -1,16 +1,16 @@
 import { ArrowRight, Reveal, waLink } from './shared'
 
 const FinalCta = () => (
-  <section className="relative overflow-hidden px-5 py-28 sm:px-8 sm:py-44">
+  <section className="relative overflow-hidden px-5 py-28 sm:px-8 sm:py-44 lg:flex lg:min-h-[100svh] lg:flex-col lg:justify-center lg:py-[clamp(4rem,10vh,8rem)]">
     <div
       className="absolute inset-0 -z-10"
       style={{ background: 'radial-gradient(55% 70% at 50% 110%, rgba(220,38,38,0.35), transparent 70%)' }}
     />
-    <div className="mx-auto max-w-[88rem]">
+    <div className="w-full mx-auto max-w-[88rem]">
       <Reveal>
         <h2
           className="max-w-[14ch] font-display font-bold text-white"
-          style={{ fontSize: 'clamp(2.8rem, 8.2vw, 6rem)', lineHeight: 0.98, letterSpacing: '-0.04em', textWrap: 'balance' }}
+          style={{ fontSize: 'clamp(2.8rem, min(8.2vw, 13vh), 6rem)', lineHeight: 0.98, letterSpacing: '-0.04em', textWrap: 'balance' }}
         >
           Agora o <span className="text-primary-500">X</span> é com você.
         </h2>

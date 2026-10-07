@@ -19,12 +19,12 @@ const paths = [
 ]
 
 const Paths = () => (
-  <section id="caminhos" className="relative bg-primary-600 px-5 py-24 text-black sm:px-8 sm:py-36">
-    <div className="mx-auto max-w-[88rem]">
+  <section id="caminhos" className="relative bg-primary-600 px-5 py-24 text-black sm:px-8 sm:py-36 lg:flex lg:min-h-[100svh] lg:flex-col lg:justify-center lg:py-[clamp(4rem,10vh,8rem)]">
+    <div className="w-full mx-auto max-w-[88rem]">
       <Reveal>
         <h2
           className="max-w-[16ch] font-display font-bold"
-          style={{ fontSize: 'clamp(2.4rem, 6vw, 5.4rem)', lineHeight: 1, letterSpacing: '-0.035em', textWrap: 'balance' }}
+          style={{ fontSize: 'clamp(2.4rem, min(6vw, 10.5vh), 5.4rem)', lineHeight: 1, letterSpacing: '-0.035em', textWrap: 'balance' }}
         >
           Onde o seu negócio está agora?
         </h2>

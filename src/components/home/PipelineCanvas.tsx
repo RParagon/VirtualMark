@@ -121,7 +121,10 @@ const PipelineCanvas = () => {
         state.opacity = 0
         return
       }
-      const heroFade = 1 - clamp((y - 0.25 * vh) / (0.75 * vh), 0, 1)
+      // o 3D é parte do hero: sobe junto com ele e dissolve antes de a seção 2 chegar
+      const heroEnd = y + hero.getBoundingClientRect().bottom
+      const heroFade = 1 - clamp((y - 0.22 * heroEnd) / (0.56 * heroEnd), 0, 1)
+      el.style.transform = state.wide && y < heroEnd ? `translate3d(0, ${-y}px, 0)` : 'none'
       if (!state.wide || !th) {
         // celular e tablet: só o hero; a cena fica na faixa reservada entre o título e o texto
         state.opacity = heroFade * 0.95
@@ -136,7 +139,7 @@ const PipelineCanvas = () => {
       const tTop = y + th.getBoundingClientRect().top
       const tH = th.offsetHeight
       const pEnd = tTop + tH - vh
-      const fadeIn = clamp((y - (tTop - vh)) / (0.9 * vh), 0, 1)
+      const fadeIn = clamp((y - (tTop - 0.5 * vh)) / (0.45 * vh), 0, 1)
       const fadeOut = 1 - clamp((y - pEnd) / (0.7 * vh), 0, 1)
       state.opacity = Math.max(heroFade, smooth(fadeIn) * fadeOut)
       if (y < tTop) state.target = fadeIn
@@ -307,7 +310,11 @@ const PipelineCanvas = () => {
 
   return (
     <div ref={wrap} className="pointer-events-none fixed inset-0 z-0" style={{ opacity: 0, visibility: 'hidden' }} aria-hidden>
-      <div ref={stageHost} className="absolute inset-0" />
+      <div
+        ref={stageHost}
+        className="absolute inset-0"
+        style={{ WebkitMaskImage: 'linear-gradient(to bottom, #000 80%, transparent 100%)', maskImage: 'linear-gradient(to bottom, #000 80%, transparent 100%)' }}
+      />
 
       {/* legendas dos quatro portões, coladas na cena */}
       {NAMES.map((n, i) => (

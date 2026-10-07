@@ -35,7 +35,7 @@ const Phone = () => {
   }, [])
 
   return (
-    <div className="relative mx-auto w-full max-w-[17rem] rounded-[2.4rem] border border-white/15 bg-black p-2 shadow-[0_40px_80px_-30px_rgba(220,38,38,0.45)]">
+    <div className="relative mx-auto w-full max-w-[min(17rem,36vh)] rounded-[2.4rem] border border-white/15 bg-black p-2 shadow-[0_40px_80px_-30px_rgba(220,38,38,0.45)]">
       <video
         ref={ref}
         className="aspect-[9/16] w-full rounded-[1.9rem] bg-neutral-900 object-cover"
@@ -153,7 +153,7 @@ const CreativeAnatomy = () => {
             <div className="col-span-4">
               <h2
                 className="font-display font-bold text-white"
-                style={{ fontSize: 'clamp(2.2rem, 4vw, 3.6rem)', lineHeight: 1.02, letterSpacing: '-0.03em', textWrap: 'balance' }}
+                style={{ fontSize: 'clamp(2.2rem, min(4vw, 7.2vh), 3.6rem)', lineHeight: 1.02, letterSpacing: '-0.03em', textWrap: 'balance' }}
               >
                 Um criativo em vídeo, desmontado.
               </h2>
@@ -179,7 +179,7 @@ const CreativeAnatomy = () => {
             </motion.div>
 
             <div className="col-span-5">
-              <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem] border border-white/10 bg-[radial-gradient(80%_60%_at_80%_0%,rgba(220,38,38,0.14),transparent_70%),#0d0d0d]">
+              <div className="relative ml-auto aspect-[4/5] h-[min(76vh,42rem)] w-auto overflow-hidden rounded-[2rem] border border-white/10 bg-[radial-gradient(80%_60%_at_80%_0%,rgba(220,38,38,0.14),transparent_70%),#0d0d0d]">
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={active}

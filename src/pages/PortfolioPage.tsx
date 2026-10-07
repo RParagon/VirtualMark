@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import Seo from '../components/Seo'
 import Footer from '../components/home/HomeFooter'
 import HomeNav from '../components/home/HomeNav'
@@ -34,7 +35,13 @@ const faqSchema = {
  * FIRST VIEWPORT: título gigante à esquerda, X 3D em obsidiana com partículas atravessando à direita, CTA vermelho abaixo do texto.
  * FORM: palco editorial com seções de scroll fixo (pinned), seed: ajuste direto do briefing (direction pinned pelo usuário).
  */
-const PortfolioPage = () => (
+const PortfolioPage = () => {
+  useEffect(() => {
+    document.documentElement.classList.add('vm-wide')
+    return () => document.documentElement.classList.remove('vm-wide')
+  }, [])
+
+  return (
   <div className="relative bg-background text-white">
     <PipelineCanvas />
     <main className="relative z-10">
@@ -62,6 +69,7 @@ const PortfolioPage = () => (
     <Footer />
     </main>
   </div>
-)
+  )
+}
 
 export default PortfolioPage
