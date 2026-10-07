@@ -34,7 +34,7 @@ const PortfolioPage = () => (
   <main className="relative bg-background text-white">
     <Seo
       title="Portfólio VirtualMark | Do zero ao ar: sites, criativos e campanhas"
-      description="Marca, site, criativos em vídeo com IA, tráfego pago e rastreio do clique à venda. Estrutura completa no ar em poucos dias. Peça sua consultoria."
+      description="Marca, site, criativos em vídeo com IA, tráfego pago e rastreio do clique à venda. Peça sua consultoria."
       path="/portfolio"
       jsonLd={faqSchema}
     />

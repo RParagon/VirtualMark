@@ -6,8 +6,8 @@ export const faqs = [
     a: 'Depende do que o seu negócio precisa: só site, só campanha ou a estrutura completa. Por isso o valor é definido em uma consultoria, depois que a gente entende o seu momento. Não existe tabela fixa.',
   },
   {
-    q: 'Em quanto tempo a campanha vai ao ar?',
-    a: 'Em geral em menos de 7 dias, às vezes menos, já com a configuração, o rastreio e os anúncios prontos.',
+    q: 'Como funciona o começo do projeto?',
+    a: 'Primeiro uma conversa para entender o negócio, o público e o objetivo. Depois a gente monta a estrutura (site, páginas, Google Meu Negócio e rastreio) e faz a configuração e a criação das campanhas. O prazo depende do que o seu negócio já tem pronto.',
   },
   {
     q: 'Eu ainda não tenho logo nem site. Vocês atendem?',
@@ -23,7 +23,7 @@ export const faqs = [
   },
   {
     q: 'Como são feitos os criativos em vídeo com IA?',
-    a: 'A gente parte da foto do produto e de um modelo, gera um storyboard no ChatGPT e produz o vídeo no Google Flow com prompt e storyboard. Quando o projeto pede, também gravamos narração e cenas presencialmente.',
+    a: 'A gente parte da foto do produto e de um modelo, gera um storyboard no ChatGPT e produz o vídeo no Google Flow com prompt e storyboard. Depois cuidamos da narração, da trilha e da edição.',
   },
 ]
 

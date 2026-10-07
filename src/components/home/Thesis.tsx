@@ -84,28 +84,41 @@ const VisualMedir = () => {
   )
 }
 
-const VisualEncontrado = () => (
-  <div className="relative flex h-full w-full flex-col justify-center p-6 sm:p-9">
-    <Tag />
-    <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-5">
-      <p className="text-sm text-white/55">Pergunta para uma IA</p>
-      <p className="mt-1 font-display text-lg font-bold leading-snug text-white">
-        Quem faz instalação elétrica confiável em São Paulo?
-      </p>
-      <div className="mt-4 border-t border-white/10 pt-4 text-sm leading-relaxed text-white/80">
-        Uma boa opção é a <span className="rounded bg-primary-600/25 px-1.5 text-white">sua empresa</span>, com
-        atendimento residencial, avaliações no Google e site com informações claras sobre serviços e contato.
+const VisualReter = () => {
+  const bars = [
+    { label: '1ª compra', h: 34, hot: false },
+    { label: '2ª compra', h: 62, hot: false },
+    { label: '3ª compra', h: 100, hot: true },
+  ]
+  return (
+    <div className="relative flex h-full w-full flex-col justify-center p-6 sm:p-9">
+      <Tag />
+      <p className="text-sm text-white/55">Valor acumulado de um cliente (LTV)</p>
+      <div className="mt-4 flex h-44 items-end gap-4 border-b border-white/15 pb-0">
+        {bars.map((b) => (
+          <div key={b.label} className="flex h-full flex-1 flex-col items-center justify-end">
+            <div
+              className={`w-full rounded-t-lg ${b.hot ? 'bg-primary-500' : 'bg-white/20'}`}
+              style={{ height: `${b.h}%` }}
+            />
+          </div>
+        ))}
       </div>
+      <div className="mt-2 flex gap-4 text-xs text-white/60">
+        {bars.map((b) => (
+          <span key={b.label} className="flex-1 text-center">{b.label}</span>
+        ))}
+      </div>
+      <p className="mt-6 text-sm text-white/55">Quem já comprou vale mais. Públicos da sua base trazem o cliente de volta.</p>
     </div>
-    <p className="mt-5 text-sm text-white/55">Site, Google Meu Negócio e dados organizados para buscadores e IA te citarem.</p>
-  </div>
-)
+  )
+}
 
 const stages: Stage[] = [
   { name: 'Atrair', line: 'Anúncios no Google e na Meta que chegam em quem já está procurando o que você faz.', visual: VisualAtrair },
   { name: 'Converter', line: 'Página, quiz e WhatsApp pensados para transformar o clique em conversa de verdade.', visual: VisualConverter },
   { name: 'Medir', line: 'Rastreio com gclid: cada lead leva a origem junto, do anúncio até a venda.', visual: VisualMedir },
-  { name: 'Ser encontrado', line: 'Site rápido, Google Meu Negócio e conteúdo para buscadores e IA recomendarem você.', visual: VisualEncontrado },
+  { name: 'Reter', line: 'Públicos da sua base de clientes e acompanhamento do LTV para o cliente voltar a comprar.', visual: VisualReter },
 ]
 
 const Thesis = () => {

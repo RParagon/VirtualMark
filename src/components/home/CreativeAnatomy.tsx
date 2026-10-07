@@ -11,7 +11,7 @@ const steps = [
   { t: 'Foto do produto e do modelo', d: 'Tudo começa com o que o cliente vende e quem vai mostrar isso.' },
   { t: 'Storyboard no ChatGPT', d: 'A foto e o modelo viram um storyboard: cena a cena, antes de gerar qualquer vídeo.' },
   { t: 'Vídeo no Google Flow', d: 'Prompt mais storyboard geram as cenas em vídeo com IA.' },
-  { t: 'Narração e trilha', d: 'A voz e o som fecham o criativo. Quando o projeto pede, a gente grava presencialmente.' },
+  { t: 'Narração e trilha', d: 'A voz e o som fecham o criativo, com edição e acabamento feitos por nós.' },
 ]
 
 /* ───────── vídeo no celular ───────── */

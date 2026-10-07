@@ -8,7 +8,7 @@ const paths = [
   },
   {
     name: 'Quero vender mais',
-    what: 'Campanhas no Google e na Meta, página de conversão e criativos em vídeo com IA, com a campanha no ar em menos de 7 dias.',
+    what: 'Campanhas no Google e na Meta, página de conversão e criativos em vídeo com IA, com a configuração e a criação das campanhas por nossa conta.',
     msg: 'Oi! Vim pelo site da VirtualMark. Quero vender mais com anúncios e página de conversão. Podemos conversar?',
   },
   {

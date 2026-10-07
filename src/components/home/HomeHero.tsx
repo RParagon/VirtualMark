@@ -73,7 +73,7 @@ const HomeHero = () => {
           className="mt-7 max-w-[46ch] text-lg leading-relaxed text-white/75 sm:text-xl"
         >
           Marca, site, criativos, tráfego pago e rastreio do clique até a venda. Tudo com a mesma
-          equipe, e a campanha rodando em menos de 7 dias.
+          equipe.
         </motion.p>
 
         <motion.div {...fade(0.7)} className="mt-9 flex flex-wrap items-center gap-x-8 gap-y-4">
