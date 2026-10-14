@@ -65,8 +65,11 @@ const HomeFooter = () => (
             </li>
             <li>São Paulo, SP</li>
             <li className="flex gap-5 pt-1">
-              <a href="https://www.instagram.com/virtualmark.com.br/" target="_blank" rel="noopener noreferrer" className="underline decoration-white/25 underline-offset-4 transition-colors hover:decoration-primary-500">
+              <a href="https://www.instagram.com/virtualmarkgroup/" target="_blank" rel="noopener noreferrer" className="underline decoration-white/25 underline-offset-4 transition-colors hover:decoration-primary-500">
                 Instagram
+              </a>
+              <a href="https://www.youtube.com/@VirtualMark" target="_blank" rel="noopener noreferrer" className="underline decoration-white/25 underline-offset-4 transition-colors hover:decoration-primary-500">
+                YouTube
               </a>
               <a href="https://br.linkedin.com/company/vmredot" target="_blank" rel="noopener noreferrer" className="underline decoration-white/25 underline-offset-4 transition-colors hover:decoration-primary-500">
                 LinkedIn

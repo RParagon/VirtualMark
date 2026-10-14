@@ -36,3 +36,6 @@ lerna-debug.log*
 
 # Material bruto da nova home (vídeo 15MB etc.); versões otimizadas ficam em public/home
 arquivos-novahome/
+
+# Gestão de conteúdo (Instagram + YouTube): material bruto, referências e mídia pesada
+conteudo/

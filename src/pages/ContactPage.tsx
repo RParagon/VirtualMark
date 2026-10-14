@@ -135,7 +135,7 @@ const ContactPage = () => {
                 <h3 className="text-2xl font-bold mb-6">Redes Sociais</h3>
                 <div className="flex space-x-4">
                   <a
-                    href="https://www.instagram.com/virtualmark.com.br/"
+                    href="https://www.instagram.com/virtualmarkgroup/"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-12 h-12 bg-primary-500/10 rounded-xl flex items-center justify-center hover:bg-primary-500/20 transition-colors"

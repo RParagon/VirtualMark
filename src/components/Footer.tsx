@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 import { Link } from 'react-router-dom'
+import { FaYoutube } from 'react-icons/fa'
 
 const Footer = () => {
   const [ref, inView] = useInView({
@@ -169,7 +170,7 @@ const Footer = () => {
           className="border-t border-gray-800 pt-8 flex justify-center space-x-6 mb-8"
         >
           <a
-            href="https://www.instagram.com/virtualmark.com.br/"
+            href="https://www.instagram.com/virtualmarkgroup/"
             target="_blank"
             rel="noopener noreferrer"
             className="text-gray-400 hover:text-primary-500 transition-colors"
@@ -182,6 +183,15 @@ const Footer = () => {
                 clipRule="evenodd"
               />
             </svg>
+          </a>
+          <a
+            href="https://www.youtube.com/@VirtualMark"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-gray-400 hover:text-primary-500 transition-colors"
+          >
+            <span className="sr-only">YouTube</span>
+            <FaYoutube className="h-5 w-5" aria-hidden="true" />
           </a>
         </motion.div>
 
