@@ -62,10 +62,21 @@ export const MarkGuiaProvider = ({ children }: { children: ReactNode }) => {
     const cursor = { x: -1, y: -1 }
     const pos = { x: -200, y: window.innerHeight * 0.4, s: 160, pronto: false }
     let atual: Element | null = null
+    // preso: chegou na âncora e passa a acompanhá-la exatamente (sem atraso na rolagem)
+    let preso = false
+    let flutua = 1
+    let eraWhats = false
+    let ultimoMovimento = 0
+    let ultimaRolagem = 0
     let visivel = 0
 
     const atividade = () => (ultimaAtividade = performance.now())
+    const rolar = () => {
+      ultimaRolagem = performance.now()
+      atividade()
+    }
     const mover = (e: PointerEvent) => {
+      ultimoMovimento = performance.now()
       cursor.x = e.clientX
       cursor.y = e.clientY
       atividade()
@@ -78,6 +89,8 @@ export const MarkGuiaProvider = ({ children }: { children: ReactNode }) => {
       if (w) return
       const alvo = el.closest('a, button, [role="radio"], select, input')
       if (!alvo) return
+      // na rolagem o conteúdo passa sob o cursor parado; isso não é a pessoa apontando
+      if (performance.now() - ultimoMovimento > 150) return
       const r = (alvo.closest('[data-mark-reacao]') as HTMLElement | null)?.dataset.markReacao as MarkEstado | undefined
       reagir(r || 'surpreso', r ? 1600 : 650)
       tocar('hover')
@@ -91,7 +104,7 @@ export const MarkGuiaProvider = ({ children }: { children: ReactNode }) => {
     }
 
     window.addEventListener('pointermove', mover, { passive: true })
-    window.addEventListener('scroll', atividade, { passive: true })
+    window.addEventListener('scroll', rolar, { passive: true })
     window.addEventListener('keydown', atividade)
     document.addEventListener('pointerover', sobre)
     document.addEventListener('pointerout', sair)
@@ -107,6 +120,10 @@ export const MarkGuiaProvider = ({ children }: { children: ReactNode }) => {
       let alvo: { x: number; y: number; s: number } | null = null
       let estadoBase: MarkEstado = 'parado'
       const w = whats.current
+      if (!!(w && desktop) !== eraWhats) {
+        eraWhats = !!(w && desktop)
+        preso = false
+      }
       if (w && desktop) {
         const r = w.getBoundingClientRect()
         alvo = { x: r.left - 64, y: r.top + r.height / 2 - 30, s: 110 }
@@ -132,6 +149,7 @@ export const MarkGuiaProvider = ({ children }: { children: ReactNode }) => {
         if (melhor && melhor !== atual && (atual === null || dist < distAtual - 80 || distAtual === Infinity)) {
           if (atual && pos.pronto) tocar('voo')
           atual = melhor
+          preso = false
         }
         if (!melhor) atual = null
         if (atual) {
@@ -148,7 +166,8 @@ export const MarkGuiaProvider = ({ children }: { children: ReactNode }) => {
       // 2. voa até lá (mola simples, independente da taxa de quadros)
       const dt = Math.min(0.05, (agora - (ultimoQuadro || agora)) / 1000)
       if (alvo) {
-        const k = reduce || !pos.pronto ? 1 : 1 - Math.exp(-dt * 5.5)
+        if (!preso && Math.hypot(alvo.x - pos.x, alvo.y - pos.y) < 1.5 && Math.abs(alvo.s - pos.s) < 1.5) preso = true
+        const k = reduce || !pos.pronto || preso ? 1 : 1 - Math.exp(-dt * 7)
         pos.x += (alvo.x - pos.x) * k
         pos.y += (alvo.y - pos.y) * k
         pos.s += (alvo.s - pos.s) * k
@@ -157,7 +176,10 @@ export const MarkGuiaProvider = ({ children }: { children: ReactNode }) => {
       const alvoVisivel = alvo ? 1 : 0
       visivel += (alvoVisivel - visivel) * (reduce ? 1 : 1 - Math.exp(-dt * 8))
       const t = (agora - t0) / 1000
-      const bob = reduce ? 0 : Math.sin(t * 1.6) * 4
+      // flutua de leve só com a página parada
+      const parado = agora - ultimaRolagem > 400
+      flutua += ((parado ? 1 : 0) - flutua) * (1 - Math.exp(-dt * 3))
+      const bob = reduce ? 0 : Math.sin(t * 1.6) * 2.5 * flutua
       box.style.transform = `translate3d(${(pos.x - pos.s / 2).toFixed(1)}px, ${(pos.y - pos.s / 2 + bob).toFixed(1)}px, 0)`
       box.style.width = box.style.height = `${pos.s.toFixed(1)}px`
       box.style.opacity = visivel.toFixed(3)
@@ -187,7 +209,7 @@ export const MarkGuiaProvider = ({ children }: { children: ReactNode }) => {
     return () => {
       cancelAnimationFrame(raf)
       window.removeEventListener('pointermove', mover)
-      window.removeEventListener('scroll', atividade)
+      window.removeEventListener('scroll', rolar)
       window.removeEventListener('keydown', atividade)
       document.removeEventListener('pointerover', sobre)
       document.removeEventListener('pointerout', sair)
