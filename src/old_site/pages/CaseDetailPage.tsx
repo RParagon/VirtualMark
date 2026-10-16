@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 import { useParams } from 'react-router-dom'
-import { useCases } from '../contexts/CaseContext'
+import { useCases } from '../../contexts/CaseContext'
 import { ArrowLeftIcon } from '@heroicons/react/24/outline'
 import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'

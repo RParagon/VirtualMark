@@ -1,4 +1,5 @@
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
+import { veioPreRenderizada } from '../components/HtmlEstatico'
 import { useState } from 'react'
 import Seo from '../components/Seo'
 import { CASOS, FILTROS, type Caso, type Filtro } from '../components/nova/casos'
@@ -12,7 +13,7 @@ import { Contador, EASE, Etiqueta, Mono, Sobrelinha, caminho } from '../componen
 export const MockSite = ({ className = '' }: { className?: string }) => (
   <div className={`flex items-center justify-center gap-3 bg-vm-sup2 ${className}`} aria-hidden>
     {[0, 1].map((k) => (
-      <div key={k} className={`flex w-[42%] max-w-[190px] flex-col overflow-hidden rounded-xl border border-vm-borda ${k ? 'bg-vm-fundo' : 'bg-vm-sup'} ${k ? '' : 'opacity-70'}`}>
+      <div key={k} className={`flex w-[42%] max-w-[190px] flex-col overflow-hidden rounded-xl border border-vm-borda ${k ? 'bg-vm-fundo' : 'bg-vm-sup'}`}>
         <div className="flex items-center gap-1 border-b border-vm-borda px-2.5 py-2">
           {[0, 1, 2].map((i) => (
             <span key={i} className="h-1.5 w-1.5 rounded-full bg-vm-borda" />
@@ -170,8 +171,9 @@ const Lista = () => {
 
 const CasesNova = () => {
   const reduce = useReducedMotion()
+  const pre = veioPreRenderizada()
   const item = (i: number) => ({
-    initial: reduce ? false : { opacity: 0, y: 28 },
+    initial: reduce || pre ? false : { opacity: 0, y: 28 },
     animate: { opacity: 1, y: 0 },
     transition: { duration: 0.8, ease: EASE, delay: 0.08 + i * 0.09 },
   })
@@ -181,6 +183,18 @@ const CasesNova = () => {
         title="Cases | VirtualMark"
         description="Cases com número da plataforma de anúncio: 23,5x de retorno numa loja de lingerie, 34 mil vendas para uma loja de games, 1.714 contatos para uma clínica e projetos completos de marca, site e rastreio."
         path="/cases"
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'CollectionPage',
+          name: 'Cases da VirtualMark',
+          url: 'https://virtualmark.com.br/cases',
+          inLanguage: 'pt-BR',
+          isPartOf: { '@id': 'https://virtualmark.com.br/#website' },
+          mainEntity: {
+            '@type': 'ItemList',
+            itemListElement: CASOS.map((c, i) => ({ '@type': 'ListItem', position: i + 1, url: `https://virtualmark.com.br/cases/${c.slug}`, name: `${c.segmento}: ${c.titulo}` })),
+          },
+        }}
       />
       <section className={`${caixa} flex flex-col gap-10 pb-12 pt-14 lg:flex-row lg:items-end lg:gap-12 lg:pb-16 lg:pt-24`}>
         <div className="flex-1">

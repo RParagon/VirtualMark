@@ -1,4 +1,5 @@
 import { motion, useReducedMotion } from 'framer-motion'
+import { veioPreRenderizada } from '../components/HtmlEstatico'
 import type { ReactNode } from 'react'
 import Seo from '../components/Seo'
 import { CASOS, type Caso } from '../components/nova/casos'
@@ -68,8 +69,9 @@ const Grafico = ({ g }: { g: NonNullable<Caso['grafico']> }) => {
 /* ───────── Abertura do case ───────── */
 const Topo = ({ c }: { c: Caso }) => {
   const reduce = useReducedMotion()
+  const pre = veioPreRenderizada()
   const item = (i: number) => ({
-    initial: reduce ? false : { opacity: 0, y: 28 },
+    initial: reduce || pre ? false : { opacity: 0, y: 28 },
     animate: { opacity: 1, y: 0 },
     transition: { duration: 0.8, ease: EASE, delay: 0.08 + i * 0.09 },
   })
@@ -98,7 +100,7 @@ const Topo = ({ c }: { c: Caso }) => {
         </motion.div>
       </div>
       <motion.div
-        initial={reduce ? false : { opacity: 0, y: 36, scale: 0.98 }}
+        initial={reduce || veioPreRenderizada() ? false : { opacity: 0, y: 36, scale: 0.98 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.9, ease: EASE, delay: 0.3 }}
         className="relative w-full lg:w-[520px] lg:shrink-0"
@@ -253,7 +255,37 @@ const Fecho = ({ c }: { c: Caso }) => {
 
 const CaseNova = ({ caso }: { caso: Caso }) => (
   <PaginaVM>
-    <Seo title={`${caso.segmento}: ${caso.titulo} | Cases VirtualMark`} description={caso.abertura} path={`/cases/${caso.slug}`} />
+    <Seo
+      title={`${caso.realce[0].toUpperCase()}${caso.realce.slice(1)} | ${caso.segmento} | VirtualMark`}
+      description={caso.abertura}
+      path={`/cases/${caso.slug}`}
+      type="article"
+      image={caso.foto ? `https://virtualmark.com.br${caso.foto}` : undefined}
+      jsonLd={[
+        {
+          '@context': 'https://schema.org',
+          '@type': 'Article',
+          headline: caso.titulo,
+          description: caso.abertura,
+          inLanguage: 'pt-BR',
+          about: caso.segmento,
+          keywords: caso.tags.join(', '),
+          ...(caso.foto ? { image: `https://virtualmark.com.br${caso.foto}` } : {}),
+          author: { '@id': 'https://virtualmark.com.br/#organization' },
+          publisher: { '@id': 'https://virtualmark.com.br/#organization' },
+          mainEntityOfPage: `https://virtualmark.com.br/cases/${caso.slug}`,
+        },
+        {
+          '@context': 'https://schema.org',
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'Início', item: 'https://virtualmark.com.br/' },
+            { '@type': 'ListItem', position: 2, name: 'Cases', item: 'https://virtualmark.com.br/cases' },
+            { '@type': 'ListItem', position: 3, name: caso.segmento, item: `https://virtualmark.com.br/cases/${caso.slug}` },
+          ],
+        },
+      ]}
+    />
     <Topo c={caso} />
     <Numeros c={caso} />
     <Portoes c={caso} />

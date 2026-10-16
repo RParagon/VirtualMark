@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { trackQuiz, getAttribution } from '../lib/quizTracking'
-import { insertLeadWithFallback } from '../lib/leadCapture'
+import { trackQuiz, getAttribution } from '../../lib/quizTracking'
+import { insertLeadWithFallback } from '../../lib/leadCapture'
 import SimuladorVM from '../components/SimuladorVM'
 
 const WPP_NUMBER = '5511992794634'

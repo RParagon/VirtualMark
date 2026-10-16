@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import { PlusIcon, PencilIcon, TrashIcon, XMarkIcon } from '@heroicons/react/24/outline'
-import { usePosts } from '../../contexts/PostContext'
-import { Editor } from '../../lib/tinymce'
-import { defaultEditorConfig } from '../../lib/tinymce'
+import { usePosts } from '../contexts/PostContext'
+import { Editor } from '../lib/tinymce'
+import { defaultEditorConfig } from '../lib/tinymce'
 
 interface BlogPost {
   id: string

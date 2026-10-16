@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
-import AdminLogin from '../components/admin/AdminLogin'
-import AdminDashboard from '../components/admin/AdminDashboard'
+import { Helmet } from 'react-helmet'
+import AdminLogin from '../admin/AdminLogin'
+import AdminDashboard from '../admin/AdminDashboard'
 import { CaseProvider } from '../contexts/CaseContext'
 import { useAuth } from '../contexts/AuthContext'
 
@@ -18,6 +19,10 @@ const AdminPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <Helmet>
+        <title>Admin | VirtualMark</title>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
       {isAuthenticated ? (
         <CaseProvider>
           <AdminDashboard />

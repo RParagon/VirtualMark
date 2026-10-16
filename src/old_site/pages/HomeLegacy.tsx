@@ -1,4 +1,4 @@
-import Seo from '../components/Seo'
+import Seo from '../../components/Seo'
 import Navbar from '../components/Navbar'
 import Hero from '../components/Hero'
 import Results from '../components/Results'

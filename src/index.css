@@ -20,9 +20,9 @@
   --vm-borda: 38 38 38;
   --vm-texto: 250 250 250;
   --vm-suave: 163 163 163;
-  --vm-apagado: 107 107 107;
+  --vm-apagado: 138 138 138;
   --vm-verm: 220 38 38;
-  --vm-vermt: 239 68 68;
+  --vm-vermt: 244 80 80;
   --vm-verms: 42 17 17;
   --vm-verde: 34 197 94;
   color-scheme: dark;
@@ -34,11 +34,27 @@
   --vm-borda: 226 226 226;
   --vm-texto: 17 17 17;
   --vm-suave: 82 82 82;
-  --vm-apagado: 138 138 138;
-  --vm-vermt: 220 38 38;
+  --vm-apagado: 105 105 105;
+  --vm-vermt: 200 30 30;
   --vm-verms: 253 236 236;
   --vm-verde: 22 163 74;
   color-scheme: light;
+}
+/* sem escolha manual, segue o tema do sistema */
+@media (prefers-color-scheme: light) {
+  .vm-tema[data-tema='auto'] {
+    --vm-fundo: 255 255 255;
+    --vm-sup: 245 245 245;
+    --vm-sup2: 235 235 235;
+    --vm-borda: 226 226 226;
+    --vm-texto: 17 17 17;
+    --vm-suave: 82 82 82;
+    --vm-apagado: 105 105 105;
+    --vm-vermt: 200 30 30;
+    --vm-verms: 253 236 236;
+    --vm-verde: 22 163 74;
+    color-scheme: light;
+  }
 }
 
 @keyframes vmflutua {

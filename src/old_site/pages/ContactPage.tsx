@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { useContact } from '../contexts/ContactContext'
+import { useContact } from '../../contexts/ContactContext'
 import {
   EnvelopeIcon,
   PhoneIcon,

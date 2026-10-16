@@ -1,4 +1,5 @@
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
+import { veioPreRenderizada } from '../HtmlEstatico'
 import { useEffect, useRef, useState } from 'react'
 import type { MarkEstado } from './mark'
 import { Ancora, useMarkGuia } from './MarkGuia'
@@ -131,8 +132,9 @@ const CartaoMark = () => {
 
 export const Abertura = () => {
   const reduce = useReducedMotion()
+  const pre = veioPreRenderizada()
   const item = (i: number) => ({
-    initial: reduce ? false : { opacity: 0, y: 28 },
+    initial: reduce || pre ? false : { opacity: 0, y: 28 },
     animate: { opacity: 1, y: 0 },
     transition: { duration: 0.8, ease: EASE, delay: 0.08 + i * 0.09 },
   })
@@ -163,7 +165,7 @@ export const Abertura = () => {
         </motion.dl>
       </div>
       <motion.div
-        initial={reduce ? false : { opacity: 0, y: 36, scale: 0.98 }}
+        initial={reduce || veioPreRenderizada() ? false : { opacity: 0, y: 36, scale: 0.98 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.9, ease: EASE, delay: 0.3 }}
         className="w-full lg:w-auto"

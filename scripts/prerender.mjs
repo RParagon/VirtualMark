@@ -172,7 +172,23 @@ async function prerender() {
           }
         }
 
-        const html = await page.content()
+        // Percorre a página para disparar as entradas "ao aparecer na tela" (contadores,
+        // blocos com fade): assim o HTML salvo traz os números finais e nada invisível.
+        await page.evaluate(async () => {
+          const passo = Math.max(300, window.innerHeight * 0.6)
+          for (let y = 0; y < document.body.scrollHeight; y += passo) {
+            window.scrollTo({ top: y, behavior: 'instant' })
+            await new Promise((r) => setTimeout(r, 90))
+          }
+          window.scrollTo({ top: 0, behavior: 'instant' })
+        })
+        await new Promise((r) => setTimeout(r, 1900))
+
+        let html = await page.content()
+        // A meta description padrão do index.html só vale se a página não definiu a sua.
+        if (/<meta name="description"[^>]*data-react-helmet/.test(html)) {
+          html = html.replace(/<meta name="description"(?![^>]*data-react-helmet)[^>]*>/, '')
+        }
         const outFile = outFileFor(route)
         await mkdir(path.dirname(outFile), { recursive: true })
         await writeFile(outFile, '<!DOCTYPE html>\n' + html, 'utf-8')

@@ -26,30 +26,32 @@ const CookieConsent: React.FC = () => {
     <AnimatePresence>
       {showCookieDialog && (
         <motion.div
-          className="fixed inset-x-0 bottom-0 z-50 p-4 md:p-6"
+          className="vm-tema fixed bottom-0 left-0 z-50 w-full p-3 sm:bottom-4 sm:left-4 sm:w-auto sm:p-0"
+          data-tema="auto"
           initial={{ y: 100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 100, opacity: 0 }}
           transition={{ type: 'spring', stiffness: 300, damping: 30 }}
         >
-          <div className="max-w-4xl mx-auto bg-gray-900 rounded-xl shadow-2xl shadow-primary-600/10 border border-gray-800 overflow-hidden">
-            <div className="relative p-6">
+          <div className="max-h-[80vh] overflow-y-auto rounded-[20px] border border-vm-borda bg-vm-sup font-manrope text-vm-texto shadow-2xl shadow-black/20 sm:max-w-[440px]">
+            <div className="relative p-5">
               {/* Close button for settings mode */}
               {showDetails && (
                 <button
                   onClick={() => setShowDetails(false)}
-                  className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
+                  className="absolute right-4 top-4 text-vm-suave transition-colors hover:text-vm-texto"
+                  aria-label="Fechar configurações"
                 >
                   <XMarkIcon className="w-6 h-6" />
                 </button>
               )}
 
               {/* Header */}
-              <div className="flex items-center gap-3 mb-4">
-                <div className="bg-primary-600/20 p-2 rounded-lg">
-                  <ShieldCheckIcon className="w-6 h-6 text-primary-500" />
+              <div className="mb-3 flex items-center gap-3">
+                <div className="rounded-lg bg-vm-verms p-2">
+                  <ShieldCheckIcon className="h-5 w-5 text-vm-vermt" />
                 </div>
-                <h2 className="text-xl font-semibold text-white">
+                <h2 className="text-base font-bold text-vm-texto">
                   {showDetails ? 'Configurações de Cookies' : 'Sua Privacidade'}
                 </h2>
               </div>
@@ -57,27 +59,27 @@ const CookieConsent: React.FC = () => {
               {/* Content */}
               {!showDetails ? (
                 <>
-                  <p className="text-gray-300 mb-6">
+                  <p className="mb-5 text-sm leading-relaxed text-vm-suave">
                     Utilizamos cookies para melhorar sua experiência, personalizar conteúdo e analisar nosso tráfego. 
                     Você pode escolher quais cookies deseja permitir ou aceitar todos para uma experiência otimizada.
                   </p>
-                  <div className="flex flex-wrap gap-3 justify-end">
+                  <div className="flex flex-wrap justify-end gap-2">
                     <button
                       onClick={rejectNonEssentialCookies}
-                      className="button-secondary bg-gray-800 hover:bg-gray-700 text-sm px-4 py-2"
+                      className="rounded-full border border-vm-borda px-4 py-2 text-sm font-semibold text-vm-texto transition-colors hover:bg-vm-sup2"
                     >
                       Apenas Essenciais
                     </button>
                     <button
                       onClick={() => setShowDetails(true)}
-                      className="flex items-center gap-2 button-secondary bg-gray-800 hover:bg-gray-700 text-sm px-4 py-2"
+                      className="flex items-center gap-2 rounded-full border border-vm-borda px-4 py-2 text-sm font-semibold text-vm-texto transition-colors hover:bg-vm-sup2"
                     >
                       <Cog6ToothIcon className="w-4 h-4" />
                       Personalizar
                     </button>
                     <button
                       onClick={acceptAllCookies}
-                      className="button-primary text-sm px-4 py-2"
+                      className="rounded-full bg-vm-verm px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-700"
                     >
                       Aceitar Todos
                     </button>
@@ -85,13 +87,13 @@ const CookieConsent: React.FC = () => {
                 </>
               ) : (
                 <>
-                  <p className="text-gray-300 mb-6">
+                  <p className="mb-5 text-sm leading-relaxed text-vm-suave">
                     Personalize suas preferências de cookies. Cookies essenciais são necessários para o funcionamento do site 
                     e não podem ser desativados.
                   </p>
 
                   {/* Cookie preference toggles */}
-                  <div className="space-y-4 mb-6">
+                  <div className="mb-5 space-y-4">
                     <CookieOption
                       title="Cookies Essenciais"
                       description="Necessários para o funcionamento básico do site. O site não pode funcionar corretamente sem estes cookies."
@@ -122,16 +124,16 @@ const CookieConsent: React.FC = () => {
                     />
                   </div>
 
-                  <div className="flex flex-wrap gap-3 justify-end">
+                  <div className="flex flex-wrap justify-end gap-2">
                     <button
                       onClick={rejectNonEssentialCookies}
-                      className="button-secondary bg-gray-800 hover:bg-gray-700 text-sm px-4 py-2"
+                      className="rounded-full border border-vm-borda px-4 py-2 text-sm font-semibold text-vm-texto transition-colors hover:bg-vm-sup2"
                     >
                       Rejeitar Todos
                     </button>
                     <button
                       onClick={acceptSelectedCookies}
-                      className="button-primary text-sm px-4 py-2"
+                      className="rounded-full bg-vm-verm px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-700"
                     >
                       Salvar Preferências
                     </button>
@@ -164,16 +166,16 @@ const CookieOption: React.FC<CookieOptionProps> = ({
   return (
     <div className="flex items-start justify-between">
       <div className="flex-1 pr-4">
-        <h3 className="text-white font-medium">{title}</h3>
-        <p className="text-gray-400 text-sm mt-1">{description}</p>
+        <h3 className="text-sm font-semibold text-vm-texto">{title}</h3>
+        <p className="mt-1 text-xs text-vm-suave">{description}</p>
       </div>
       <Switch
         checked={enabled}
         onChange={onChange}
         disabled={disabled}
-        className={`${enabled ? 'bg-primary-600' : 'bg-gray-700'}
+        className={`${enabled ? 'bg-vm-verm' : 'bg-vm-borda'}
           ${disabled ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'}
-          relative inline-flex h-6 w-11 shrink-0 rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-opacity-75`}
+          relative inline-flex h-6 w-11 shrink-0 rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-vm-verm focus-visible:ring-opacity-75`}
       >
         <span className="sr-only">{enabled ? 'Enabled' : 'Disabled'}</span>
         <span

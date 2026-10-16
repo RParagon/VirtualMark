@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { usePosts } from '../contexts/PostContext'
-import Seo from './Seo'
+import { usePosts } from '../../contexts/PostContext'
+import Seo from '../../components/Seo'
 import { ArrowLeftIcon, ClockIcon, UserIcon, CalendarIcon, ShareIcon } from '@heroicons/react/24/outline'
 
 const SITE_URL = 'https://virtualmark.com.br'

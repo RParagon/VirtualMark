@@ -7,13 +7,14 @@ export type Som = 'pulo' | 'oh' | 'pisca' | 'fala' | 'festa' | 'voo' | 'sono'
 
 const CHAVE = 'vm-som'
 let ctx: AudioContext | null = null
-let ligado = true
+let ligado = false
 const ouvintes = new Set<(v: boolean) => void>()
 
 try {
-  ligado = localStorage.getItem(CHAVE) !== 'off'
+  // nesta primeira versão o som começa desligado; liga só quem apertar o botão
+  ligado = localStorage.getItem(CHAVE) === 'on'
 } catch {
-  /* sem armazenamento: fica ligado */
+  /* sem armazenamento: fica desligado */
 }
 
 export const somLigado = () => ligado

@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react'
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline'
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
 import { Link } from 'react-router-dom'
-import { usePosts } from '../contexts/PostContext'
-import { supabase } from '../lib/supabase'
+import { usePosts } from '../../contexts/PostContext'
+import { supabase } from '../../lib/supabase'
 
 // Função auxiliar para criar "slug" em links
 const slugify = (text: string) => {

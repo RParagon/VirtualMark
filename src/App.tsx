@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { Suspense, lazy, useEffect } from 'react'
 import { motion, useScroll, useSpring } from 'framer-motion'
 import { BrowserRouter as Router, Route, Routes, Navigate, useParams } from 'react-router-dom'
 import { PostProvider } from './contexts/PostContext'
@@ -8,30 +8,31 @@ import { ServiceProvider } from './contexts/ServiceContext'
 import { AuthProvider } from './contexts/AuthContext'
 import { CookieProvider } from './contexts/CookieContext'
 import ScrollToTop from './components/ScrollToTop'
+import { EsquecerHtmlAoNavegar, HtmlEstatico } from './components/HtmlEstatico'
 
 // Components will be imported here as they are created
 import HomePage from './pages/HomeNova'
-import PortfolioPage from './pages/PortfolioPage'
-import BlogPage from './pages/BlogPage'
-import PrivacyPolicyPage from './pages/PrivacyPolicyPage'
-import AdminPage from './pages/AdminPage'
+const PortfolioPage = lazy(() => import('./old_site/pages/PortfolioPage'))
+const BlogPage = lazy(() => import('./old_site/pages/BlogPage'))
+const PrivacyPolicyPage = lazy(() => import('./old_site/pages/PrivacyPolicyPage'))
+const AdminPage = lazy(() => import('./pages/AdminPage'))
 import CasesNova from './pages/CasesNova'
 import CaseNova from './pages/CaseNova'
 import { casoPorSlug } from './components/nova/casos'
-import CaseDetailPage from './pages/CaseDetailPage'
-import ContactPage from './pages/ContactPage'
+const CaseDetailPage = lazy(() => import('./old_site/pages/CaseDetailPage'))
+const ContactPage = lazy(() => import('./old_site/pages/ContactPage'))
 import CookieConsent from './components/CookieConsent'
-import ImobiliariaPage from './pages/ImobiliariaPage'
-import QuizImobiliariaTreePage from './pages/QuizImobiliariaTreePage'
-import EcommercePage from './pages/EcommercePage'
-import QuizEcommerceTreePage from './pages/QuizEcommerceTreePage'
-import SimuladorPage from './pages/SimuladorPage'
+const ImobiliariaPage = lazy(() => import('./old_site/pages/ImobiliariaPage'))
+const QuizImobiliariaTreePage = lazy(() => import('./old_site/pages/QuizImobiliariaTreePage'))
+const EcommercePage = lazy(() => import('./old_site/pages/EcommercePage'))
+const QuizEcommerceTreePage = lazy(() => import('./old_site/pages/QuizEcommerceTreePage'))
+const SimuladorPage = lazy(() => import('./old_site/pages/SimuladorPage'))
 
 // Service Pages
-import TrafficManagement from './pages/services/TrafficManagement'
-import PerformanceMarketing from './pages/services/PerformanceMarketing'
-import ContentMarketing from './pages/services/ContentMarketing'
-import DigitalConsulting from './pages/services/DigitalConsulting'
+const TrafficManagement = lazy(() => import('./old_site/pages/services/TrafficManagement'))
+const PerformanceMarketing = lazy(() => import('./old_site/pages/services/PerformanceMarketing'))
+const ContentMarketing = lazy(() => import('./old_site/pages/services/ContentMarketing'))
+const DigitalConsulting = lazy(() => import('./old_site/pages/services/DigitalConsulting'))
 
 /** Cases novos (anônimos) primeiro; slugs antigos continuam abrindo a página antiga. */
 const CaseRota = () => {
@@ -70,6 +71,8 @@ function App() {
                       style={{ scaleX }}
                     />
                     <ScrollToTop />
+                    <EsquecerHtmlAoNavegar />
+                    <Suspense fallback={<HtmlEstatico />}>
                     <Routes>
                       <Route path="/blog/*" element={<BlogPage />} />
                       <Route path="/admin" element={<AdminPage />} />
@@ -91,6 +94,7 @@ function App() {
                       <Route path="/" element={<HomePage />} />
                       <Route path="/portfolio" element={<PortfolioPage />} />
                     </Routes>
+                    </Suspense>
                     <CookieConsent />
                   </div>
                 </CookieProvider>

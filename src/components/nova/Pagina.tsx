@@ -4,9 +4,8 @@ import { MarkGuiaProvider } from './MarkGuia'
 import { RodapeVM, WhatsFlutuante } from './Final'
 import { caminho } from './ui'
 
-const CHAVE = 'vm-tema'
+const CHAVE = 'vm-tema-escolha'
 
-/** Casca das páginas novas: tema escuro/claro salvo por visitante, um só Mark, menu, rodapé e WhatsApp. */
 const LINKS_FORA: LinkTopo[] = [
   { rotulo: 'Serviços', href: '/#servicos' },
   { rotulo: 'Cases', href: '/cases' },
@@ -14,29 +13,39 @@ const LINKS_FORA: LinkTopo[] = [
   { rotulo: 'Contato', href: '#contato' },
 ]
 
+/** Casca das páginas novas: tema do sistema (ou o escolhido no botão), um só Mark, menu, rodapé e WhatsApp. */
 export const PaginaVM = ({ children, home = false }: { children: ReactNode; home?: boolean }) => {
-  const [claro, setClaro] = useState(false)
+  // sem escolha manual o tema segue o sistema (claro ou escuro); o botão grava a escolha
+  const [escolha, setEscolha] = useState<'auto' | 'claro' | 'escuro'>('auto')
+  const [sistemaClaro, setSistemaClaro] = useState(false)
 
   useEffect(() => {
     try {
-      if (localStorage.getItem(CHAVE) === 'claro') setClaro(true)
+      const salvo = localStorage.getItem(CHAVE)
+      if (salvo === 'claro' || salvo === 'escuro') setEscolha(salvo)
     } catch {
-      /* sem armazenamento: fica no escuro */
+      /* sem armazenamento: segue o sistema */
     }
+    const mq = window.matchMedia('(prefers-color-scheme: light)')
+    const aoMudar = () => setSistemaClaro(mq.matches)
+    aoMudar()
+    mq.addEventListener('change', aoMudar)
+    return () => mq.removeEventListener('change', aoMudar)
   }, [])
 
-  const alternarTema = () =>
-    setClaro((c) => {
-      try {
-        localStorage.setItem(CHAVE, c ? 'escuro' : 'claro')
-      } catch {
-        /* ignora */
-      }
-      return !c
-    })
+  const claro = escolha === 'auto' ? sistemaClaro : escolha === 'claro'
+  const alternarTema = () => {
+    const nova = claro ? 'escuro' : 'claro'
+    setEscolha(nova)
+    try {
+      localStorage.setItem(CHAVE, nova)
+    } catch {
+      /* ignora */
+    }
+  }
 
   return (
-    <div className="vm-tema min-h-screen bg-vm-fundo font-manrope text-vm-texto antialiased transition-colors duration-500" data-tema={claro ? 'claro' : 'escuro'}>
+    <div className="vm-tema min-h-screen bg-vm-fundo font-manrope text-vm-texto antialiased transition-colors duration-500" data-tema={escolha}>
       <a href="#conteudo" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-full focus:bg-vm-verm focus:px-4 focus:py-2 focus:text-white">
         Pular para o conteúdo
       </a>

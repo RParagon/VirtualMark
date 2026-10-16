@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import Seo from '../components/Seo'
+import Seo from '../../components/Seo'
 import Footer from '../components/home/HomeFooter'
 import HomeNav from '../components/home/HomeNav'
 import PipelineCanvas from '../components/home/PipelineCanvas'

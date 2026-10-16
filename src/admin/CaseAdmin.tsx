@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
 import { PlusIcon, PencilIcon, TrashIcon, XMarkIcon } from '@heroicons/react/24/outline'
-import { useCases } from '../../contexts/CaseContext'
-import { Editor } from '../../lib/tinymce'
-import { supabase } from '../../lib/supabase'
-import { defaultEditorConfig } from '../../lib/tinymce'
+import { useCases } from '../contexts/CaseContext'
+import { Editor } from '../lib/tinymce'
+import { supabase } from '../lib/supabase'
+import { defaultEditorConfig } from '../lib/tinymce'
 
 interface CaseData {
   id: string

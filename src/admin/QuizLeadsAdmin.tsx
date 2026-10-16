@@ -1,6 +1,6 @@
 import { useState, useEffect, Fragment } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { supabase } from '../../lib/supabase'
+import { supabase } from '../lib/supabase'
 import {
   ArrowDownTrayIcon,
   MagnifyingGlassIcon,

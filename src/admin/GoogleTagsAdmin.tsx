@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { supabase } from '../../lib/supabase'
-import { GoogleTag, GoogleTagFormData } from '../../types/GoogleTags'
+import { supabase } from '../lib/supabase'
+import { GoogleTag, GoogleTagFormData } from '../types/GoogleTags'
 import { PencilIcon, TrashIcon, XMarkIcon, InformationCircleIcon } from '@heroicons/react/24/outline'
 
 const commonElements = [

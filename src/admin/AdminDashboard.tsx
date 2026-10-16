@@ -5,8 +5,8 @@ import BlogAdmin from './BlogAdmin'
 import CaseAdmin from './CaseAdmin'
 import LeadsManager from './LeadsManager'
 import GoogleTagsAdmin from './GoogleTagsAdmin'
-import { useAuth } from '../../contexts/AuthContext'
-import { supabase } from '../../lib/supabase'
+import { useAuth } from '../contexts/AuthContext'
+import { supabase } from '../lib/supabase'
 import {
   ChartBarIcon,
   DocumentTextIcon,

@@ -194,7 +194,7 @@ export const CASOS: Caso[] = [
     dupla: [['Site', 'redesenhado'], ['GCLID', 'já medindo']],
     reacao: 'piscando',
     titulo: 'Marca mais elegante, site novo e vídeos de produto.',
-    realce: 'site novo',
+    realce: 'Marca mais elegante, site novo',
     abertura: 'Uma ótica queria que o digital tivesse o mesmo cuidado da loja. Redesenhamos a marca e o site, gravamos vídeos de produto e deixamos o rastreio pronto antes do primeiro anúncio.',
     numeros: [['Marca', 'redesenhada'], ['Site', 'novo, feito para anúncio'], ['Vídeos', 'de produto'], ['GCLID', 'já medindo']],
     fonte: 'Projeto em andamento. Os números de anúncio entram aqui quando o primeiro período fechar.',

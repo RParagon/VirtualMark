@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom'
 import { useEffect } from 'react'
 import Navbar from '../../components/Navbar'
 import Footer from '../../components/Footer'
-import Seo from '../../components/Seo'
-import { useService } from '../../contexts/ServiceContext'
-import { useContact } from '../../contexts/ContactContext'
+import Seo from '../../../components/Seo'
+import { useService } from '../../../contexts/ServiceContext'
+import { useContact } from '../../../contexts/ContactContext'
 import {
   ChartBarIcon,
   RocketLaunchIcon,

@@ -2,7 +2,7 @@ import { motion, Variants } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 import { CheckCircleIcon } from '@heroicons/react/24/solid'
 import { useState } from 'react'
-import { useContact } from '../contexts/ContactContext'
+import { useContact } from '../../contexts/ContactContext'
 
 const Qualification = () => {
   const [ref, inView] = useInView({

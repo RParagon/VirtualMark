@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import Seo from '../components/Seo'
+import Seo from '../../components/Seo'
 import SimuladorVM from '../components/SimuladorVM'
 
 const WPP_NUMBER = '5511992794634'

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { getAttribution } from '../lib/quizTracking'
-import { insertLeadWithFallback } from '../lib/leadCapture'
+import { getAttribution } from '../../lib/quizTracking'
+import { insertLeadWithFallback } from '../../lib/leadCapture'
 import {
   UserIcon,
   PhoneIcon,
