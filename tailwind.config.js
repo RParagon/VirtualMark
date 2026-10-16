@@ -6,6 +6,11 @@ export default {
   ],
   theme: {
     extend: {
+      screens: {
+        // desktop com pouca altura (notebooks até 960px de altura): aperta espaçamentos para cada seção caber na tela
+        baixo: { raw: '(min-width: 1024px) and (max-height: 960px)' },
+        curto: { raw: '(min-width: 1024px) and (max-height: 800px)' },
+      },
       fontFamily: {
         display: ['"Bricolage Grotesque"', 'Inter', 'sans-serif'],
         manrope: ['Manrope', 'Inter', 'sans-serif'],

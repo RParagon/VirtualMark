@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
+import { alternarSom, aoMudarSom, somLigado } from './som'
 import { Botao, EASE, LogoVM } from './ui'
 
 const LINKS = [
@@ -24,6 +25,11 @@ const IconeTema = ({ claro }: { claro: boolean }) =>
 export const Topo = ({ claro, alternarTema }: { claro: boolean; alternarTema: () => void }) => {
   const [rolou, setRolou] = useState(false)
   const [aberto, setAberto] = useState(false)
+  const [som, setSom] = useState(true)
+  useEffect(() => {
+    setSom(somLigado())
+    return aoMudarSom(setSom)
+  }, [])
 
   useEffect(() => {
     const onScroll = () => setRolou(window.scrollY > 8)
@@ -40,6 +46,21 @@ export const Topo = ({ claro, alternarTema }: { claro: boolean; alternarTema: ()
       aria-label={claro ? 'Usar tema escuro' : 'Usar tema claro'}
     >
       <IconeTema claro={claro} />
+    </button>
+  )
+
+  const botaoSom = (
+    <button
+      type="button"
+      onClick={alternarSom}
+      className="grid h-10 w-10 place-items-center rounded-full border border-vm-borda text-vm-suave transition-colors hover:text-vm-texto"
+      aria-label={som ? 'Desligar sons' : 'Ligar sons'}
+      aria-pressed={som}
+    >
+      <svg viewBox="0 0 24 24" className="h-[18px] w-[18px]" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <path d="M4 10v4h4l5 4V6L8 10H4z" />
+        {som ? <path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12" /> : <path d="M17 9l5 6M22 9l-5 6" />}
+      </svg>
     </button>
   )
 
@@ -66,10 +87,12 @@ export const Topo = ({ claro, alternarTema }: { claro: boolean; alternarTema: ()
           <a href="tel:+5511992794634" className="font-manrope text-sm font-medium text-vm-suave transition-colors hover:text-vm-texto">
             (11) 99279-4634
           </a>
+          {botaoSom}
           {botaoTema}
           <Botao href="#contato" className="!py-3.5">Fale com a gente</Botao>
         </div>
         <div className="flex items-center gap-2 lg:hidden">
+          {botaoSom}
           {botaoTema}
           <button
             type="button"

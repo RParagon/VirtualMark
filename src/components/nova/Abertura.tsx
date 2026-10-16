@@ -1,7 +1,9 @@
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { useEffect, useRef, useState } from 'react'
 import type { MarkEstado } from './mark'
-import { Botao, EASE, Etiqueta, Mark, Mono, Sobrelinha, waLink } from './ui'
+import { Ancora, useMarkGuia } from './MarkGuia'
+import { tocar } from './som'
+import { Botao, EASE, Etiqueta, Mono, Sobrelinha, waLink } from './ui'
 
 type Opcao = { rotulo: string; estado: MarkEstado; fala: string; acao: string; href: string }
 
@@ -47,20 +49,23 @@ const CartaoMark = () => {
   const [pensando, setPensando] = useState(false)
   const timer = useRef<number>()
   const reduce = useReducedMotion()
+  const { definirBase } = useMarkGuia()
 
   useEffect(() => () => window.clearTimeout(timer.current), [])
 
+  const estado: MarkEstado = pensando ? 'pensando' : escolha ? escolha.estado : 'olhando'
+  useEffect(() => definirBase('abertura', estado), [estado, definirBase])
+
   const escolher = (o: Opcao) => {
     window.clearTimeout(timer.current)
+    tocar('escolha')
     setEscolha(o)
     setPensando(true)
     timer.current = window.setTimeout(() => setPensando(false), reduce ? 0 : 900)
   }
 
-  const estado: MarkEstado = pensando ? 'pensando' : escolha ? escolha.estado : 'olhando'
-
   return (
-    <div className="relative w-full rounded-[32px] border border-vm-borda bg-vm-sup p-6 sm:p-8 lg:w-[520px] lg:shrink-0">
+    <div className="relative w-full rounded-[32px] border border-vm-borda bg-vm-sup p-6 sm:p-8 baixo:p-6 lg:w-[520px] lg:shrink-0">
       <div className="flex items-center justify-between">
         <span className="flex items-center gap-2">
           <span className="relative flex h-2 w-2">
@@ -72,7 +77,7 @@ const CartaoMark = () => {
         <Mono className="!text-xs">diagnóstico grátis</Mono>
       </div>
 
-      <div className="mt-5 min-h-[132px] rounded-[20px] rounded-tl-md bg-vm-sup2 px-5 py-[18px]" aria-live="polite">
+      <div className="mt-5 min-h-[132px] baixo:min-h-[112px] rounded-[20px] rounded-tl-md bg-vm-sup2 px-5 py-[18px]" aria-live="polite">
         <AnimatePresence mode="wait" initial={false}>
           {pensando ? (
             <motion.div key="digitando" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex h-[96px] items-center gap-1.5" aria-label="Mark está digitando">
@@ -106,17 +111,17 @@ const CartaoMark = () => {
         ))}
       </div>
 
-      <div className="relative mt-5 h-[230px] sm:h-[250px]">
+      <div className="relative mt-5 h-[230px] sm:h-[250px] baixo:h-[190px]">
         <div className="pointer-events-none absolute left-1/2 top-0 h-[300px] w-[300px] -translate-x-1/2 rounded-full" style={{ background: 'radial-gradient(closest-side, rgba(220,38,38,0.28), rgba(220,38,38,0))' }} aria-hidden />
         <div className="absolute left-1/2 top-8 -translate-x-1/2 sm:top-2">
-          <Mark estado={estado} size={220} className="h-[170px] w-[170px] sm:h-[220px] sm:w-[220px]" label="Mark, o assistente da Virtual Mark" />
+          <Ancora id="abertura" estado={estado} celular className="w-[170px] sm:w-[220px] baixo:w-[170px]" />
         </div>
-        <div className="absolute -left-1 top-0 origin-top-left -rotate-3 scale-[0.85] sm:left-0 sm:top-10 sm:scale-100 animate-[vmflutua_6s_ease-in-out_infinite] rounded-2xl border border-vm-borda bg-vm-fundo px-3.5 py-3 shadow-xl shadow-black/20 motion-reduce:animate-none">
+        <div className="absolute -left-1 top-0 origin-top-left -rotate-3 scale-[0.85] sm:left-0 sm:top-10 sm:scale-100 baixo:top-2 animate-[vmflutua_6s_ease-in-out_infinite] rounded-2xl border border-vm-borda bg-vm-fundo px-3.5 py-3 shadow-xl shadow-black/20 motion-reduce:animate-none">
           <Mono className="!text-[10px]">Retorno do mês</Mono>
           <p className="font-manrope text-2xl font-bold tracking-tight text-vm-verde">23,7x</p>
           <p className="font-manrope text-[11px] text-vm-suave">loja de lingerie · set</p>
         </div>
-        <div className="absolute -right-1 bottom-0 origin-bottom-right rotate-2 scale-[0.85] sm:bottom-6 sm:right-0 sm:scale-100 animate-[vmflutua_7s_ease-in-out_1.5s_infinite] rounded-2xl border border-vm-borda bg-vm-fundo px-3.5 py-3 shadow-xl shadow-black/20 motion-reduce:animate-none">
+        <div className="absolute -right-1 bottom-0 origin-bottom-right rotate-2 scale-[0.85] sm:bottom-6 sm:right-0 sm:scale-100 baixo:bottom-0 animate-[vmflutua_7s_ease-in-out_1.5s_infinite] rounded-2xl border border-vm-borda bg-vm-fundo px-3.5 py-3 shadow-xl shadow-black/20 motion-reduce:animate-none">
           <Mono className="!text-[10px]">Custo por venda</Mono>
           <p className="font-manrope text-2xl font-bold tracking-tight text-vm-texto">R$ 11,31</p>
           <p className="font-manrope text-[11px] text-vm-suave">loja de games · 12 meses</p>
@@ -135,12 +140,12 @@ export const Abertura = () => {
   })
 
   return (
-    <section className="mx-auto flex max-w-[90rem] flex-col items-center gap-14 px-5 pb-20 pt-12 sm:px-8 lg:flex-row lg:gap-16 lg:px-20 lg:pb-24 lg:pt-[88px]">
+    <section className="mx-auto flex max-w-[90rem] flex-col items-center gap-14 px-5 pb-20 pt-12 sm:px-8 lg:min-h-[calc(100svh-93px)] lg:flex-row lg:gap-16 lg:px-20 lg:py-[clamp(32px,6vh,88px)]">
       <div className="w-full min-w-0 flex-1">
         <motion.div {...item(0)}>
           <Sobrelinha>Tráfego pago · Criativos · Site</Sobrelinha>
         </motion.div>
-        <motion.h1 {...item(1)} className="mt-7 font-manrope text-[clamp(2.9rem,6.4vw,5.25rem)] font-extrabold leading-[0.98] tracking-[-0.035em] text-vm-texto" style={{ textWrap: 'balance' }}>
+        <motion.h1 {...item(1)} className="mt-7 font-manrope text-[clamp(2.9rem,min(6.4vw,10vh),5.25rem)] font-extrabold leading-[0.98] tracking-[-0.035em] text-vm-texto" style={{ textWrap: 'balance' }}>
           O X da questão é <span className="text-vm-vermt">vender mais.</span>
         </motion.h1>
         <motion.p {...item(2)} className="mt-7 max-w-[34rem] font-manrope text-lg leading-relaxed text-vm-suave sm:text-xl">

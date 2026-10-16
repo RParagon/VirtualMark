@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react'
 import Seo from '../components/Seo'
 import { Topo } from '../components/nova/Topo'
 import { Abertura } from '../components/nova/Abertura'
-import { Cases, Numeros, Pista, Segmentos, Servicos } from '../components/nova/Secoes'
+import { Cases, Pista, Prova, Servicos } from '../components/nova/Secoes'
+import { MarkGuiaProvider } from '../components/nova/MarkGuia'
 import { Chamada, Quiz, RodapeVM, WhatsFlutuante } from '../components/nova/Final'
 
 const CHAVE = 'vm-tema'
@@ -39,11 +40,11 @@ const HomeNova = () => {
       <a href="#conteudo" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-full focus:bg-vm-verm focus:px-4 focus:py-2 focus:text-white">
         Pular para o conteúdo
       </a>
+      <MarkGuiaProvider>
       <Topo claro={claro} alternarTema={alternarTema} />
       <main id="conteudo">
         <Abertura />
-        <Segmentos />
-        <Numeros />
+        <Prova />
         <Servicos />
         <Pista />
         <Cases />
@@ -52,6 +53,7 @@ const HomeNova = () => {
       </main>
       <RodapeVM />
       <WhatsFlutuante />
+      </MarkGuiaProvider>
     </div>
   )
 }

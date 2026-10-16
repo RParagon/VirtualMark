@@ -1,7 +1,9 @@
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { useEffect, useState, type FormEvent } from 'react'
 import { getAttribution } from '../../lib/quizTracking'
-import { Botao, EASE, LogoVM, Mark, Mono, Sobrelinha, Surge, waLink } from './ui'
+import { FaWhatsapp } from 'react-icons/fa'
+import { Ancora, useMarkGuia } from './MarkGuia'
+import { Botao, EASE, LogoVM, Mono, Sobrelinha, Surge, waLink } from './ui'
 
 const evento = (payload: Record<string, unknown>) => {
   if (typeof window === 'undefined') return
@@ -9,7 +11,8 @@ const evento = (payload: Record<string, unknown>) => {
   window.dataLayer.push(payload)
 }
 
-const caixa = 'mx-auto max-w-[90rem] px-5 sm:px-8 lg:px-20'
+const caixa = 'mx-auto w-full max-w-[90rem] px-5 sm:px-8 lg:px-20'
+const tela = 'lg:flex lg:min-h-[calc(100svh-93px)] lg:flex-col lg:justify-center lg:py-[clamp(24px,5vh,112px)]'
 
 /* ───────── Quiz de 3 perguntas com o Mark ───────── */
 const PERGUNTAS = [
@@ -28,7 +31,9 @@ const COMECO: Record<string, string> = {
 export const Quiz = () => {
   const [passo, setPasso] = useState(0)
   const [resp, setResp] = useState<string[]>([])
+  const { definirBase, comemorar } = useMarkGuia()
   const fim = passo >= PERGUNTAS.length
+  useEffect(() => definirBase('quiz', fim ? 'pronto' : passo === 0 ? 'olhando' : 'pensando'), [fim, passo, definirBase])
   const q = PERGUNTAS[Math.min(passo, PERGUNTAS.length - 1)]
 
   const responder = (o: string) => {
@@ -37,7 +42,10 @@ export const Quiz = () => {
     evento({ event: 'home_quiz_answered', question_id: q.id, answer: o })
     window.setTimeout(() => {
       setPasso((p) => p + 1)
-      if (passo + 1 >= PERGUNTAS.length) evento({ event: 'home_quiz_completed', negocio: nova[0] })
+      if (passo + 1 >= PERGUNTAS.length) {
+        evento({ event: 'home_quiz_completed', negocio: nova[0] })
+        comemorar()
+      }
     }, 260)
   }
 
@@ -45,7 +53,7 @@ export const Quiz = () => {
   const msg = `Oi! Fiz o diagnóstico no site da Virtual Mark.\nNegócio: ${resp[0]}\nInvestimento em anúncio: ${resp[1]}\nO que incomoda: ${resp[2]}`
 
   return (
-    <section id="diagnostico" className="scroll-mt-24 bg-vm-sup py-24 lg:py-[120px]">
+    <section id="diagnostico" className={`scroll-mt-24 bg-vm-sup py-24 ${tela}`}>
       <div className={`${caixa} flex flex-col items-center gap-14 lg:flex-row lg:gap-20`}>
         <Surge className="w-full flex-1">
           <Sobrelinha>Diagnóstico em 3 perguntas</Sobrelinha>
@@ -55,8 +63,8 @@ export const Quiz = () => {
           <p className="mt-6 max-w-[36rem] font-manrope text-lg leading-relaxed text-vm-suave">
             O quiz muda conforme o seu tipo de negócio. No fim, você recebe o plano por WhatsApp e marca 30 minutos com a equipe.
           </p>
-          <div className="relative mt-6 flex h-[200px] items-center">
-            <Mark estado={fim ? 'comemorando' : passo === 0 ? 'olhando' : 'pensando'} size={200} className="-ml-5" />
+          <div className="relative mt-6 hidden h-[200px] items-center lg:flex baixo:h-[150px]">
+            <Ancora id="quiz" estado="olhando" className="-ml-5 w-[200px] baixo:w-[150px]" />
             <AnimatePresence mode="wait">
               <motion.span
                 key={fim ? 'fim' : passo}
@@ -155,6 +163,8 @@ export const Chamada = () => {
   const [enviando, setEnviando] = useState(false)
   const [enviado, setEnviado] = useState(false)
   const reduce = useReducedMotion()
+  const { definirBase, comemorar } = useMarkGuia()
+  useEffect(() => definirBase('contato', enviado ? 'pronto' : 'esperando'), [enviado, definirBase])
 
   const enviar = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -175,11 +185,12 @@ export const Chamada = () => {
     evento({ event: 'home_lead_submitted', verba })
     setEnviando(false)
     setEnviado(true)
+    comemorar()
     window.open(waLink(`Oi! Sou ${nome}, da ${empresa}. Quero minha avaliação gratuita.\nInvestimento em anúncio: ${verba}`), '_blank', 'noopener')
   }
 
   return (
-    <section id="contato" className="relative scroll-mt-24 overflow-hidden py-24 lg:py-[120px]">
+    <section id="contato" className={`relative scroll-mt-24 overflow-hidden py-24 ${tela}`}>
       <div className="pointer-events-none absolute inset-0 -z-0" style={{ background: 'radial-gradient(50% 60% at 15% 100%, rgba(220,38,38,0.16), transparent 70%)' }} aria-hidden />
       <div className={`${caixa} relative flex flex-col items-center gap-14 lg:flex-row lg:gap-20`}>
         <Surge className="w-full flex-1">
@@ -195,19 +206,20 @@ export const Chamada = () => {
               </li>
             ))}
           </ul>
+          <Ancora id="contato" estado="esperando" className="mt-6 hidden w-[150px] lg:block baixo:mt-2 baixo:w-[110px]" />
         </Surge>
         <Surge delay={0.1} className="w-full lg:w-[560px] lg:shrink-0">
-          <div className="rounded-[28px] border border-vm-borda bg-vm-sup p-6 sm:p-9">
+          <div className="rounded-[28px] border border-vm-borda bg-vm-sup p-6 sm:p-9 baixo:p-7">
             <AnimatePresence mode="wait" initial={false}>
               {enviado ? (
-                <motion.div key="ok" initial={reduce ? false : { opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.45, ease: EASE }} className="flex flex-col items-center py-6 text-center">
-                  <Mark estado="comemorando" size={160} />
-                  <p className="mt-2 font-manrope text-2xl font-bold tracking-[-0.01em] text-vm-texto">Recebemos! O WhatsApp abriu com a sua mensagem.</p>
+                <motion.div key="ok" initial={reduce ? false : { opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.45, ease: EASE }} className="flex flex-col items-center py-10 text-center">
+                  <span className="grid h-14 w-14 place-items-center rounded-full bg-vm-verms text-vm-vermt"><Check /></span>
+                  <p className="mt-4 font-manrope text-2xl font-bold tracking-[-0.01em] text-vm-texto">Recebemos! O WhatsApp abriu com a sua mensagem.</p>
                   <p className="mt-2 max-w-[36ch] font-manrope text-[15px] text-vm-suave">Se ele não abriu, é só tocar no botão abaixo. A equipe responde em horário comercial.</p>
                   <Botao href={waLink('Oi! Acabei de pedir a avaliação gratuita pelo site.')} className="mt-6">Abrir o WhatsApp</Botao>
                 </motion.div>
               ) : (
-                <motion.form key="form" onSubmit={enviar} exit={{ opacity: 0 }} className="flex flex-col gap-4">
+                <motion.form key="form" onSubmit={enviar} exit={{ opacity: 0 }} className="flex flex-col gap-4 baixo:gap-3">
                   <label className="flex flex-col gap-2">
                     <span className="font-manrope text-[13px] font-semibold text-vm-suave">Nome</span>
                     <input name="nome" required autoComplete="name" placeholder="Como podemos te chamar?" className={campo} />
@@ -232,10 +244,6 @@ export const Chamada = () => {
                   <Botao type="submit" className="mt-2 w-full" disabled={enviando}>
                     {enviando ? 'Enviando…' : 'Quero minha avaliação gratuita'}
                   </Botao>
-                  <div className="flex items-center gap-2.5">
-                    <Mark estado="parado" size={44} />
-                    <p className="font-manrope text-[13px] text-vm-apagado">Depois de enviar, o Mark comemora e o WhatsApp abre com a sua mensagem pronta.</p>
-                  </div>
                 </motion.form>
               )}
             </AnimatePresence>
@@ -305,11 +313,9 @@ export const WhatsFlutuante = () => {
           transition={{ duration: 0.4, ease: EASE }}
           className="fixed bottom-5 right-5 z-50 flex items-center gap-2.5 rounded-full bg-vm-verm py-3.5 pl-4 pr-5 font-manrope text-sm font-semibold text-white shadow-[0_8px_24px_rgba(220,38,38,0.35)] transition-transform hover:-translate-y-0.5 sm:bottom-8 sm:right-8"
           aria-label="Fale no WhatsApp"
+          data-mark-whats
         >
-          <svg viewBox="0 0 24 24" className="h-[22px] w-[22px]" fill="none" aria-hidden>
-            <path d="M4 20l1.3-3.9A8 8 0 1 1 8 19l-4 1z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
-            <path d="M9 9.5c.3 1.6 1.9 3.3 3.6 3.9l1-.9 1.6.8c-.2 1-1 1.6-2 1.5-2.6-.3-4.9-2.6-5.2-5.2-.1-1 .5-1.8 1.5-2l.8 1.6-.3.3z" fill="currentColor" />
-          </svg>
+          <FaWhatsapp className="h-6 w-6" aria-hidden />
           <span className="hidden sm:inline">Fale no WhatsApp</span>
         </motion.a>
       )}

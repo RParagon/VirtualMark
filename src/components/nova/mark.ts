@@ -16,8 +16,11 @@ export type MarkEstado =
   | 'comemorando'
   | 'analisando'
   | 'atendendo'
+  | 'dormindo'
+  | 'gerindo'
 
-export type MarkOpts = { shadow?: boolean; color?: string }
+/** look: para onde os olhos apontam (-1 a 1), ex.: seguindo o cursor. */
+export type MarkOpts = { shadow?: boolean; color?: string; look?: [number, number] }
 
 const RED = '#dc2626'
 const INK = '#0a0a0a'
@@ -148,6 +151,32 @@ function pose(t: number, estado: MarkEstado): Pose {
     s.h = 0.72
     s.rot = k * 3
   }
+  if (estado === 'dormindo') {
+    const b = Math.sin((t * TAU) / 3.6)
+    s.sx += b * 0.03
+    s.sy -= b * 0.03
+    s.h = 0.1
+    s.look = [0, 0.4]
+    s.extra = [0, 1, 2]
+      .map((i) => {
+        const f = (t / 3 + i / 3) % 1
+        return `<text x="${(70 + f * 60).toFixed(1)}" y="${(-80 - f * 80).toFixed(1)}" font-family="Manrope,Inter,sans-serif" font-weight="800" font-size="${(22 + f * 18).toFixed(1)}" fill="${RED}" opacity="${Math.sin(f * Math.PI).toFixed(2)}">z</text>`
+      })
+      .join('')
+  }
+  if (estado === 'gerindo') {
+    // "fingindo" que gere anúncios: olha para um painelzinho com barras que sobem
+    s.look = [0.55, 0.55]
+    s.h = 0.7 * blinkAt(t, 3.1, 0.4)
+    s.rot = Math.sin((t * TAU) / 3) * 2
+    const bars = [0, 1, 2, 3]
+      .map((i) => {
+        const hh = 14 + 26 * (0.5 + 0.5 * Math.sin(t * 2.2 + i * 1.3)) * (0.6 + i * 0.15)
+        return `<rect x="${78 + i * 17}" y="${(96 - hh).toFixed(1)}" width="11" height="${hh.toFixed(1)}" rx="3" fill="${i === 3 ? RED : '#a3a3a3'}"/>`
+      })
+      .join('')
+    s.extra = `<g><rect x="64" y="34" width="86" height="72" rx="12" fill="${INK}" stroke="#3a3a3a" stroke-width="3"/>${bars}<circle cx="${(84 + 50 * (0.5 + 0.5 * Math.sin(t * 1.4))).toFixed(1)}" cy="46" r="4" fill="#22c55e"/></g>`
+  }
   if (estado === 'comemorando') {
     s.arc = true
     s.rot = Math.sin(t * TAU * 2) * 9
@@ -168,11 +197,15 @@ const ACC: Partial<Record<MarkEstado, string>> = {
   atendendo: `<g><path d="M -86 -10 Q -84 -112 0 -112 Q 84 -112 86 -10" fill="none" stroke="${INK}" stroke-width="10" stroke-linecap="round"/><rect x="-100" y="-30" width="22" height="44" rx="10" fill="${INK}"/><rect x="78" y="-30" width="22" height="44" rx="10" fill="${INK}"/><path d="M -90 14 Q -80 54 -36 58" fill="none" stroke="${INK}" stroke-width="5" stroke-linecap="round"/><circle cx="-34" cy="58" r="7" fill="${INK}"/></g>`,
 }
 
+const OLHAR_LIVRE = new Set<MarkEstado>(['parado', 'olhando', 'surpreso', 'falando', 'atendendo', 'analisando', 'esperando'])
+
 /** Conteúdo interno do SVG (viewBox -170 -170 340 340) para o quadro t. */
 export function markInner(tempo: number, estado: MarkEstado = 'parado', opts: MarkOpts = {}) {
   // o rAF pode entregar um instante anterior ao início; tempo negativo quebra a pose
   const t = Math.max(0, tempo)
   const s = pose(t, estado)
+  // olhos que seguem o cursor só nos estados de olhar livre
+  if (opts.look && OLHAR_LIVRE.has(estado)) s.look = opts.look
   const ex = 23
   const ey = -4
   const lx = s.look[0] * 9
