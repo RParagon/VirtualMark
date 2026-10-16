@@ -10,7 +10,7 @@ import { CookieProvider } from './contexts/CookieContext'
 import ScrollToTop from './components/ScrollToTop'
 
 // Components will be imported here as they are created
-import HomePage from './pages/HomeLegacy'
+import HomePage from './pages/HomeNova'
 import PortfolioPage from './pages/PortfolioPage'
 import BlogPage from './pages/BlogPage'
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage'

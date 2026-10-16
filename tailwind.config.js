@@ -8,9 +8,25 @@ export default {
     extend: {
       fontFamily: {
         display: ['"Bricolage Grotesque"', 'Inter', 'sans-serif'],
+        manrope: ['Manrope', 'Inter', 'sans-serif'],
+        vmmono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
       },
       colors: {
         background: '#0a0a0a',
+        // Nova home: tokens do Figma (VM / Cor), trocam com data-tema="claro"
+        vm: {
+          fundo: 'rgb(var(--vm-fundo) / <alpha-value>)',
+          sup: 'rgb(var(--vm-sup) / <alpha-value>)',
+          sup2: 'rgb(var(--vm-sup2) / <alpha-value>)',
+          borda: 'rgb(var(--vm-borda) / <alpha-value>)',
+          texto: 'rgb(var(--vm-texto) / <alpha-value>)',
+          suave: 'rgb(var(--vm-suave) / <alpha-value>)',
+          apagado: 'rgb(var(--vm-apagado) / <alpha-value>)',
+          verm: 'rgb(var(--vm-verm) / <alpha-value>)',
+          vermt: 'rgb(var(--vm-vermt) / <alpha-value>)',
+          verms: 'rgb(var(--vm-verms) / <alpha-value>)',
+          verde: 'rgb(var(--vm-verde) / <alpha-value>)',
+        },
         primary: {
           50: '#fef2f2',
           100: '#fee2e2',

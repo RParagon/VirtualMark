@@ -12,6 +12,40 @@
   }
 }
 
+/* Nova home: tokens de cor do Figma (VM / Cor). Escuro é o padrão. */
+.vm-tema {
+  --vm-fundo: 10 10 10;
+  --vm-sup: 20 20 20;
+  --vm-sup2: 28 28 28;
+  --vm-borda: 38 38 38;
+  --vm-texto: 250 250 250;
+  --vm-suave: 163 163 163;
+  --vm-apagado: 107 107 107;
+  --vm-verm: 220 38 38;
+  --vm-vermt: 239 68 68;
+  --vm-verms: 42 17 17;
+  --vm-verde: 34 197 94;
+  color-scheme: dark;
+}
+.vm-tema[data-tema='claro'] {
+  --vm-fundo: 255 255 255;
+  --vm-sup: 245 245 245;
+  --vm-sup2: 235 235 235;
+  --vm-borda: 226 226 226;
+  --vm-texto: 17 17 17;
+  --vm-suave: 82 82 82;
+  --vm-apagado: 138 138 138;
+  --vm-vermt: 220 38 38;
+  --vm-verms: 253 236 236;
+  --vm-verde: 22 163 74;
+  color-scheme: light;
+}
+
+@keyframes vmflutua {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -8px; }
+}
+
 @layer components {
   .gradient-text {
     @apply bg-gradient-to-r from-primary-500 to-primary-700 text-transparent bg-clip-text;
