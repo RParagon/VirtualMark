@@ -1,13 +1,13 @@
 import { motion, useMotionValueEvent, useReducedMotion, useScroll, useSpring, useTransform } from 'framer-motion'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { Ancora, useMarkGuia } from './MarkGuia'
-import { Botao, Contador, EASE, Etiqueta, Mono, Sobrelinha, Surge } from './ui'
+import { Botao, Contador, EASE, Etiqueta, Mono, Sobrelinha, Surge, caminho } from './ui'
 
-const caixa = 'mx-auto w-full max-w-[90rem] px-5 sm:px-8 lg:px-20'
+export const caixa = 'mx-auto w-full max-w-[90rem] px-5 sm:px-8 lg:px-20'
 /** No desktop cada seção ocupa uma tela e centraliza o conteúdo. */
 const tela = 'lg:flex lg:min-h-[calc(100svh-93px)] lg:flex-col lg:justify-center lg:py-[clamp(24px,5vh,112px)]'
 
-const Titulo = ({ children, className = '' }: { children: ReactNode; className?: string }) => (
+export const Titulo = ({ children, className = '' }: { children: ReactNode; className?: string }) => (
   <h2 className={`font-manrope text-[clamp(2.25rem,min(4.4vw,6.4vh),3.5rem)] font-extrabold leading-[1.02] tracking-[-0.03em] text-vm-texto ${className}`} style={{ textWrap: 'balance' }}>
     {children}
   </h2>
@@ -280,7 +280,7 @@ export const Pista = () => {
 }
 
 /* ───────── Cases ───────── */
-const Dupla = ({ a, b }: { a: [string, string]; b: [string, string] }) => (
+export const Dupla = ({ a, b }: { a: [string, string]; b: [string, string] }) => (
   <div className="grid grid-cols-2">
     {[a, b].map(([n, d], i) => (
       <div key={d} className={`border-t border-vm-borda pt-4 curto:pt-2 ${i ? 'border-l pl-5' : ''}`}>
@@ -291,7 +291,7 @@ const Dupla = ({ a, b }: { a: [string, string]; b: [string, string] }) => (
   </div>
 )
 
-const Rodape = ({ tags }: { tags: string[] }) => (
+export const RodapeCartao = ({ tags }: { tags: string[] }) => (
   <div className="flex items-center justify-between gap-3">
     <div className="flex flex-wrap gap-1.5">
       {tags.map((t) => (
@@ -302,7 +302,7 @@ const Rodape = ({ tags }: { tags: string[] }) => (
   </div>
 )
 
-const cartao = 'group relative flex h-full flex-col rounded-[28px] border border-vm-borda bg-vm-sup transition-all duration-500 hover:-translate-y-1.5 hover:border-vm-verm hover:bg-vm-sup2'
+export const cartao = 'group relative flex h-full flex-col rounded-[28px] border border-vm-borda bg-vm-sup transition-all duration-500 hover:-translate-y-1.5 hover:border-vm-verm hover:bg-vm-sup2'
 
 export const Cases = () => {
   const reduce = useReducedMotion()
@@ -329,7 +329,7 @@ export const Cases = () => {
           </div>
           <div className="flex items-end gap-6">
             <Ancora id="cases" estado="olhando" className="hidden w-[110px] lg:block baixo:w-[84px]" />
-            <Botao tipo="contorno" href="/cases">Ver todos os cases</Botao>
+            <Botao tipo="contorno" href={caminho('/cases')}>Ver todos os cases</Botao>
           </div>
         </Surge>
 
@@ -341,7 +341,7 @@ export const Cases = () => {
           aria-label="Cases"
         >
           <Surge className="h-full w-[86%] shrink-0 snap-center md:w-auto">
-            <a href="/cases" data-mark-reacao="pronto" className={`${cartao} gap-5 p-8 baixo:gap-3 baixo:p-6 curto:gap-2.5 curto:py-5`}>
+            <a href={caminho('/cases/loja-de-lingerie')} data-mark-reacao="pronto" className={`${cartao} gap-5 p-8 baixo:gap-3 baixo:p-6 curto:gap-2.5 curto:py-5`}>
               <Mono>Loja online de lingerie</Mono>
               <p className="flex items-baseline font-manrope font-extrabold leading-none tracking-[-0.05em] text-vm-vermt">
                 <span className="text-[96px] baixo:text-[72px] curto:text-[56px]"><Contador para={23.5} casas={1} /></span>
@@ -364,12 +364,12 @@ export const Cases = () => {
                 ))}
               </div>
               <Dupla a={['R$ 20,5 mil', 'investidos']} b={['R$ 482 mil', 'em vendas']} />
-              <Rodape tags={['Google Ads', 'Meta Ads']} />
+              <RodapeCartao tags={['Google Ads', 'Meta Ads']} />
             </a>
           </Surge>
 
           <Surge delay={0.08} className="h-full w-[86%] shrink-0 snap-center md:w-auto">
-            <a href="/cases" data-mark-reacao="surpreso" className={`${cartao} gap-5 p-8 baixo:gap-3 baixo:p-6 curto:gap-2.5 curto:py-5`}>
+            <a href={caminho('/cases/loja-de-games')} data-mark-reacao="surpreso" className={`${cartao} gap-5 p-8 baixo:gap-3 baixo:p-6 curto:gap-2.5 curto:py-5`}>
               <Mono>Loja de games online</Mono>
               <p className="flex items-baseline font-manrope font-extrabold leading-none tracking-[-0.05em] text-vm-texto">
                 <span className="text-[96px] baixo:text-[72px] curto:text-[56px]"><Contador para={3.8} casas={1} /></span>
@@ -397,12 +397,12 @@ export const Cases = () => {
                 </div>
               </div>
               <Dupla a={['34.369', 'vendas']} b={['R$ 1,22 mi', 'em receita']} />
-              <Rodape tags={['Google Ads']} />
+              <RodapeCartao tags={['Google Ads']} />
             </a>
           </Surge>
 
           <Surge delay={0.16} className="h-full w-[86%] shrink-0 snap-center md:col-span-2 md:w-auto xl:col-span-1">
-            <a href="/cases" data-mark-reacao="analisando" className={`${cartao} overflow-hidden`}>
+            <a href={caminho('/cases/energia-solar')} data-mark-reacao="analisando" className={`${cartao} overflow-hidden`}>
               <div className="h-[250px] overflow-hidden baixo:h-[clamp(110px,18vh,170px)]">
                 <img src="/home/cases/energia-solar-obra.webp" alt="Instalação de inversor solar feita pelo cliente" loading="lazy" width={960} height={931} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
               </div>
@@ -414,7 +414,7 @@ export const Cases = () => {
                 <p className="font-manrope text-2xl font-bold leading-tight tracking-[-0.01em] text-vm-texto curto:text-xl">Do zero ao primeiro lead qualificado em dez dias de anúncio.</p>
                 <div className="mt-auto flex flex-col gap-[18px]">
                   <Dupla a={['R$ 76', 'por lead']} b={['3 leads', '1 qualificado']} />
-                  <Rodape tags={['Marca', 'Site', 'Rastreio']} />
+                  <RodapeCartao tags={['Marca', 'Site', 'Rastreio']} />
                 </div>
               </div>
             </a>

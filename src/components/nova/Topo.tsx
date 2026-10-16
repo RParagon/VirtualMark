@@ -1,9 +1,11 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import { alternarSom, aoMudarSom, somLigado } from './som'
-import { Botao, EASE, LogoVM } from './ui'
+import { Botao, EASE, LogoVM, caminho } from './ui'
 
-const LINKS = [
+export type LinkTopo = { rotulo: string; href: string }
+
+const LINKS: LinkTopo[] = [
   { rotulo: 'Serviços', href: '#servicos' },
   { rotulo: 'Cases', href: '#cases' },
   { rotulo: 'Sobre', href: '#como-trabalhamos' },
@@ -22,7 +24,7 @@ const IconeTema = ({ claro }: { claro: boolean }) =>
     </svg>
   )
 
-export const Topo = ({ claro, alternarTema }: { claro: boolean; alternarTema: () => void }) => {
+export const Topo = ({ claro, alternarTema, links = LINKS }: { claro: boolean; alternarTema: () => void; links?: LinkTopo[] }) => {
   const [rolou, setRolou] = useState(false)
   const [aberto, setAberto] = useState(false)
   const [som, setSom] = useState(true)
@@ -71,11 +73,11 @@ export const Topo = ({ claro, alternarTema }: { claro: boolean; alternarTema: ()
       }`}
     >
       <nav className="mx-auto flex max-w-[90rem] items-center justify-between px-5 py-4 sm:px-8 lg:px-20 lg:py-5" aria-label="Principal">
-        <a href="/" className="shrink-0" aria-label="Virtual Mark, início">
+        <a href={caminho('/')} className="shrink-0" aria-label="Virtual Mark, início">
           <LogoVM className="h-7 w-auto lg:h-8" />
         </a>
         <ul className="hidden items-center gap-10 lg:flex">
-          {LINKS.map((l) => (
+          {links.map((l) => (
             <li key={l.href}>
               <a href={l.href} className="relative font-manrope text-[15px] font-medium text-vm-suave transition-colors after:absolute after:-bottom-1.5 after:left-0 after:h-0.5 after:w-full after:origin-left after:scale-x-0 after:rounded-full after:bg-vm-verm after:transition-transform after:duration-300 hover:text-vm-texto hover:after:scale-x-100">
                 {l.rotulo}
@@ -119,7 +121,7 @@ export const Topo = ({ claro, alternarTema }: { claro: boolean; alternarTema: ()
             className="overflow-hidden border-t border-vm-borda lg:hidden"
           >
             <ul className="flex flex-col px-5 py-4 sm:px-8">
-              {LINKS.map((l) => (
+              {links.map((l) => (
                 <li key={l.href}>
                   <a href={l.href} onClick={() => setAberto(false)} className="block py-3 font-manrope text-2xl font-bold tracking-tight text-vm-texto">
                     {l.rotulo}

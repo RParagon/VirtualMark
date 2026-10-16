@@ -4,6 +4,9 @@ import { markInner, type MarkEstado } from './mark'
 
 export const WA_NUMBER = '5511992794634'
 export const waLink = (msg: string) => `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`
+/** Caminho interno. Na prévia (arquivo único) as páginas trocam pelo hash. */
+export const caminho = (p: string) => (typeof window !== 'undefined' && (window as unknown as { __VM_PREVIA__?: boolean }).__VM_PREVIA__ ? `#${p}` : p)
+
 export const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1]
 
 /** Mark v3 animado. Só anima quando está na tela; com "reduzir movimento" fica parado. */

@@ -1,5 +1,5 @@
-import { useReducedMotion } from 'framer-motion'
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, type ReactNode } from 'react'
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { acessorioDo, markInner, type Acessorio, type MarkEstado } from './mark'
 import { tocar, type Som } from './som'
 
@@ -7,8 +7,9 @@ import { tocar, type Som } from './som'
  * Um só Mark na página. Cada seção marca um lugar para ele com <Ancora>; o Mark
  * voa até a âncora mais perto do centro da tela, segue o cursor com os olhos,
  * reage a botões, descansa ou "gere anúncios" quando a pessoa fica parada e
- * comemora quando alguém envia o formulário. No celular ele só aparece nas
- * âncoras marcadas para celular; fora delas fica num cantinho da tela.
+ * comemora quando alguém envia o formulário. Clicar nele traz uma curiosidade.
+ * No celular ele se apresenta nas âncoras marcadas para celular e depois fica
+ * ao lado do botão do WhatsApp, mudando de cara conforme a seção da tela.
  */
 
 type Guia = {
@@ -27,6 +28,20 @@ export const Ancora = ({ id, estado, className = '', celular = false }: { id: st
   <div data-mark-ancora={id} data-estado={estado} data-celular={celular ? '1' : undefined} className={`pointer-events-none aspect-square ${className}`} aria-hidden />
 )
 
+/** O que o Mark conta quando alguém clica nele. Só coisas que estão no site. */
+const FATOS = [
+  'Oi! Eu sou o Mark, o mascote da Virtual Mark. Clica de novo que eu conto mais.',
+  'Uma loja de lingerie teve 23,5x de retorno em anúncio, cinco meses seguidos.',
+  'Foram 34 mil vendas para uma loja de games em 12 meses, com o custo por venda estável.',
+  'Uma clínica recebeu 1.714 contatos de pacientes em 13 meses seguidos.',
+  'Anúncio, site e criativo no mesmo time. Assim ninguém joga a culpa no outro.',
+  'Cada lead leva a origem do anúncio. Você sabe de qual campanha veio cada venda.',
+  'Todo mês você vê o retorno em reais, não em curtidas.',
+  'A avaliação é gratuita: 30 minutos com a equipe olhando a sua conta e o seu site.',
+  'O X da questão é vender mais. É o nosso lema, e o meu também.',
+  'Se eu estiver barulhento demais, é só apertar o botão de som lá em cima.',
+]
+
 const OCIOSO_MS = 9000
 const TRANSICAO_MS = 280
 
@@ -40,7 +55,7 @@ function reacaoDoDestino(alvo: Element): MarkEstado {
   const href = alvo.getAttribute('href') || ''
   const rotulo = `${alvo.getAttribute('aria-label') || ''} ${alvo.textContent || ''}`.toLowerCase()
   if (href.includes('wa.me') || href.startsWith('tel:')) return 'atendendo'
-  if (alvo.getAttribute('type') === 'submit' || href === '#contato' || rotulo.includes('avaliação')) return 'pronto'
+  if (alvo.getAttribute('type') === 'submit' || href.endsWith('#contato') || rotulo.includes('avaliação')) return 'pronto'
   if (href.includes('cases')) return 'surpreso'
   if (href.includes('quiz') || href === '#diagnostico' || rotulo.includes('diagnóstico')) return 'analisando'
   if (href === '#como-trabalhamos') return 'trabalhando'
@@ -67,6 +82,10 @@ export const MarkGuiaProvider = ({ children }: { children: ReactNode }) => {
   const bases = useRef<Record<string, MarkEstado>>({})
   const reacao = useRef<{ estado: MarkEstado; ate: number } | null>(null)
   const whats = useRef<HTMLElement | null>(null)
+  const [fala, setFala] = useState<{ texto: string; lado: 'esq' | 'dir'; acima: boolean } | null>(null)
+  const nFato = useRef(0)
+  const timerFala = useRef<number>()
+  const posRef = useRef({ x: 0, y: 0 })
 
   const definirBase = useCallback((ancora: string, estado: MarkEstado) => {
     bases.current[ancora] = estado
@@ -78,6 +97,14 @@ export const MarkGuiaProvider = ({ children }: { children: ReactNode }) => {
     reacao.current = { estado: 'comemorando', ate: performance.now() + 3600 }
     tocar('festa')
   }, [])
+  const contar = () => {
+    const texto = FATOS[nFato.current++ % FATOS.length]
+    const { x, y } = posRef.current
+    setFala({ texto, lado: x > window.innerWidth / 2 ? 'esq' : 'dir', acima: y > 220 })
+    window.clearTimeout(timerFala.current)
+    timerFala.current = window.setTimeout(() => setFala(null), 5200)
+  }
+  useEffect(() => () => window.clearTimeout(timerFala.current), [])
   const api = useMemo(() => ({ definirBase, reagir, comemorar }), [definirBase, reagir, comemorar])
 
   useEffect(() => {
@@ -114,6 +141,10 @@ export const MarkGuiaProvider = ({ children }: { children: ReactNode }) => {
     let voo: { ancora: Element; x0: number; y0: number; s0: number; x1: number; y1: number; s1: number; inicio: number; dur: number; arco: number; dir: number } | null = null
     let ultimaRolagem = 0
     let visivel = 0
+    // acessório que fica enquanto a pessoa está numa seção (ex.: óculos no diagnóstico)
+    let fixo: { acc: Acessorio; secao: Element } | null = null
+    // no celular o Mark só aparece depois de se apresentar numa âncora de celular
+    let apresentou = false
 
     const atividade = () => (ultimaAtividade = performance.now())
     const rolar = () => {
@@ -129,6 +160,8 @@ export const MarkGuiaProvider = ({ children }: { children: ReactNode }) => {
     const sobre = (e: PointerEvent) => {
       const el = e.target as Element | null
       if (!el || !el.closest) return
+      const f = el.closest('[data-mark-acessorio]') as HTMLElement | null
+      if (f) fixo = { acc: f.dataset.markAcessorio as Acessorio, secao: f.closest('section') || f }
       const w = el.closest('[data-mark-whats]') as HTMLElement | null
       whats.current = w
       if (w) return
@@ -143,6 +176,7 @@ export const MarkGuiaProvider = ({ children }: { children: ReactNode }) => {
       const el = e.target as Element | null
       if (el?.closest?.('[data-mark-whats]')) whats.current = null
       const para = e.relatedTarget as Element | null
+      if (fixo && !(para && fixo.secao.contains(para))) fixo = null
       if (!para?.closest?.('a, button, [role="radio"], select, input')) hover = null
     }
     const clique = (e: PointerEvent) => {
@@ -155,7 +189,12 @@ export const MarkGuiaProvider = ({ children }: { children: ReactNode }) => {
     const navegar = (e: MouseEvent) => {
       const link = (e.target as Element | null)?.closest?.('a[href^="#"]') as HTMLAnchorElement | null
       if (!link || reduce || !mq.matches) return
-      const destino = document.querySelector(link.getAttribute('href') || '')
+      let destino: Element | null = null
+      try {
+        destino = document.querySelector(link.getAttribute('href') || '')
+      } catch {
+        return // "#/rota" da prévia não é um seletor
+      }
       const ancora = destino?.querySelector('[data-mark-ancora]')
       if (!destino || !ancora || ancora === atual) return
       const rd = destino.getBoundingClientRect()
@@ -216,14 +255,26 @@ export const MarkGuiaProvider = ({ children }: { children: ReactNode }) => {
         alvo = { x: r.left - 64, y: r.top + r.height / 2 - 30, s: 110 }
         estadoBase = 'atendendo'
       } else {
+        let secao: Element | null = null
+        let distSecao = Infinity
         let melhor: Element | null = null
         let dist = Infinity
         let distAtual = Infinity
         document.querySelectorAll('[data-mark-ancora]').forEach((a) => {
+          const r0 = a.getBoundingClientRect()
+          if (!desktop && r0.width > 0) {
+            // no celular toda seção conta para a reação, mesmo sem lugar para o Mark
+            const ds = Math.abs(r0.top + r0.height / 2 - vh * 0.5)
+            if (ds < distSecao) {
+              distSecao = ds
+              secao = a
+            }
+          }
           if (!desktop && !(a as HTMLElement).dataset.celular) return
-          const r = a.getBoundingClientRect()
+          const r = r0
           if (r.width === 0) return
           const cy = r.top + r.height / 2
+          if (!desktop && cy > 0 && cy < vh) apresentou = true
           if (!desktop && (cy < 0 || cy > vh)) return
           const d = Math.abs(cy - vh * 0.5)
           if (a === atual) distAtual = d
@@ -234,7 +285,7 @@ export const MarkGuiaProvider = ({ children }: { children: ReactNode }) => {
         })
         // histerese: só troca de âncora quando a nova está bem mais perto
         if (melhor && melhor !== atual && (atual === null || dist < distAtual - 80 || distAtual === Infinity)) {
-          if (atual && pos.pronto && agora - ultimoVoo > 1200) tocar('voo')
+          if (atual && pos.pronto && agora - ultimoVoo > 1200 && desktop) tocar('voo')
           atual = melhor
           preso = false
         }
@@ -244,9 +295,15 @@ export const MarkGuiaProvider = ({ children }: { children: ReactNode }) => {
           alvo = { x: r.left + r.width / 2, y: r.top + r.height / 2, s: r.width }
           const id = (atual as HTMLElement).dataset.markAncora || ''
           estadoBase = bases.current[id] || ((atual as HTMLElement).dataset.estado as MarkEstado) || 'parado'
-        } else if (!desktop) {
-          // celular fora das âncoras: cantinho inferior esquerdo
-          alvo = { x: 16 + 32, y: vh - 16 - 34, s: 64 }
+        } else if (!desktop && apresentou) {
+          // celular fora das âncoras: fica ao lado do botão do WhatsApp, reagindo à seção da tela
+          const bw = document.querySelector('[data-mark-whats]')?.getBoundingClientRect()
+          const dir = bw && bw.width > 0 ? bw.left - 8 : vw - 20 - 56 - 8
+          alvo = { x: dir - 30, y: (bw && bw.width > 0 ? bw.top + bw.height / 2 : vh - 20 - 26) - 4, s: 64 }
+          if (secao) {
+            const id = (secao as HTMLElement).dataset.markAncora || ''
+            estadoBase = bases.current[id] || ((secao as HTMLElement).dataset.estado as MarkEstado) || 'parado'
+          }
         }
       }
 
@@ -256,8 +313,14 @@ export const MarkGuiaProvider = ({ children }: { children: ReactNode }) => {
         ultimaDir = voo.dir
         const p = Math.min(1, (agora - voo.inicio) / voo.dur)
         const e = p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2
-        pos.x = voo.x0 + (voo.x1 - voo.x0) * e
-        pos.y = voo.y0 + (voo.y1 - voo.y0) * e - Math.sin(Math.PI * e) * voo.arco
+        // na segunda metade o destino passa a ser a âncora de verdade (seções fixas mudam no caminho)
+        const ra = voo.ancora.getBoundingClientRect()
+        const b = p < 0.5 ? 0 : Math.min(1, (p - 0.5) / 0.5)
+        const m = b * b * (3 - 2 * b)
+        const x1 = voo.x1 + (ra.left + ra.width / 2 - voo.x1) * m
+        const y1 = voo.y1 + (Math.max(-200, Math.min(vh + 200, ra.top + ra.height / 2)) - voo.y1) * m
+        pos.x = voo.x0 + (x1 - voo.x0) * e
+        pos.y = voo.y0 + (y1 - voo.y0) * e - Math.sin(Math.PI * e) * voo.arco
         pos.s = voo.s0 + (voo.s1 - voo.s0) * e
         // pousa quando o voo acabou e a página parou de rolar
         if (p >= 1 && agora - ultimaRolagem > 140) {
@@ -284,6 +347,8 @@ export const MarkGuiaProvider = ({ children }: { children: ReactNode }) => {
       box.style.transform = `translate3d(${(pos.x - pos.s / 2).toFixed(1)}px, ${(pos.y - pos.s / 2 + bob).toFixed(1)}px, 0)`
       box.style.width = box.style.height = `${pos.s.toFixed(1)}px`
       box.style.opacity = visivel.toFixed(3)
+      box.style.pointerEvents = visivel > 0.5 ? 'auto' : 'none'
+      posRef.current = { x: pos.x, y: pos.y }
 
       // 3. estado: clique/festa > digitação > mouse em cima > ócio > base da seção
       let estado = estadoBase
@@ -297,7 +362,8 @@ export const MarkGuiaProvider = ({ children }: { children: ReactNode }) => {
       if (agora - ultimaDigitacao < 1300 && !voo) estado = 'lendo'
       if (reacao.current && reacao.current.ate > agora && !voo) estado = reacao.current.estado
       else if (!reacao.current || reacao.current.ate <= agora) reacao.current = null
-      const acc = estado === 'voando' ? accAtual : acessorioDo(estado) ?? acessorioDo(persona)
+      if (fixo && atual && !fixo.secao.contains(atual)) fixo = null
+      const acc = estado === 'voando' ? accAtual : fixo ? fixo.acc : acessorioDo(estado) ?? acessorioDo(persona)
       if (acc !== accAtual) {
         accDe = accAtual
         accAtual = acc
@@ -343,8 +409,27 @@ export const MarkGuiaProvider = ({ children }: { children: ReactNode }) => {
   return (
     <Ctx.Provider value={api}>
       {children}
-      <div ref={boxRef} className="pointer-events-none fixed left-0 top-0 z-30 will-change-transform" style={{ width: 160, height: 160, opacity: 0 }} aria-hidden>
-        <svg ref={svgRef} viewBox="-170 -170 340 340" width="100%" height="100%" style={{ overflow: 'visible' }} />
+      <div ref={boxRef} className="pointer-events-none fixed left-0 top-0 z-30 will-change-transform" style={{ width: 160, height: 160, opacity: 0 }}>
+        <button type="button" onClick={contar} data-mark-reacao="piscando" className="block h-full w-full cursor-pointer rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-vm-verm" aria-label="Mark, o mascote da Virtual Mark: toque para ouvir uma curiosidade">
+          <svg ref={svgRef} viewBox="-170 -170 340 340" width="100%" height="100%" style={{ overflow: 'visible' }} aria-hidden />
+        </button>
+        <AnimatePresence>
+          {fala && (
+            <motion.p
+              key={fala.texto}
+              role="status"
+              initial={{ opacity: 0, y: fala.acima ? 8 : -8, scale: 0.94 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.96 }}
+              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+              className={`pointer-events-none absolute w-[min(260px,calc(100vw-40px))] rounded-[18px] border border-vm-borda bg-vm-sup px-4 py-3 font-manrope text-sm font-medium leading-snug text-vm-texto shadow-xl shadow-black/30 ${
+                fala.acima ? 'bottom-[92%]' : 'top-[92%]'
+              } ${fala.lado === 'esq' ? `right-[40%] ${fala.acima ? 'rounded-br-md' : 'rounded-tr-md'}` : `left-[40%] ${fala.acima ? 'rounded-bl-md' : 'rounded-tl-md'}`}`}
+            >
+              {fala.texto}
+            </motion.p>
+          )}
+        </AnimatePresence>
       </div>
     </Ctx.Provider>
   )

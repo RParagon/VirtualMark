@@ -3,7 +3,7 @@ import { useEffect, useState, type FormEvent } from 'react'
 import { getAttribution } from '../../lib/quizTracking'
 import { FaWhatsapp } from 'react-icons/fa'
 import { Ancora, useMarkGuia } from './MarkGuia'
-import { Botao, EASE, LogoVM, Mono, Sobrelinha, Surge, waLink } from './ui'
+import { Botao, EASE, LogoVM, Mono, Sobrelinha, Surge, caminho, waLink } from './ui'
 
 const evento = (payload: Record<string, unknown>) => {
   if (typeof window === 'undefined') return
@@ -81,7 +81,7 @@ export const Quiz = () => {
         </Surge>
 
         <Surge delay={0.1} className="w-full lg:w-[520px] lg:shrink-0">
-          <div className="rounded-[28px] border border-vm-borda bg-vm-fundo p-6 sm:p-9" aria-live="polite">
+          <div data-mark-acessorio="oculos" className="rounded-[28px] border border-vm-borda bg-vm-fundo p-6 sm:p-9" aria-live="polite">
             <div className="flex items-center justify-between">
               <Mono>{fim ? 'Resultado' : `Pergunta ${passo + 1} de 3`}</Mono>
               {resp[0] && <span className="font-manrope text-[13px] font-semibold text-vm-vermt">{resp[0]}</span>}
@@ -255,7 +255,10 @@ export const Chamada = () => {
 }
 
 /* ───────── Rodapé ───────── */
-export const RodapeVM = () => (
+export const RodapeVM = ({ home = true }: { home?: boolean }) => {
+  // fora da home, as âncoras da home viram /#ancora (o contato existe em todas as páginas)
+  const ir = (href: string) => (!home && href.startsWith('#') && href !== '#contato' ? caminho('/') + href : href.startsWith('/') ? caminho(href) : href)
+  return (
   <footer className="border-t border-vm-borda pb-10 pt-16">
     <div className={caixa}>
       <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr] lg:gap-16">
@@ -274,7 +277,7 @@ export const RodapeVM = () => (
             <ul className="mt-4 flex flex-col gap-3">
               {(itens as string[][]).map(([r, href]) => (
                 <li key={r}>
-                  <a href={href} {...(href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})} className="font-manrope text-[15px] text-vm-suave transition-colors hover:text-vm-texto">
+                  <a href={ir(href)} {...(href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})} className="font-manrope text-[15px] text-vm-suave transition-colors hover:text-vm-texto">
                     {r}
                   </a>
                 </li>
@@ -285,11 +288,12 @@ export const RodapeVM = () => (
       </div>
       <div className="mt-12 flex flex-wrap items-center justify-between gap-3 border-t border-vm-borda pt-6 font-manrope text-[13px] text-vm-apagado">
         <span>© {new Date().getFullYear()} Virtual Mark</span>
-        <a href="/privacy-policy" className="transition-colors hover:text-vm-texto">Política de privacidade</a>
+        <a href={caminho('/privacy-policy')} className="transition-colors hover:text-vm-texto">Política de privacidade</a>
       </div>
     </div>
   </footer>
-)
+  )
+}
 
 /* ───────── WhatsApp flutuante: aparece depois da abertura ───────── */
 export const WhatsFlutuante = () => {

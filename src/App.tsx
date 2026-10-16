@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { motion, useScroll, useSpring } from 'framer-motion'
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom'
+import { BrowserRouter as Router, Route, Routes, Navigate, useParams } from 'react-router-dom'
 import { PostProvider } from './contexts/PostContext'
 import { CaseProvider } from './contexts/CaseContext'
 import { ContactProvider } from './contexts/ContactContext'
@@ -15,7 +15,9 @@ import PortfolioPage from './pages/PortfolioPage'
 import BlogPage from './pages/BlogPage'
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage'
 import AdminPage from './pages/AdminPage'
-import CasesPage from './pages/CasesPage'
+import CasesNova from './pages/CasesNova'
+import CaseNova from './pages/CaseNova'
+import { casoPorSlug } from './components/nova/casos'
 import CaseDetailPage from './pages/CaseDetailPage'
 import ContactPage from './pages/ContactPage'
 import CookieConsent from './components/CookieConsent'
@@ -30,6 +32,13 @@ import TrafficManagement from './pages/services/TrafficManagement'
 import PerformanceMarketing from './pages/services/PerformanceMarketing'
 import ContentMarketing from './pages/services/ContentMarketing'
 import DigitalConsulting from './pages/services/DigitalConsulting'
+
+/** Cases novos (anônimos) primeiro; slugs antigos continuam abrindo a página antiga. */
+const CaseRota = () => {
+  const { slug } = useParams()
+  const caso = casoPorSlug(slug)
+  return caso ? <CaseNova caso={caso} /> : <CaseProvider><CaseDetailPage /></CaseProvider>
+}
 
 function App() {
   const { scrollYProgress } = useScroll()
@@ -64,8 +73,8 @@ function App() {
                     <Routes>
                       <Route path="/blog/*" element={<BlogPage />} />
                       <Route path="/admin" element={<AdminPage />} />
-                      <Route path="/cases" element={<CaseProvider><CasesPage /></CaseProvider>} />
-                      <Route path="/cases/:slug" element={<CaseProvider><CaseDetailPage /></CaseProvider>} />
+                      <Route path="/cases" element={<CasesNova />} />
+                      <Route path="/cases/:slug" element={<CaseRota />} />
                       <Route path="/contact" element={<ContactPage />} />
                       <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
                       <Route path="/imobiliarias" element={<ImobiliariaPage />} />
