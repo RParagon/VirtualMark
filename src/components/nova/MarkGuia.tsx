@@ -1,7 +1,7 @@
 import { useReducedMotion } from 'framer-motion'
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, type ReactNode } from 'react'
 import { markInner, type MarkEstado } from './mark'
-import { tocar } from './som'
+import { tocar, type Som } from './som'
 
 /*
  * Um só Mark na página. Cada seção marca um lugar para ele com <Ancora>; o Mark
@@ -28,6 +28,37 @@ export const Ancora = ({ id, estado, className = '', celular = false }: { id: st
 )
 
 const OCIOSO_MS = 9000
+const TRANSICAO_MS = 280
+
+/** O que o Mark faz ao ver o mouse em cima de algo, conforme para onde aquilo leva. */
+function reacaoDoDestino(alvo: Element): MarkEstado {
+  const explicita = (alvo.closest('[data-mark-reacao]') as HTMLElement | null)?.dataset.markReacao
+  if (explicita) return explicita as MarkEstado
+  const tag = alvo.tagName
+  if (tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA') return 'procurando'
+  if (alvo.getAttribute('role') === 'radio') return 'analisando'
+  const href = alvo.getAttribute('href') || ''
+  const rotulo = `${alvo.getAttribute('aria-label') || ''} ${alvo.textContent || ''}`.toLowerCase()
+  if (href.includes('wa.me') || href.startsWith('tel:')) return 'atendendo'
+  if (alvo.getAttribute('type') === 'submit' || href === '#contato' || rotulo.includes('avaliação')) return 'pronto'
+  if (href.includes('cases')) return 'surpreso'
+  if (href.includes('quiz') || href === '#diagnostico' || rotulo.includes('diagnóstico')) return 'analisando'
+  if (href === '#como-trabalhamos') return 'trabalhando'
+  if (href.includes('instagram') || href.includes('youtube')) return 'falando'
+  if (rotulo.includes('tema')) return 'piscando'
+  if (rotulo.includes('sons')) return 'falando'
+  if (href.includes('privacy')) return 'analisando'
+  return 'olhando'
+}
+
+/** A cada clique uma reação diferente, cada uma com a sua voz. */
+const CLIQUES: [MarkEstado, Som, number][] = [
+  ['pronto', 'pulo', 1100],
+  ['surpreso', 'oh', 900],
+  ['piscando', 'pisca', 1000],
+  ['falando', 'fala', 1100],
+  ['comemorando', 'festa', 1500],
+]
 
 export const MarkGuiaProvider = ({ children }: { children: ReactNode }) => {
   const svgRef = useRef<SVGSVGElement>(null)
@@ -67,6 +98,13 @@ export const MarkGuiaProvider = ({ children }: { children: ReactNode }) => {
     let flutua = 1
     let eraWhats = false
     let ultimoMovimento = 0
+    let ultimaDigitacao = -1e9
+    let hover: MarkEstado | null = null
+    let nCliques = 0
+    let estadoAtual: MarkEstado = 'olhando'
+    let estadoDe: MarkEstado = 'olhando'
+    let trocaEm = 0
+    let dormia = false
     let ultimaRolagem = 0
     let visivel = 0
 
@@ -91,16 +129,26 @@ export const MarkGuiaProvider = ({ children }: { children: ReactNode }) => {
       if (!alvo) return
       // na rolagem o conteúdo passa sob o cursor parado; isso não é a pessoa apontando
       if (performance.now() - ultimoMovimento > 150) return
-      const r = (alvo.closest('[data-mark-reacao]') as HTMLElement | null)?.dataset.markReacao as MarkEstado | undefined
-      reagir(r || 'surpreso', r ? 1600 : 650)
-      tocar('hover')
+      // em silêncio: só muda a cara enquanto o mouse estiver em cima
+      hover = reacaoDoDestino(alvo)
     }
     const sair = (e: PointerEvent) => {
-      if ((e.target as Element | null)?.closest?.('[data-mark-whats]')) whats.current = null
+      const el = e.target as Element | null
+      if (el?.closest?.('[data-mark-whats]')) whats.current = null
+      const para = e.relatedTarget as Element | null
+      if (!para?.closest?.('a, button, [role="radio"], select, input')) hover = null
     }
     const clique = (e: PointerEvent) => {
       atividade()
-      if ((e.target as Element | null)?.closest?.('a, button, [role="radio"]')) tocar('clique')
+      if (!(e.target as Element | null)?.closest?.('a, button, [role="radio"]')) return
+      const [estado, som, ms] = CLIQUES[nCliques++ % CLIQUES.length]
+      reagir(estado, ms)
+      tocar(som)
+    }
+    const digitar = (e: Event) => {
+      const el = e.target as Element | null
+      if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA')) ultimaDigitacao = performance.now()
+      atividade()
     }
 
     window.addEventListener('pointermove', mover, { passive: true })
@@ -109,6 +157,7 @@ export const MarkGuiaProvider = ({ children }: { children: ReactNode }) => {
     document.addEventListener('pointerover', sobre)
     document.addEventListener('pointerout', sair)
     document.addEventListener('pointerdown', clique)
+    document.addEventListener('input', digitar)
 
     const loop = (agora: number) => {
       raf = requestAnimationFrame(loop)
@@ -184,12 +233,23 @@ export const MarkGuiaProvider = ({ children }: { children: ReactNode }) => {
       box.style.width = box.style.height = `${pos.s.toFixed(1)}px`
       box.style.opacity = visivel.toFixed(3)
 
-      // 3. estado: reação > ócio > base da seção
+      // 3. estado: clique/festa > digitação > mouse em cima > ócio > base da seção
       let estado = estadoBase
       const ocioso = agora - ultimaAtividade > OCIOSO_MS
       if (ocioso && !w) estado = Math.floor((agora - ultimaAtividade - OCIOSO_MS) / 8000) % 2 === 0 ? 'gerindo' : 'dormindo'
+      if (estado === 'dormindo' && !dormia) tocar('sono')
+      dormia = estado === 'dormindo'
+      if (hover && !w) estado = hover
+      if (agora - ultimaDigitacao < 1300) estado = 'lendo'
       if (reacao.current && reacao.current.ate > agora) estado = reacao.current.estado
       else reacao.current = null
+      if (estado !== estadoAtual) {
+        // começa a nova transição de onde a anterior estava
+        estadoDe = agora - trocaEm < TRANSICAO_MS ? estadoDe : estadoAtual
+        estadoAtual = estado
+        trocaEm = agora
+      }
+      const k = reduce ? 1 : Math.min(1, (agora - trocaEm) / TRANSICAO_MS)
 
       // 4. olhos no cursor
       let look: [number, number] | undefined
@@ -201,7 +261,7 @@ export const MarkGuiaProvider = ({ children }: { children: ReactNode }) => {
 
       if (agora - ultimoDesenho > 33) {
         ultimoDesenho = agora
-        svg.innerHTML = markInner(reduce ? 0.8 : t, estado, { look })
+        svg.innerHTML = markInner(reduce ? 0.8 : t, estadoAtual, { look, de: estadoDe, k })
       }
       ultimoQuadro = agora
     }
@@ -214,6 +274,7 @@ export const MarkGuiaProvider = ({ children }: { children: ReactNode }) => {
       document.removeEventListener('pointerover', sobre)
       document.removeEventListener('pointerout', sair)
       document.removeEventListener('pointerdown', clique)
+      document.removeEventListener('input', digitar)
     }
   }, [reduce, reagir])
 

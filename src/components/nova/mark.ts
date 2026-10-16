@@ -18,9 +18,14 @@ export type MarkEstado =
   | 'atendendo'
   | 'dormindo'
   | 'gerindo'
+  | 'lendo'
+  | 'piscando'
 
-/** look: para onde os olhos apontam (-1 a 1), ex.: seguindo o cursor. */
-export type MarkOpts = { shadow?: boolean; color?: string; look?: [number, number] }
+/**
+ * look: para onde os olhos apontam (-1 a 1), ex.: seguindo o cursor.
+ * de + k: transição suave vindo do estado `de` (k vai de 0 a 1).
+ */
+export type MarkOpts = { shadow?: boolean; color?: string; look?: [number, number]; de?: MarkEstado; k?: number }
 
 const RED = '#dc2626'
 const INK = '#0a0a0a'
@@ -177,6 +182,21 @@ function pose(t: number, estado: MarkEstado): Pose {
       .join('')
     s.extra = `<g><rect x="64" y="34" width="86" height="72" rx="12" fill="${INK}" stroke="#3a3a3a" stroke-width="3"/>${bars}<circle cx="${(84 + 50 * (0.5 + 0.5 * Math.sin(t * 1.4))).toFixed(1)}" cy="46" r="4" fill="#22c55e"/></g>`
   }
+  if (estado === 'lendo') {
+    // lê o que a pessoa digita: os olhos varrem a linha e voltam, cabeça um pouco baixa
+    const p = (t % 1.3) / 1.3
+    const varre = p < 0.82 ? -0.8 + (1.6 * p) / 0.82 : 0.8 - (1.6 * (p - 0.82)) / 0.18
+    s.look = [varre, 0.55]
+    s.h = 0.72 * blinkAt(t, 3.6, 0.9)
+    s.rot = -3
+    s.y = 2
+  }
+  if (estado === 'piscando') {
+    // piscadinha de um olho só: feliz e cúmplice
+    s.arc = true
+    s.y = -Math.abs(Math.sin(t * 5)) * 6
+    s.rot = 5
+  }
   if (estado === 'comemorando') {
     s.arc = true
     s.rot = Math.sin(t * TAU * 2) * 9
@@ -199,23 +219,48 @@ const ACC: Partial<Record<MarkEstado, string>> = {
 
 const OLHAR_LIVRE = new Set<MarkEstado>(['parado', 'olhando', 'surpreso', 'falando', 'atendendo', 'analisando', 'esperando'])
 
+const mistura = (a: Pose, b: Pose, k: number): Pose => {
+  // números se misturam; o que é "sim ou não" troca no meio, escondido por uma piscada
+  const e = ease(k)
+  const m: Pose = { ...(k < 0.5 ? a : b) }
+  m.y = lerp(a.y, b.y, e)
+  m.sx = lerp(a.sx, b.sx, e)
+  m.sy = lerp(a.sy, b.sy, e)
+  m.rot = lerp(a.rot, b.rot, e)
+  m.wob = lerp(a.wob, b.wob, e)
+  m.w = lerp(a.w, b.w, e)
+  m.look = [lerp(a.look[0], b.look[0], e), lerp(a.look[1], b.look[1], e)]
+  const piscada = 1 - Math.sin(Math.PI * clamp(k)) * 0.85
+  m.h = Math.min(lerp(a.h, b.h, e), piscada)
+  return m
+}
+
 /** Conteúdo interno do SVG (viewBox -170 -170 340 340) para o quadro t. */
 export function markInner(tempo: number, estado: MarkEstado = 'parado', opts: MarkOpts = {}) {
   // o rAF pode entregar um instante anterior ao início; tempo negativo quebra a pose
   const t = Math.max(0, tempo)
-  const s = pose(t, estado)
-  // olhos que seguem o cursor só nos estados de olhar livre
-  if (opts.look && OLHAR_LIVRE.has(estado)) s.look = opts.look
+  const poseCom = (e: MarkEstado) => {
+    const p = pose(t, e)
+    // olhos que seguem o cursor só nos estados de olhar livre
+    if (opts.look && OLHAR_LIVRE.has(e)) p.look = opts.look
+    return p
+  }
+  const k = opts.de && opts.de !== estado && opts.k != null ? clamp(opts.k) : 1
+  const s = k < 1 ? mistura(poseCom(opts.de as MarkEstado), poseCom(estado), k) : poseCom(estado)
+  const acc = ACC[k < 0.5 && opts.de ? opts.de : estado] || ''
+  const piscaUm = estado === 'piscando' && k >= 0.5
   const ex = 23
   const ey = -4
   const lx = s.look[0] * 9
   const ly = s.look[1] * 9
-  const eyes = s.focus
-    ? eye(-ex + lx, ey + ly, { h: s.h, tilt: 14 }) + eye(ex + lx, ey + ly, { h: s.h, tilt: -14 })
-    : eye(-ex + lx, ey + ly, s) + eye(ex + lx, ey + ly, s)
+  const eyes = piscaUm
+    ? eye(-ex + lx, ey + ly, { h: 1, arc: true }) + eye(ex + lx, ey + ly, { h: Math.max(s.h, 0.9) })
+    : s.focus
+      ? eye(-ex + lx, ey + ly, { h: s.h, tilt: 14 }) + eye(ex + lx, ey + ly, { h: s.h, tilt: -14 })
+      : eye(-ex + lx, ey + ly, s) + eye(ex + lx, ey + ly, s)
   const shadowK = 1 - clamp(-s.y / 60) * 0.5
   const shadow = opts.shadow === false
     ? ''
     : `<ellipse cx="0" cy="104" rx="${(74 * shadowK).toFixed(1)}" ry="${(9 * shadowK).toFixed(1)}" fill="#000" opacity="${(0.28 * shadowK).toFixed(2)}"/>`
-  return `${shadow}${s.back}<g transform="translate(0 ${s.y.toFixed(2)}) rotate(${s.rot.toFixed(2)} 0 90)"><g transform="translate(0 ${(100 * (1 - s.sy) * 0.93).toFixed(2)})"><path d="${blob(s.sx, s.sy, s.wob, t)}" fill="${opts.color || RED}"/></g>${ACC[estado] || ''}${eyes}</g>${s.extra}`
+  return `${shadow}${s.back}<g transform="translate(0 ${s.y.toFixed(2)}) rotate(${s.rot.toFixed(2)} 0 90)"><g transform="translate(0 ${(100 * (1 - s.sy) * 0.93).toFixed(2)})"><path d="${blob(s.sx, s.sy, s.wob, t)}" fill="${opts.color || RED}"/></g>${acc}${eyes}</g>${s.extra}`
 }

@@ -1,12 +1,13 @@
-// Efeitos sonoros curtos, sintetizados com Web Audio (sem arquivos).
+// Voz do Mark: efeitos curtos sintetizados com Web Audio (sem arquivos).
+// Só o personagem faz som (pulo, susto, piscada, fala, voo, sono, festa);
+// passar o mouse em botões não toca nada.
 // O navegador só libera áudio depois de um gesto da pessoa; antes disso tudo fica mudo.
 
-export type Som = 'hover' | 'clique' | 'escolha' | 'festa' | 'voo'
+export type Som = 'pulo' | 'oh' | 'pisca' | 'fala' | 'festa' | 'voo' | 'sono'
 
 const CHAVE = 'vm-som'
 let ctx: AudioContext | null = null
 let ligado = true
-let ultimoHover = 0
 const ouvintes = new Set<(v: boolean) => void>()
 
 try {
@@ -25,7 +26,7 @@ export function alternarSom() {
     /* ignora */
   }
   ouvintes.forEach((f) => f(ligado))
-  if (ligado) tocar('clique')
+  if (ligado) tocar('pisca')
 }
 
 export function aoMudarSom(f: (v: boolean) => void) {
@@ -66,17 +67,19 @@ export function tocar(som: Som) {
   const c = contexto()
   if (!c) return
   const t = c.currentTime
-  if (som === 'hover') {
-    if (performance.now() - ultimoHover < 90) return
-    ultimoHover = performance.now()
-    nota(c, 880, t, 0.06, 0.025, 'sine', 1040)
-  } else if (som === 'clique') {
-    nota(c, 520, t, 0.08, 0.06, 'triangle', 780)
-  } else if (som === 'escolha') {
-    nota(c, 660, t, 0.09, 0.05, 'triangle')
-    nota(c, 990, t + 0.07, 0.12, 0.045, 'triangle')
+  if (som === 'pulo') {
+    nota(c, 380, t, 0.12, 0.06, 'sine', 760)
+    nota(c, 620, t + 0.1, 0.12, 0.04, 'sine', 900)
+  } else if (som === 'oh') {
+    nota(c, 520, t, 0.14, 0.05, 'triangle', 1180)
+  } else if (som === 'pisca') {
+    nota(c, 1320, t, 0.09, 0.035, 'sine', 1560)
+  } else if (som === 'fala') {
+    ;[0, 1, 2].forEach((i) => nota(c, 300 + Math.random() * 280, t + i * 0.075, 0.07, 0.035, 'square'))
   } else if (som === 'voo') {
-    nota(c, 300, t, 0.22, 0.02, 'sine', 620)
+    nota(c, 300, t, 0.24, 0.02, 'sine', 640)
+  } else if (som === 'sono') {
+    nota(c, 420, t, 0.5, 0.025, 'sine', 210)
   } else if (som === 'festa') {
     ;[523, 659, 784, 1047].forEach((f, i) => nota(c, f, t + i * 0.08, 0.22, 0.05, 'triangle'))
   }

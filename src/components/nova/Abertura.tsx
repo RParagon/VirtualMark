@@ -2,7 +2,6 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { useEffect, useRef, useState } from 'react'
 import type { MarkEstado } from './mark'
 import { Ancora, useMarkGuia } from './MarkGuia'
-import { tocar } from './som'
 import { Botao, EASE, Etiqueta, Mono, Sobrelinha, waLink } from './ui'
 
 type Opcao = { rotulo: string; estado: MarkEstado; fala: string; acao: string; href: string }
@@ -58,7 +57,6 @@ const CartaoMark = () => {
 
   const escolher = (o: Opcao) => {
     window.clearTimeout(timer.current)
-    tocar('escolha')
     setEscolha(o)
     setPensando(true)
     timer.current = window.setTimeout(() => setPensando(false), reduce ? 0 : 900)
@@ -103,7 +101,7 @@ const CartaoMark = () => {
         </AnimatePresence>
       </div>
 
-      <div className="mt-5 flex flex-wrap gap-2.5" role="group" aria-label="Tipo de negócio">
+      <div className="mt-5 flex flex-wrap gap-2.5" role="group" aria-label="Tipo de negócio" data-mark-reacao="pensando">
         {OPCOES.map((o) => (
           <Etiqueta key={o.rotulo} estado={escolha?.rotulo === o.rotulo ? 'ativo' : 'padrao'} onClick={() => escolher(o)}>
             {o.rotulo}
