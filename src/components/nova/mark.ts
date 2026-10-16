@@ -20,12 +20,28 @@ export type MarkEstado =
   | 'gerindo'
   | 'lendo'
   | 'piscando'
+  | 'voando'
 
 /**
  * look: para onde os olhos apontam (-1 a 1), ex.: seguindo o cursor.
  * de + k: transição suave vindo do estado `de` (k vai de 0 a 1).
  */
-export type MarkOpts = { shadow?: boolean; color?: string; look?: [number, number]; de?: MarkEstado; k?: number }
+export type MarkOpts = {
+  shadow?: boolean
+  color?: string
+  look?: [number, number]
+  de?: MarkEstado
+  k?: number
+  /** acessório do personagem, independente do estado (null = sem); some/aparece com fade */
+  acessorio?: Acessorio | null
+  accDe?: Acessorio | null
+  accK?: number
+  /** voando: -1 para a esquerda/cima, 1 para a direita/baixo */
+  dir?: number
+}
+export type Acessorio = 'oculos' | 'fone'
+/** Estado que já vem com acessório (quando ninguém escolhe outro). */
+export const acessorioDo = (e: MarkEstado): Acessorio | null => (e === 'analisando' ? 'oculos' : e === 'atendendo' ? 'fone' : null)
 
 const RED = '#dc2626'
 const INK = '#0a0a0a'
@@ -212,9 +228,9 @@ function pose(t: number, estado: MarkEstado): Pose {
   return s
 }
 
-const ACC: Partial<Record<MarkEstado, string>> = {
-  analisando: `<g fill="none" stroke="${INK}" stroke-width="7"><circle cx="-25" cy="-4" r="27"/><circle cx="25" cy="-4" r="27"/><path d="M -52 -8 L -84 -18 M 52 -8 L 84 -18" stroke-linecap="round"/></g>`,
-  atendendo: `<g><path d="M -86 -10 Q -84 -112 0 -112 Q 84 -112 86 -10" fill="none" stroke="${INK}" stroke-width="10" stroke-linecap="round"/><rect x="-100" y="-30" width="22" height="44" rx="10" fill="${INK}"/><rect x="78" y="-30" width="22" height="44" rx="10" fill="${INK}"/><path d="M -90 14 Q -80 54 -36 58" fill="none" stroke="${INK}" stroke-width="5" stroke-linecap="round"/><circle cx="-34" cy="58" r="7" fill="${INK}"/></g>`,
+const ACC: Record<Acessorio, string> = {
+  oculos: `<g fill="none" stroke="${INK}" stroke-width="7"><circle cx="-25" cy="-4" r="27"/><circle cx="25" cy="-4" r="27"/><path d="M -52 -8 L -84 -18 M 52 -8 L 84 -18" stroke-linecap="round"/></g>`,
+  fone: `<g><path d="M -86 -10 Q -84 -112 0 -112 Q 84 -112 86 -10" fill="none" stroke="${INK}" stroke-width="10" stroke-linecap="round"/><rect x="-100" y="-30" width="22" height="44" rx="10" fill="${INK}"/><rect x="78" y="-30" width="22" height="44" rx="10" fill="${INK}"/><path d="M -90 14 Q -80 54 -36 58" fill="none" stroke="${INK}" stroke-width="5" stroke-linecap="round"/><circle cx="-34" cy="58" r="7" fill="${INK}"/></g>`,
 }
 
 const OLHAR_LIVRE = new Set<MarkEstado>(['parado', 'olhando', 'surpreso', 'falando', 'atendendo', 'analisando', 'esperando'])
@@ -230,8 +246,12 @@ const mistura = (a: Pose, b: Pose, k: number): Pose => {
   m.wob = lerp(a.wob, b.wob, e)
   m.w = lerp(a.w, b.w, e)
   m.look = [lerp(a.look[0], b.look[0], e), lerp(a.look[1], b.look[1], e)]
-  const piscada = 1 - Math.sin(Math.PI * clamp(k)) * 0.85
+  const forma = (p: Pose) => (p.arc ? 'arc' : p.x ? 'x' : p.focus ? 'foco' : 'olho')
+  const piscada = forma(a) === forma(b) ? 1 : 1 - Math.sin(Math.PI * clamp(k)) * 0.85
   m.h = Math.min(lerp(a.h, b.h, e), piscada)
+  // efeitos (exclamação, estrelas, confete) somem e aparecem em fade, sem sobrepor de vez
+  m.extra = `${a.extra ? `<g opacity="${(1 - e).toFixed(2)}">${a.extra}</g>` : ''}${b.extra ? `<g opacity="${e.toFixed(2)}">${b.extra}</g>` : ''}`
+  m.back = `${a.back ? `<g opacity="${(1 - e).toFixed(2)}">${a.back}</g>` : ''}${b.back ? `<g opacity="${e.toFixed(2)}">${b.back}</g>` : ''}`
   return m
 }
 
@@ -247,7 +267,31 @@ export function markInner(tempo: number, estado: MarkEstado = 'parado', opts: Ma
   }
   const k = opts.de && opts.de !== estado && opts.k != null ? clamp(opts.k) : 1
   const s = k < 1 ? mistura(poseCom(opts.de as MarkEstado), poseCom(estado), k) : poseCom(estado)
-  const acc = ACC[k < 0.5 && opts.de ? opts.de : estado] || ''
+  if (estado === 'voando' || (opts.de === 'voando' && k < 1)) {
+    // voando: corpo esticado, inclinado para onde vai, linhas de velocidade atrás
+    const d = opts.dir || 1
+    const f = estado === 'voando' ? ease(k) : 1 - ease(k)
+    s.rot += d * 10 * f
+    s.sx += 0.07 * f
+    s.sy -= 0.06 * f
+    s.look = [lerp(s.look[0], d * 0.9, f), lerp(s.look[1], -0.1, f)]
+    s.extra += [0, 1, 2]
+      .map((i) => {
+        const y = -40 + i * 40
+        const x0 = -d * (118 + ((t * 420 + i * 37) % 60))
+        return `<path d="M ${x0.toFixed(1)} ${y} l ${(-d * 46).toFixed(1)} 0" stroke="${RED}" stroke-width="7" stroke-linecap="round" opacity="${(0.55 * f).toFixed(2)}"/>`
+      })
+      .join('')
+  }
+  // acessório: vem das opções (persona que se mantém) ou do próprio estado; troca em fade
+  const accAgora = opts.acessorio !== undefined ? opts.acessorio : acessorioDo(k < 0.5 && opts.de ? opts.de : estado)
+  const accK = opts.accK != null ? clamp(opts.accK) : 1
+  const acc =
+    opts.accDe !== undefined && accK < 1 && opts.accDe !== accAgora
+      ? `${opts.accDe ? `<g opacity="${(1 - ease(accK)).toFixed(2)}">${ACC[opts.accDe]}</g>` : ''}${accAgora ? `<g opacity="${ease(accK).toFixed(2)}">${ACC[accAgora]}</g>` : ''}`
+      : accAgora
+        ? ACC[accAgora]
+        : ''
   const piscaUm = estado === 'piscando' && k >= 0.5
   const ex = 23
   const ey = -4

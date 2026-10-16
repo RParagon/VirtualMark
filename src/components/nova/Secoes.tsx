@@ -174,6 +174,8 @@ export const Servicos = () => {
 }
 
 /* ───────── Como trabalhamos: a pista anda com a rolagem ───────── */
+const ESTADO_PASSO = ['analisando', 'pensando', 'trabalhando', 'gerindo'] as const
+
 const PASSOS = [
   ['01', 'Diagnóstico', 'Olhamos conta, site e números antes de prometer qualquer coisa.'],
   ['02', 'Plano', 'Público, verba e criativo definidos pelo objetivo de venda.'],
@@ -209,7 +211,8 @@ export const Pista = () => {
     const i = Math.min(3, Math.floor(v * 4.4))
     setAtivo(i)
   })
-  useEffect(() => definirBase('pista', ativo === 3 ? 'pronto' : 'trabalhando'), [ativo, definirBase])
+  // cada passo com o Mark no clima dele: diagnóstico de óculos, plano pensando, execução trabalhando, relatório no painel
+  useEffect(() => definirBase('pista', ESTADO_PASSO[ativo]), [ativo, definirBase])
 
   const x = useTransform(p, (v) => -(reduce ? 0 : v) * desloc)
   const larg = useTransform(p, (v) => (reduce ? 1 : v))
@@ -247,7 +250,7 @@ export const Pista = () => {
           <div className={`${caixa} relative`}>
             <div className="relative h-[clamp(96px,14vh,130px)]">
               <motion.div className="absolute bottom-0" style={{ left: montaria }}>
-                <Ancora id="pista" estado="trabalhando" className="w-[clamp(84px,12vh,110px)]" />
+                <Ancora id="pista" estado="analisando" className="w-[clamp(84px,12vh,110px)]" />
               </motion.div>
             </div>
             <div className="relative h-0.5 w-full rounded-full bg-vm-borda">

@@ -1,6 +1,6 @@
 import { useReducedMotion } from 'framer-motion'
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, type ReactNode } from 'react'
-import { markInner, type MarkEstado } from './mark'
+import { acessorioDo, markInner, type Acessorio, type MarkEstado } from './mark'
 import { tocar, type Som } from './som'
 
 /*
@@ -105,6 +105,13 @@ export const MarkGuiaProvider = ({ children }: { children: ReactNode }) => {
     let estadoDe: MarkEstado = 'olhando'
     let trocaEm = 0
     let dormia = false
+    let ultimoVoo = -1e9
+    let ultimaDir = 1
+    let accAtual: Acessorio | null = null
+    let accDe: Acessorio | null = null
+    let accTrocaEm = 0
+    // voo direto até a seção clicada no menu, sem pousar nas seções do meio
+    let voo: { ancora: Element; x0: number; y0: number; s0: number; x1: number; y1: number; s1: number; inicio: number; dur: number; arco: number; dir: number } | null = null
     let ultimaRolagem = 0
     let visivel = 0
 
@@ -145,6 +152,34 @@ export const MarkGuiaProvider = ({ children }: { children: ReactNode }) => {
       reagir(estado, ms)
       tocar(som)
     }
+    const navegar = (e: MouseEvent) => {
+      const link = (e.target as Element | null)?.closest?.('a[href^="#"]') as HTMLAnchorElement | null
+      if (!link || reduce || !mq.matches) return
+      const destino = document.querySelector(link.getAttribute('href') || '')
+      const ancora = destino?.querySelector('[data-mark-ancora]')
+      if (!destino || !ancora || ancora === atual) return
+      const rd = destino.getBoundingClientRect()
+      const ra = ancora.getBoundingClientRect()
+      const margem = parseFloat(getComputedStyle(destino).scrollMarginTop) || 0
+      // onde a âncora vai estar na tela quando a rolagem terminar
+      const x1 = ra.left + ra.width / 2
+      const y1 = ra.top - rd.top + margem + ra.height / 2
+      const dist = Math.hypot(x1 - pos.x, y1 - pos.y)
+      voo = {
+        ancora,
+        x0: pos.x,
+        y0: pos.y,
+        s0: pos.s,
+        x1,
+        y1,
+        s1: ra.width,
+        inicio: performance.now(),
+        dur: Math.min(1500, Math.max(800, dist * 1.4 + Math.abs(rd.top) * 0.08)),
+        arco: Math.min(180, 60 + dist * 0.25),
+        dir: x1 >= pos.x ? 1 : -1,
+      }
+      tocar('voo')
+    }
     const digitar = (e: Event) => {
       const el = e.target as Element | null
       if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA')) ultimaDigitacao = performance.now()
@@ -158,6 +193,7 @@ export const MarkGuiaProvider = ({ children }: { children: ReactNode }) => {
     document.addEventListener('pointerout', sair)
     document.addEventListener('pointerdown', clique)
     document.addEventListener('input', digitar)
+    document.addEventListener('click', navegar)
 
     const loop = (agora: number) => {
       raf = requestAnimationFrame(loop)
@@ -173,7 +209,9 @@ export const MarkGuiaProvider = ({ children }: { children: ReactNode }) => {
         eraWhats = !!(w && desktop)
         preso = false
       }
-      if (w && desktop) {
+      if (voo) {
+        estadoBase = 'voando'
+      } else if (w && desktop) {
         const r = w.getBoundingClientRect()
         alvo = { x: r.left - 64, y: r.top + r.height / 2 - 30, s: 110 }
         estadoBase = 'atendendo'
@@ -196,7 +234,7 @@ export const MarkGuiaProvider = ({ children }: { children: ReactNode }) => {
         })
         // histerese: só troca de âncora quando a nova está bem mais perto
         if (melhor && melhor !== atual && (atual === null || dist < distAtual - 80 || distAtual === Infinity)) {
-          if (atual && pos.pronto) tocar('voo')
+          if (atual && pos.pronto && agora - ultimoVoo > 1200) tocar('voo')
           atual = melhor
           preso = false
         }
@@ -214,7 +252,21 @@ export const MarkGuiaProvider = ({ children }: { children: ReactNode }) => {
 
       // 2. voa até lá (mola simples, independente da taxa de quadros)
       const dt = Math.min(0.05, (agora - (ultimoQuadro || agora)) / 1000)
-      if (alvo) {
+      if (voo) {
+        ultimaDir = voo.dir
+        const p = Math.min(1, (agora - voo.inicio) / voo.dur)
+        const e = p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2
+        pos.x = voo.x0 + (voo.x1 - voo.x0) * e
+        pos.y = voo.y0 + (voo.y1 - voo.y0) * e - Math.sin(Math.PI * e) * voo.arco
+        pos.s = voo.s0 + (voo.s1 - voo.s0) * e
+        // pousa quando o voo acabou e a página parou de rolar
+        if (p >= 1 && agora - ultimaRolagem > 140) {
+          atual = voo.ancora
+          preso = false
+          ultimoVoo = agora
+          voo = null
+        }
+      } else if (alvo) {
         if (!preso && Math.hypot(alvo.x - pos.x, alvo.y - pos.y) < 1.5 && Math.abs(alvo.s - pos.s) < 1.5) preso = true
         const k = reduce || !pos.pronto || preso ? 1 : 1 - Math.exp(-dt * 7)
         pos.x += (alvo.x - pos.x) * k
@@ -222,7 +274,7 @@ export const MarkGuiaProvider = ({ children }: { children: ReactNode }) => {
         pos.s += (alvo.s - pos.s) * k
         pos.pronto = true
       }
-      const alvoVisivel = alvo ? 1 : 0
+      const alvoVisivel = alvo || voo ? 1 : 0
       visivel += (alvoVisivel - visivel) * (reduce ? 1 : 1 - Math.exp(-dt * 8))
       const t = (agora - t0) / 1000
       // flutua de leve só com a página parada
@@ -239,10 +291,19 @@ export const MarkGuiaProvider = ({ children }: { children: ReactNode }) => {
       if (ocioso && !w) estado = Math.floor((agora - ultimaAtividade - OCIOSO_MS) / 8000) % 2 === 0 ? 'gerindo' : 'dormindo'
       if (estado === 'dormindo' && !dormia) tocar('sono')
       dormia = estado === 'dormindo'
-      if (hover && !w) estado = hover
-      if (agora - ultimaDigitacao < 1300) estado = 'lendo'
-      if (reacao.current && reacao.current.ate > agora) estado = reacao.current.estado
-      else reacao.current = null
+      // o "persona" (óculos, fone) fica enquanto só os efeitos mudam por cima
+      const persona = estado
+      if (hover && !w && !voo) estado = hover
+      if (agora - ultimaDigitacao < 1300 && !voo) estado = 'lendo'
+      if (reacao.current && reacao.current.ate > agora && !voo) estado = reacao.current.estado
+      else if (!reacao.current || reacao.current.ate <= agora) reacao.current = null
+      const acc = estado === 'voando' ? accAtual : acessorioDo(estado) ?? acessorioDo(persona)
+      if (acc !== accAtual) {
+        accDe = accAtual
+        accAtual = acc
+        accTrocaEm = agora
+      }
+      const accK = reduce ? 1 : Math.min(1, (agora - accTrocaEm) / 320)
       if (estado !== estadoAtual) {
         // começa a nova transição de onde a anterior estava
         estadoDe = agora - trocaEm < TRANSICAO_MS ? estadoDe : estadoAtual
@@ -261,7 +322,7 @@ export const MarkGuiaProvider = ({ children }: { children: ReactNode }) => {
 
       if (agora - ultimoDesenho > 33) {
         ultimoDesenho = agora
-        svg.innerHTML = markInner(reduce ? 0.8 : t, estadoAtual, { look, de: estadoDe, k })
+        svg.innerHTML = markInner(reduce ? 0.8 : t, estadoAtual, { look, de: estadoDe, k, acessorio: accAtual, accDe, accK, dir: voo?.dir ?? ultimaDir })
       }
       ultimoQuadro = agora
     }
@@ -275,6 +336,7 @@ export const MarkGuiaProvider = ({ children }: { children: ReactNode }) => {
       document.removeEventListener('pointerout', sair)
       document.removeEventListener('pointerdown', clique)
       document.removeEventListener('input', digitar)
+      document.removeEventListener('click', navegar)
     }
   }, [reduce, reagir])
 
