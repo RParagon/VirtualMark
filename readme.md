@@ -1,7 +1,7 @@
 # Virtual Mark - Digital Marketing Agency Website
 
 <div align="center">
-  <img src="public/vm-logo.svg" alt="Virtual Mark Logo" width="200"/>
+  <img src="public/vm-logo.png" alt="Virtual Mark Logo" width="200"/>
   <p><strong>Transforming Digital Presence into Business Results</strong></p>
 </div>
 
