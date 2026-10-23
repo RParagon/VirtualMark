@@ -1,9 +1,17 @@
+mod asana;
+mod cofre;
+mod monitor;
+mod painel;
+
 use serde::Serialize;
 use tauri::{
     menu::{Menu, MenuItem, PredefinedMenuItem},
     tray::TrayIconBuilder,
-    AppHandle, Emitter, Manager, PhysicalPosition, WebviewWindow,
+    AppHandle, Emitter, Manager, PhysicalPosition, State, WebviewWindow,
 };
+
+use monitor::Monitor;
+use painel::Painel;
 
 // Tamanhos lógicos das janelas (iguais aos de tauri.conf.json).
 const ILHA_LARGURA: f64 = 440.0;
@@ -37,6 +45,32 @@ fn area_trabalho(window: WebviewWindow) -> Option<Area> {
     })
 }
 
+#[tauri::command]
+fn status_atual(monitor: State<Monitor>) -> Vec<Painel> {
+    monitor.paineis.lock().unwrap().values().cloned().collect()
+}
+
+#[tauri::command]
+fn tem_token(nome: String) -> bool {
+    cofre::ler(&nome).is_some()
+}
+
+/// Guarda (ou apaga, se vier vazio) um token e consulta de novo na hora.
+#[tauri::command]
+fn salvar_token(nome: String, valor: String, monitor: State<Monitor>) -> Result<(), String> {
+    if nome != monitor::TOKEN_ASANA {
+        return Err("token desconhecido".into());
+    }
+    cofre::gravar(&nome, &valor)?;
+    monitor.atualizar_agora();
+    Ok(())
+}
+
+#[tauri::command]
+fn atualizar(monitor: State<Monitor>) {
+    monitor.atualizar_agora();
+}
+
 /// Barra no topo, centralizada; Mark no canto inferior direito, acima da barra de tarefas.
 fn posicionar(app: &AppHandle) {
     let (Some(ilha), Some(mark)) = (app.get_webview_window("ilha"), app.get_webview_window("mark")) else {
@@ -60,22 +94,26 @@ fn posicionar(app: &AppHandle) {
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![area_trabalho])
+        .invoke_handler(tauri::generate_handler![area_trabalho, status_atual, tem_token, salvar_token, atualizar])
         .setup(|app| {
             posicionar(app.handle());
+            monitor::iniciar(app.handle());
 
             let demo = MenuItem::with_id(app, "demo", "Testar animações", true, None::<&str>)?;
             let teste = MenuItem::with_id(app, "alerta-teste", "Testar um alerta", true, None::<&str>)?;
+            let atualizar = MenuItem::with_id(app, "atualizar", "Atualizar agora", true, None::<&str>)?;
             let pausar = MenuItem::with_id(app, "pausar", "Pausar alertas por 1 hora", true, None::<&str>)?;
             let sep = PredefinedMenuItem::separator(app)?;
+            let sep2 = PredefinedMenuItem::separator(app)?;
             let sair = MenuItem::with_id(app, "sair", "Sair", true, None::<&str>)?;
-            let menu = Menu::with_items(app, &[&demo, &teste, &pausar, &sep, &sair])?;
+            let menu = Menu::with_items(app, &[&atualizar, &pausar, &sep, &demo, &teste, &sep2, &sair])?;
 
             let mut bandeja = TrayIconBuilder::with_id("mark")
                 .tooltip("Mark")
                 .menu(&menu)
                 .on_menu_event(|app, ev| match ev.id().as_ref() {
                     "sair" => app.exit(0),
+                    "atualizar" => app.state::<Monitor>().atualizar_agora(),
                     id => {
                         let _ = app.emit("bandeja", id.to_string());
                     }

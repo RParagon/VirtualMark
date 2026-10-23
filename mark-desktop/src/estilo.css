@@ -61,3 +61,16 @@ html, body { background: transparent; overflow: hidden; user-select: none; font:
 .item .s { color: var(--texto-2); font-size: 11.5px; white-space: nowrap; }
 .item.atencao .s { color: var(--vermelho-vivo); }
 .vazio { color: var(--texto-2); padding: 8px 0; }
+
+.conectar { padding: 8px 0; display: grid; gap: 8px; color: var(--texto-2); }
+.conectar .link { color: var(--vermelho-vivo); text-decoration: none; }
+.conectar .linha { display: flex; gap: 6px; }
+.conectar input {
+  flex: 1; min-width: 0; padding: 6px 10px; border-radius: 8px;
+  border: 1px solid var(--borda); background: var(--fundo-2); color: var(--texto); font: inherit;
+}
+.conectar button {
+  padding: 6px 12px; border-radius: 8px; border: 0; cursor: pointer;
+  background: var(--vermelho); color: #fff; font: inherit; font-weight: 600;
+}
+.conectar .erro { color: var(--vermelho-vivo); font-size: 12px; min-height: 1em; }

@@ -5,6 +5,8 @@ import { resolve } from "node:path";
 export default defineConfig({
   clearScreen: false,
   server: { port: 1420, strictPort: true },
+  // Não herda o postcss.config.js (Tailwind) do site na raiz do repositório.
+  css: { postcss: {} },
   build: {
     target: "es2021",
     rollupOptions: {
