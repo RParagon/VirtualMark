@@ -81,6 +81,52 @@ function formularioAsana() {
   return caixa;
 }
 
+/** Sem credenciais do Google Ads, oferece importar do .env do analise-cpa (nada sai do PC). */
+function formularioAds() {
+  const caixa = document.createElement("div");
+  caixa.className = "conectar";
+  caixa.innerHTML = `
+    <p>Importar as credenciais do Google Ads do .env do analise-cpa. Elas ficam no Gerenciador de Credenciais do Windows.</p>
+    <div class="linha"><input type="text" /><button>Importar</button></div>
+    <p class="erro"></p>`;
+  const input = caixa.querySelector("input")!;
+  const erro = caixa.querySelector(".erro")!;
+  invoke<string>("ads_env_padrao").then((c) => (input.value = c));
+  caixa.querySelector("button")!.addEventListener("click", async () => {
+    try {
+      await invoke("importar_ads", { caminho: input.value });
+      erro.textContent = "Importado. Consultando as contas…";
+    } catch (e) {
+      erro.textContent = String(e);
+    }
+  });
+  return caixa;
+}
+
+let hooksOk = false;
+invoke<boolean>("hooks_instalados").then((ok) => (hooksOk = ok));
+
+/** Liga o Mark às sessões do Claude Code deste PC (backup do settings.json antes). */
+function formularioClaude() {
+  const caixa = document.createElement("div");
+  caixa.className = "conectar";
+  caixa.innerHTML = `
+    <p>Para eu acompanhar o Claude Code deste PC, preciso pôr uns hooks no settings.json do Claude. Faço um backup antes.</p>
+    <div class="linha"><button>Instalar hooks</button></div>
+    <p class="erro"></p>`;
+  const erro = caixa.querySelector(".erro")!;
+  caixa.querySelector("button")!.addEventListener("click", async () => {
+    try {
+      const arq = await invoke<string>("instalar_hooks");
+      hooksOk = true;
+      erro.textContent = `Pronto! Hooks gravados em ${arq}. Vale para as próximas sessões do Claude Code.`;
+    } catch (e) {
+      erro.textContent = String(e);
+    }
+  });
+  return caixa;
+}
+
 function desenharPainel() {
   const p = paineis[aba];
   painelEl.replaceChildren();
@@ -88,6 +134,14 @@ function desenharPainel() {
     const form = formularioAsana();
     if (p.vazio) form.querySelector(".erro")!.textContent = p.vazio;
     painelEl.append(form);
+    return;
+  }
+  if (aba === "claude" && !hooksOk) {
+    painelEl.append(formularioClaude());
+    return;
+  }
+  if (aba === "ads" && p.nivel === "nenhum" && p.vazio === "") {
+    painelEl.append(formularioAds());
     return;
   }
   if (!p.itens.length) {

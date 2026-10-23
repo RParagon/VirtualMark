@@ -25,9 +25,18 @@ npx tauri dev
 - `public/sprites/`: quadros do kit 2D do Mark v3 (192x208, PNG transparente).
 - `src-tauri/`: janelas, bandeja e, nas próximas etapas, Asana, Google Ads e hooks do Claude Code.
 
+## Conectar (pela própria barra, passando o mouse no indicador)
+
+- **Asana:** colar o token pessoal (Asana > Configurações > Apps > Tokens de acesso pessoal). Mostra as tarefas abertas atribuídas ao Rafael, inclusive subtarefas: atrasadas, de hoje e dos próximos 7 dias. Avisa tarefa nova e manda um resumo às 8h.
+- **Google Ads:** importar o `E:\Paragon\analise-cpa\.env`. Só leitura, a cada 30 minutos. Regras em `src-tauri/src/ads.rs`: conta ativa sem impressões depois das 11h, gasto do dia acima de 120% do orçamento, anúncio reprovado, CPA de 3 dias 40% acima do de 30 dias (com 10+ conversões). Cada alerta aparece uma vez por dia por conta.
+- **Claude Code:** botão "Instalar hooks". Faz backup do `~/.claude/settings.json` (`settings.json.mark-backup`) e acrescenta hooks que chamam `Mark.exe --mark-hook`. O Mark fica "trabalhando" enquanto o Claude trabalha, corre até a barra quando o Claude espera você e comemora quando termina. Sessões do claude.ai na nuvem não entram (não há API pública).
+
+Tokens e credenciais ficam no Gerenciador de Credenciais do Windows, nunca em arquivo.
+
 ## Etapas
 
 1. Esqueleto: barra, Mark animado, bandeja. (feito)
-2. Asana (VM Gestão).
-3. Google Ads (MCC), só leitura.
-4. Hooks do Claude Code.
+2. Asana (VM Gestão). (feito, falta testar com o token)
+3. Google Ads (MCC), só leitura. (feito, falta testar no PC)
+4. Hooks do Claude Code. (feito, falta testar no PC)
+5. Teste no PC e medição de RAM.

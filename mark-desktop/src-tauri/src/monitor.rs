@@ -6,13 +6,14 @@ use std::time::{Duration, Instant};
 use tauri::{AppHandle, Emitter, Manager};
 
 use crate::painel::Painel;
-use crate::{asana, cofre};
+use crate::{ads, asana, cofre};
 
 // Uma thread só, que acorda a cada minuto, roda cada integração no seu intervalo
 // e avisa a barra pelos eventos "status" e "regra:alerta".
 
 pub const TOKEN_ASANA: &str = "asana_token";
 const INTERVALO_ASANA: Duration = Duration::from_secs(5 * 60);
+const INTERVALO_ADS: Duration = Duration::from_secs(30 * 60);
 
 pub struct Monitor {
     pub paineis: Mutex<HashMap<&'static str, Painel>>,
@@ -38,6 +39,8 @@ pub fn iniciar(app: &AppHandle) {
     std::thread::spawn(move || {
         let mut mem_asana = asana::Memoria::default();
         let mut proxima_asana = Instant::now();
+        let mut mem_ads = ads::Memoria::default();
+        let mut proxima_ads = Instant::now();
         loop {
             let agora = Instant::now();
             if agora >= proxima_asana {
@@ -56,8 +59,28 @@ pub fn iniciar(app: &AppHandle) {
                     },
                 }
             }
+            if agora >= proxima_ads {
+                proxima_ads = agora + INTERVALO_ADS;
+                if !ads::conectado() {
+                    publicar(&app, ads::painel_sem_credenciais());
+                } else {
+                    match ads::buscar() {
+                        Ok(contas) => {
+                            let (painel, alertas) = ads::avaliar(&contas, &mut mem_ads);
+                            publicar(&app, painel);
+                            for a in alertas {
+                                let _ = app.emit("regra:alerta", &a);
+                            }
+                        }
+                        Err(e) => publicar(&app, ads::painel_erro(&e)),
+                    }
+                }
+            }
             match rx.recv_timeout(Duration::from_secs(60)) {
-                Ok(()) => proxima_asana = Instant::now(),
+                Ok(()) => {
+                    proxima_asana = Instant::now();
+                    proxima_ads = Instant::now();
+                }
                 Err(RecvTimeoutError::Timeout) => {}
                 Err(RecvTimeoutError::Disconnected) => break,
             }

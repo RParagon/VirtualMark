@@ -1,4 +1,6 @@
+mod ads;
 mod asana;
+mod claude;
 mod cofre;
 mod monitor;
 mod painel;
@@ -11,6 +13,8 @@ use tauri::{
 };
 
 use monitor::Monitor;
+
+pub use claude::{rele as rele_hook, FLAG as FLAG_HOOK};
 use painel::Painel;
 
 // Tamanhos lógicos das janelas (iguais aos de tauri.conf.json).
@@ -67,6 +71,29 @@ fn salvar_token(nome: String, valor: String, monitor: State<Monitor>) -> Result<
 }
 
 #[tauri::command]
+fn ads_env_padrao() -> &'static str {
+    ads::ENV_PADRAO
+}
+
+/// Importa as credenciais do Google Ads do .env do analise-cpa (fica tudo no PC).
+#[tauri::command]
+fn importar_ads(caminho: String, monitor: State<Monitor>) -> Result<(), String> {
+    ads::importar_env(&caminho)?;
+    monitor.atualizar_agora();
+    Ok(())
+}
+
+#[tauri::command]
+fn hooks_instalados() -> bool {
+    claude::hooks_instalados()
+}
+
+#[tauri::command]
+fn instalar_hooks() -> Result<String, String> {
+    claude::instalar_hooks()
+}
+
+#[tauri::command]
 fn atualizar(monitor: State<Monitor>) {
     monitor.atualizar_agora();
 }
@@ -94,10 +121,11 @@ fn posicionar(app: &AppHandle) {
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![area_trabalho, status_atual, tem_token, salvar_token, atualizar])
+        .invoke_handler(tauri::generate_handler![area_trabalho, status_atual, tem_token, salvar_token, ads_env_padrao, importar_ads, hooks_instalados, instalar_hooks, atualizar])
         .setup(|app| {
             posicionar(app.handle());
             monitor::iniciar(app.handle());
+            claude::iniciar(app.handle());
 
             let demo = MenuItem::with_id(app, "demo", "Testar animações", true, None::<&str>)?;
             let teste = MenuItem::with_id(app, "alerta-teste", "Testar um alerta", true, None::<&str>)?;
