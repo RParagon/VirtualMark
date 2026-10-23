@@ -25,13 +25,21 @@ npx tauri dev
 - `public/sprites/`: quadros do kit 2D do Mark v3 (192x208, PNG transparente).
 - `src-tauri/`: janelas, bandeja e, nas próximas etapas, Asana, Google Ads e hooks do Claude Code.
 
-## Conectar (pela própria barra, passando o mouse no indicador)
+## Configurações
 
-- **Asana:** colar o token pessoal (Asana > Configurações > Apps > Tokens de acesso pessoal). Mostra as tarefas abertas atribuídas ao Rafael, inclusive subtarefas: atrasadas, de hoje e dos próximos 7 dias. Avisa tarefa nova e manda um resumo às 8h.
-- **Google Ads:** importar o `E:\Paragon\analise-cpa\.env`. Só leitura, a cada 30 minutos. Regras em `src-tauri/src/ads.rs`: conta ativa sem impressões depois das 11h, gasto do dia acima de 120% do orçamento, anúncio reprovado, CPA de 3 dias 40% acima do de 30 dias (com 10+ conversões). Cada alerta aparece uma vez por dia por conta.
-- **Claude Code:** botão "Instalar hooks". Faz backup do `~/.claude/settings.json` (`settings.json.mark-backup`) e acrescenta hooks que chamam `Mark.exe --mark-hook`. O Mark fica "trabalhando" enquanto o Claude trabalha, corre até a barra quando o Claude espera você e comemora quando termina. Sessões do claude.ai na nuvem não entram (não há API pública).
+Engrenagem na barra ou "Configurações…" no ícone da bandeja. Lá ficam:
+
+- **Asana:** token pessoal (Asana > Configurações > Apps > Tokens de acesso pessoal), desconectar, dias para uma tarefa atrasada virar "antiga", hora do resumo. Tarefas abertas atribuídas ao Rafael, inclusive subtarefas. Avisa tarefa nova, tarefa atualizada e o resumo do dia. Na barra, cada tarefa tem "concluir" (pede confirmação) e "ocultar" (só some da barra).
+- **Google Ads:** importar o `.env` do analise-cpa, desconectar e as regras: conta ativa sem impressões depois de certa hora, gasto acima de X% do orçamento, anúncio reprovado, CPA de 3 dias acima do de 30 dias. Uma conta com erro não esconde as outras. A conexão tenta IPv4 primeiro (o IPv6 do PC não funciona).
+- **Claude Code:** instalar, testar e remover os hooks (`Mark.exe --mark-hook`, com backup do `~/.claude/settings.json`). A barra mostra cada sessão com o pedido, a ferramenta em uso e o tempo. Sessões do claude.ai na nuvem não entram (não há API pública).
+- **Visual:** tema e quanto tempo a barra espera para se recolher.
 
 Tokens e credenciais ficam no Gerenciador de Credenciais do Windows, nunca em arquivo.
+
+## Comportamento
+
+- A barra fica colada no topo da tela, como um notch. Parada, ela se recolhe numa lingueta; passando o mouse, abre de novo.
+- O Mark segue o cursor com os olhos, passeia de vez em quando, esperneia quando é arrastado e mostra os alertas num balão ao lado da cabeça.
 
 ## Etapas
 

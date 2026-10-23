@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Mark · Configurações</title>
+    <link rel="stylesheet" href="/src/estilo.css" />
+  </head>
+  <body class="janela-config">
+    <header class="cfg-topo">
+      <img src="/logo-vm.png" class="logo" alt="vm." />
+      <h1>Configurações do Mark</h1>
+    </header>
+
+    <section class="cfg-bloco" data-fonte="asana">
+      <div class="cfg-cab"><h2>Asana</h2><span class="estado"></span></div>
+      <p class="msg"></p>
+      <label>Token pessoal <a href="#" data-abrir="https://app.asana.com/0/my-apps">gerar token</a></label>
+      <div class="linha"><input id="token-asana" type="password" placeholder="Cole o token para conectar ou trocar" /><button data-acao="salvar-asana">Salvar</button></div>
+      <div class="grade">
+        <label>Atrasada há mais de (dias) vira "antiga"<input type="number" min="1" data-cfg="asana_dias_antiga" /></label>
+        <label>Hora do resumo do dia<input type="number" min="0" max="23" data-cfg="asana_hora_resumo" /></label>
+        <label>Consultar a cada (min)<input type="number" min="1" data-cfg="intervalo_asana_min" /></label>
+      </div>
+      <div class="linha acoes"><button class="sec" data-acao="atualizar">Atualizar agora</button><button class="sec perigo" data-acao="desconectar" data-alvo="asana">Desconectar</button></div>
+    </section>
+
+    <section class="cfg-bloco" data-fonte="ads">
+      <div class="cfg-cab"><h2>Google Ads (MCC)</h2><span class="estado"></span></div>
+      <p class="msg"></p>
+      <label>Arquivo .env com as credenciais</label>
+      <div class="linha"><input id="env-ads" type="text" data-cfg="ads_env" /><button data-acao="importar-ads">Importar</button></div>
+      <div class="grade">
+        <label>Sem impressões depois das (h)<input type="number" min="0" max="23" data-cfg="ads_hora_sem_impressoes" /></label>
+        <label>Gasto do dia acima de (% do orçamento)<input type="number" min="100" data-cfg="ads_gasto_sobre_orcamento_pct" /></label>
+        <label>CPA 3 dias acima do de 30 dias (%)<input type="number" min="5" data-cfg="ads_cpa_sobe_pct" /></label>
+        <label>Mínimo de conversões para comparar CPA<input type="number" min="1" data-cfg="ads_cpa_min_conversoes" /></label>
+        <label>Consultar a cada (min)<input type="number" min="5" data-cfg="intervalo_ads_min" /></label>
+      </div>
+      <div class="linha acoes"><button class="sec" data-acao="atualizar">Atualizar agora</button><button class="sec perigo" data-acao="desconectar" data-alvo="ads">Desconectar</button></div>
+    </section>
+
+    <section class="cfg-bloco" data-fonte="claude">
+      <div class="cfg-cab"><h2>Claude Code</h2><span class="estado"></span></div>
+      <p class="msg"></p>
+      <p class="ajuda">Os hooks ficam no settings.json do Claude Code (com backup antes). Valem para as sessões abertas depois de instalar.</p>
+      <div class="linha acoes"><button data-acao="instalar-hooks">Instalar hooks</button><button class="sec" data-acao="testar-hooks">Testar</button><button class="sec perigo" data-acao="remover-hooks">Remover hooks</button></div>
+    </section>
+
+    <section class="cfg-bloco">
+      <div class="cfg-cab"><h2>Visual</h2></div>
+      <label>Tema da barra
+        <select data-cfg="tema"><option value="escuro">Escuro (preto e vermelho)</option><option value="claro">Claro</option></select>
+      </label>
+      <label>Recolher a barra depois de parada (segundos, 0 = nunca)<input type="number" min="0" data-cfg="ilha_recolher_seg" /></label>
+    </section>
+
+    <footer class="cfg-rodape"><span id="salvo"></span><button data-acao="salvar-config">Salvar preferências</button></footer>
+    <script type="module" src="/src/config.ts"></script>
+  </body>
+</html>

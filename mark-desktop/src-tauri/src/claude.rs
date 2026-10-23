@@ -41,6 +41,36 @@ struct Sessao {
     estado: Estado,
     desde: Instant,
     mensagem: String,
+    /// Último pedido do Rafael nesta sessão (começo do texto).
+    pedido: String,
+    /// O que o Claude está fazendo agora, ex.: "Edit ilha.ts".
+    acao: String,
+    /// Início da rodada atual (epoch ms), para "há 3 min".
+    inicio_ms: i64,
+}
+
+fn agora_ms() -> i64 {
+    chrono::Local::now().timestamp_millis()
+}
+
+fn curto(texto: &str, max: usize) -> String {
+    let t = texto.split_whitespace().collect::<Vec<_>>().join(" ");
+    if t.chars().count() > max { format!("{}…", t.chars().take(max).collect::<String>()) } else { t }
+}
+
+/// "Edit ilha.ts", "Bash npm run build", "Grep TODO"...
+fn descrever_ferramenta(dados: &Value) -> String {
+    let nome = dados["tool_name"].as_str().unwrap_or("ferramenta");
+    let e = &dados["tool_input"];
+    let alvo = e["file_path"]
+        .as_str()
+        .map(nome_pasta)
+        .or_else(|| e["command"].as_str().map(|c| curto(c, 40)))
+        .or_else(|| e["pattern"].as_str().map(|c| curto(c, 30)))
+        .or_else(|| e["url"].as_str().map(|c| curto(c, 40)))
+        .or_else(|| e["description"].as_str().map(|c| curto(c, 40)))
+        .unwrap_or_default();
+    if alvo.is_empty() { nome.to_string() } else { format!("{nome} {alvo}") }
 }
 
 #[derive(Default)]
@@ -67,14 +97,23 @@ fn painel(sessoes: &HashMap<String, Sessao>) -> Painel {
     let itens = lista
         .iter()
         .map(|s| Item {
-            titulo: if s.mensagem.is_empty() { s.pasta.clone() } else { format!("{} · {}", s.pasta, s.mensagem) },
-            detalhe: match s.estado {
-                Estado::Trabalhando => "trabalhando".into(),
-                Estado::Esperando => "esperando você".into(),
-                Estado::Terminou => "terminou".into(),
-            },
-            atencao: s.estado == Estado::Esperando,
-            link: None,
+            sub: Some(match s.estado {
+                Estado::Esperando if !s.mensagem.is_empty() => s.mensagem.clone(),
+                Estado::Trabalhando if !s.acao.is_empty() => s.acao.clone(),
+                _ if !s.pedido.is_empty() => format!("“{}”", s.pedido),
+                _ => String::new(),
+            })
+            .filter(|t| !t.is_empty()),
+            desde_ms: Some(s.inicio_ms),
+            ..Item::novo(
+                if s.pedido.is_empty() { s.pasta.clone() } else { format!("{} · {}", s.pasta, curto(&s.pedido, 50)) },
+                match s.estado {
+                    Estado::Trabalhando => "trabalhando",
+                    Estado::Esperando => "esperando você",
+                    Estado::Terminou => "terminou",
+                },
+                s.estado == Estado::Esperando,
+            )
         })
         .collect();
     Painel {
@@ -106,8 +145,35 @@ fn receber(app: &AppHandle, dados: Value) {
         _ => return,
     };
     if let Some(estado) = novo {
-        let mensagem = if estado == Estado::Esperando { dados["message"].as_str().unwrap_or_default().to_string() } else { String::new() };
-        mapa.insert(id, Sessao { pasta: pasta.clone(), estado, desde: Instant::now(), mensagem });
+        let s = mapa.entry(id).or_insert_with(|| Sessao {
+            pasta: pasta.clone(),
+            estado,
+            desde: Instant::now(),
+            mensagem: String::new(),
+            pedido: String::new(),
+            acao: String::new(),
+            inicio_ms: agora_ms(),
+        });
+        match evento {
+            "UserPromptSubmit" => {
+                s.pedido = curto(dados["prompt"].as_str().unwrap_or_default(), 120);
+                s.acao.clear();
+                s.inicio_ms = agora_ms();
+            }
+            "PreToolUse" => s.acao = descrever_ferramenta(&dados),
+            "Notification" => s.mensagem = dados["message"].as_str().unwrap_or_default().to_string(),
+            "Stop" => {
+                s.acao.clear();
+                s.inicio_ms = agora_ms();
+            }
+            _ => {}
+        }
+        if estado != Estado::Esperando {
+            s.mensagem.clear();
+        }
+        s.pasta = pasta.clone();
+        s.estado = estado;
+        s.desde = Instant::now();
     }
 
     // Animações do Mark e alertas.
@@ -210,6 +276,56 @@ pub fn instalar_hooks() -> Result<String, String> {
     Ok(caminho.display().to_string())
 }
 
+/// Tira só os hooks do Mark do settings.json (com backup), deixando o resto como estava.
+pub fn remover_hooks() -> Result<(), String> {
+    let caminho = settings()?;
+    let Ok(texto) = std::fs::read_to_string(&caminho) else { return Ok(()) };
+    let mut cfg: Value = serde_json::from_str(&texto).map_err(|e| format!("settings.json inválido: {e}"))?;
+    std::fs::copy(&caminho, caminho.with_extension("json.mark-backup")).map_err(|e| e.to_string())?;
+    if let Some(hooks) = cfg["hooks"].as_object_mut() {
+        for lista in hooks.values_mut() {
+            let Some(lista) = lista.as_array_mut() else { continue };
+            for grupo in lista.iter_mut() {
+                if let Some(hs) = grupo["hooks"].as_array_mut() {
+                    hs.retain(|h| !eh_nosso(h));
+                }
+            }
+            lista.retain(|g| g["hooks"].as_array().map_or(true, |hs| !hs.is_empty()));
+        }
+        hooks.retain(|_, v| v.as_array().map_or(true, |l| !l.is_empty()));
+    }
+    std::fs::write(&caminho, serde_json::to_string_pretty(&cfg).map_err(|e| e.to_string())?).map_err(|e| e.to_string())
+}
+
+/// Faz o caminho completo de um hook (Mark.exe --mark-hook -> porta -> barra) com uma sessão de teste.
+pub fn testar() -> Result<(), String> {
+    use std::process::{Command, Stdio};
+    let exe = std::env::current_exe().map_err(|e| e.to_string())?;
+    let enviar = move |dados: Value| -> Result<(), String> {
+        let mut filho = Command::new(&exe).arg(FLAG).stdin(Stdio::piped()).spawn().map_err(|e| e.to_string())?;
+        filho.stdin.take().unwrap().write_all(dados.to_string().as_bytes()).map_err(|e| e.to_string())?;
+        filho.wait().map_err(|e| e.to_string())?;
+        Ok(())
+    };
+    let base = json!({ "session_id": "teste-do-mark", "cwd": "Teste do Mark" });
+    let mut d = base.clone();
+    d["hook_event_name"] = json!("UserPromptSubmit");
+    d["prompt"] = json!("teste de ligação com o Claude Code");
+    enviar(d)?;
+    let mut d = base.clone();
+    d["hook_event_name"] = json!("PreToolUse");
+    d["tool_name"] = json!("Read");
+    d["tool_input"] = json!({ "file_path": "LEIA.md" });
+    enviar(d)?;
+    std::thread::spawn(move || {
+        std::thread::sleep(Duration::from_secs(6));
+        let mut d = base;
+        d["hook_event_name"] = json!("SessionEnd");
+        let _ = enviar(d);
+    });
+    Ok(())
+}
+
 pub fn hooks_instalados() -> bool {
     settings()
         .ok()
@@ -239,6 +355,14 @@ mod testes {
         assert_eq!(cfg["hooks"]["PreToolUse"][0]["matcher"], "*");
         assert!(dir.join(".claude/settings.json.mark-backup").exists());
         std::fs::remove_dir_all(dir).unwrap();
+    }
+
+    #[test]
+    fn descreve_ferramentas() {
+        let d = json!({"tool_name":"Edit","tool_input":{"file_path":"E:\\Paragon\\mark\\src\\ilha.ts"}});
+        assert_eq!(descrever_ferramenta(&d), "Edit ilha.ts");
+        let d = json!({"tool_name":"Bash","tool_input":{"command":"npm   run build"}});
+        assert_eq!(descrever_ferramenta(&d), "Bash npm run build");
     }
 
     #[test]

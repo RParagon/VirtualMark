@@ -2,7 +2,11 @@
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
   "description": "Permissões da barra VM e do Mark",
-  "windows": ["ilha", "mark"],
+  "windows": [
+    "ilha",
+    "mark",
+    "config"
+  ],
   "permissions": [
     "core:default",
     "core:window:allow-set-position",

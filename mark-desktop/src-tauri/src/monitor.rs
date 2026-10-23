@@ -6,14 +6,12 @@ use std::time::{Duration, Instant};
 use tauri::{AppHandle, Emitter, Manager};
 
 use crate::painel::Painel;
-use crate::{ads, asana, cofre};
+use crate::{ads, asana, cofre, config};
 
 // Uma thread só, que acorda a cada minuto, roda cada integração no seu intervalo
 // e avisa a barra pelos eventos "status" e "regra:alerta".
 
 pub const TOKEN_ASANA: &str = "asana_token";
-const INTERVALO_ASANA: Duration = Duration::from_secs(5 * 60);
-const INTERVALO_ADS: Duration = Duration::from_secs(30 * 60);
 
 pub struct Monitor {
     pub paineis: Mutex<HashMap<&'static str, Painel>>,
@@ -43,13 +41,14 @@ pub fn iniciar(app: &AppHandle) {
         let mut proxima_ads = Instant::now();
         loop {
             let agora = Instant::now();
+            let cfg = config::atual(&app);
             if agora >= proxima_asana {
-                proxima_asana = agora + INTERVALO_ASANA;
+                proxima_asana = agora + Duration::from_secs(cfg.intervalo_asana_min.max(1) * 60);
                 match cofre::ler(TOKEN_ASANA) {
                     None => publicar(&app, asana::painel_sem_token()),
                     Some(token) => match asana::buscar(&token) {
                         Ok(tarefas) => {
-                            let (painel, alertas) = asana::avaliar(&tarefas, &mut mem_asana);
+                            let (painel, alertas) = asana::avaliar(&tarefas, &mut mem_asana, &cfg);
                             publicar(&app, painel);
                             for a in alertas {
                                 let _ = app.emit("regra:alerta", &a);
@@ -60,13 +59,13 @@ pub fn iniciar(app: &AppHandle) {
                 }
             }
             if agora >= proxima_ads {
-                proxima_ads = agora + INTERVALO_ADS;
+                proxima_ads = agora + Duration::from_secs(cfg.intervalo_ads_min.max(5) * 60);
                 if !ads::conectado() {
                     publicar(&app, ads::painel_sem_credenciais());
                 } else {
                     match ads::buscar() {
                         Ok(contas) => {
-                            let (painel, alertas) = ads::avaliar(&contas, &mut mem_ads);
+                            let (painel, alertas) = ads::avaliar(&contas, &mut mem_ads, &cfg);
                             publicar(&app, painel);
                             for a in alertas {
                                 let _ = app.emit("regra:alerta", &a);

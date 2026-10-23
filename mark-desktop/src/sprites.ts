@@ -26,7 +26,7 @@ export function animacao(estado: Estado): Animacao {
 
 /** Carrega todos os quadros uma vez, para a troca de estado não piscar. */
 export function precarregar(): Promise<void> {
-  const todos = (Object.keys(QUADROS) as Estado[]).flatMap((e) => animacao(e).quadros);
+  const todos = [...(Object.keys(QUADROS) as Estado[]).flatMap((e) => animacao(e).quadros), ...OLHAR];
   return Promise.all(
     todos.map(
       (src) =>
@@ -37,6 +37,15 @@ export function precarregar(): Promise<void> {
         }),
     ),
   ).then(() => undefined);
+}
+
+// 16 quadros do Mark olhando em volta: 0 = cima, 4 = direita, 8 = baixo, 12 = esquerda.
+const OLHAR = Array.from({ length: 16 }, (_, i) => `/sprites/olhar/${String(i).padStart(2, "0")}.png`);
+
+/** Quadro para um ângulo em radianos (eixo y da tela para baixo, 0 = direita). */
+export function quadroOlhar(angulo: number): string {
+  const passos = Math.round((angulo + Math.PI / 2) / (Math.PI / 8));
+  return OLHAR[((passos % 16) + 16) % 16];
 }
 
 export const TODOS_ESTADOS = Object.keys(QUADROS) as Estado[];

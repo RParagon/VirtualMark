@@ -1,6 +1,6 @@
 [package]
 name = "mark-desktop"
-version = "0.1.0"
+version = "0.2.0"
 description = "Mark, o mascote da Virtual Mark, na área de trabalho"
 authors = ["Virtual Mark"]
 edition = "2021"

@@ -4,6 +4,8 @@ use chrono::{Local, NaiveDate, Timelike};
 use serde_json::{json, Value};
 
 use crate::cofre;
+use crate::config::Config;
+use crate::net;
 use crate::painel::{Alerta, Item, Nivel, Painel};
 
 // Google Ads pela MCC, só leitura. Mesmas credenciais do E:\Paragon\analise-cpa\.env,
@@ -17,12 +19,6 @@ pub const CHAVES: [(&str, &str); 5] = [
     ("GOOGLE_ADS_MCC_ID", "ads_mcc_id"),
 ];
 pub const ENV_PADRAO: &str = r"E:\Paragon\analise-cpa\.env";
-
-// Regras (ajustar aqui até existir uma tela de configuração).
-const HORA_SEM_IMPRESSOES: u32 = 11; // depois desta hora, conta ativa com 0 impressões vira alerta
-const GASTO_SOBRE_ORCAMENTO: f64 = 1.2; // gasto do dia acima de 120% da soma dos orçamentos
-const CPA_SOBE: f64 = 1.4; // CPA dos últimos 3 dias 40% acima do de 30 dias
-const CPA_MIN_CONVERSOES: f64 = 10.0; // só compara CPA com amostra mínima
 
 struct Credenciais {
     client_id: String,
@@ -44,6 +40,13 @@ fn credenciais() -> Option<Credenciais> {
 
 pub fn conectado() -> bool {
     credenciais().is_some()
+}
+
+pub fn desconectar() -> Result<(), String> {
+    for (_, nome) in CHAVES {
+        cofre::gravar(nome, "")?;
+    }
+    Ok(())
 }
 
 /// Lê o .env do analise-cpa e guarda as 5 chaves no cofre.
@@ -80,14 +83,18 @@ const VERSOES: [&str; 5] = ["v24", "v23", "v22", "v21", "v20"];
 
 impl Cliente {
     fn novo(cred: Credenciais) -> Result<Self, String> {
-        let r: Value = ureq::post("https://oauth2.googleapis.com/token")
-            .send_form(&[
+        let r: Value = net::com_retentativa(|| {
+            net::agente().post("https://oauth2.googleapis.com/token").send_form(&[
                 ("client_id", cred.client_id.as_str()),
                 ("client_secret", cred.client_secret.as_str()),
                 ("refresh_token", cred.refresh_token.as_str()),
                 ("grant_type", "refresh_token"),
             ])
-            .map_err(|e| format!("login no Google falhou ({e})"))?
+        })
+        .map_err(|e| match e {
+            ureq::Error::Status(400 | 401, _) => "o Google recusou o login (refresh token vencido? importe o .env de novo)".to_string(),
+            e => format!("login no Google falhou: {}", net::explicar(&e)),
+        })?
             .into_json()
             .map_err(|e| e.to_string())?;
         let token = r["access_token"].as_str().ok_or("login no Google sem token")?.to_string();
@@ -101,12 +108,14 @@ impl Cliente {
         };
         for v in versoes {
             let url = format!("https://googleads.googleapis.com/{v}/customers/{conta}/googleAds:searchStream");
-            let r = ureq::post(&url)
-                .set("Authorization", &format!("Bearer {}", self.token))
-                .set("developer-token", &self.cred.developer_token)
-                .set("login-customer-id", &self.cred.mcc)
-                .timeout(std::time::Duration::from_secs(30))
-                .send_json(json!({ "query": gaql }));
+            let r = net::com_retentativa(|| {
+                net::agente()
+                    .post(&url)
+                    .set("Authorization", &format!("Bearer {}", self.token))
+                    .set("developer-token", &self.cred.developer_token)
+                    .set("login-customer-id", &self.cred.mcc)
+                    .send_json(json!({ "query": gaql }))
+            });
             match r {
                 Ok(resp) => {
                     self.versao = Some(v);
@@ -118,10 +127,11 @@ impl Cliente {
                 }
                 Err(ureq::Error::Status(404, _)) if self.versao.is_none() => continue,
                 Err(ureq::Error::Status(c, resp)) => {
-                    let corpo = resp.into_string().unwrap_or_default();
-                    return Err(format!("Google Ads respondeu {c}: {}", corpo.chars().take(200).collect::<String>()));
+                    let corpo: Value = resp.into_json().unwrap_or_default();
+                    let msg = corpo[0]["error"]["message"].as_str().or(corpo["error"]["message"].as_str()).unwrap_or("").to_string();
+                    return Err(format!("o Google Ads respondeu {c}{}", if msg.is_empty() { String::new() } else { format!(": {msg}") }));
                 }
-                Err(e) => return Err(e.to_string()),
+                Err(e) => return Err(net::explicar(&e)),
             }
         }
         Err("nenhuma versão da API do Google Ads respondeu".into())
@@ -142,6 +152,7 @@ fn reais(v: f64) -> String {
 
 /// Números de uma conta numa rodada.
 pub struct Conta {
+    erro: Option<String>,
     id: String,
     nome: String,
     gasto_hoje: f64,
@@ -167,7 +178,29 @@ pub fn buscar() -> Result<Vec<Conta>, String> {
     for cl in clientes {
         let id = cl["customerClient"]["id"].as_str().unwrap_or_default().to_string();
         let nome = cl["customerClient"]["descriptiveName"].as_str().unwrap_or(&id).to_string();
+        // Uma conta com problema não impede as outras de aparecerem.
+        match ler_conta(&mut c, &id, &nome, hoje) {
+            Ok(Some(conta)) => contas.push(conta),
+            Ok(None) => {}
+            Err(erro) => contas.push(Conta {
+                erro: Some(erro),
+                id,
+                nome,
+                gasto_hoje: 0.0,
+                impressoes_hoje: 0.0,
+                orcamento: 0.0,
+                reprovados: 0,
+                cpa_3d: None,
+                cpa_30d: None,
+                conv_30d: 0.0,
+            }),
+        }
+    }
+    Ok(contas)
+}
 
+fn ler_conta(c: &mut Cliente, id: &str, nome: &str, hoje: NaiveDate) -> Result<Option<Conta>, String> {
+    let (id, nome) = (id.to_string(), nome.to_string());
         // 30 dias por dia: serve para ignorar contas paradas e para o CPA.
         let dias = c.consulta(
             &id,
@@ -189,7 +222,7 @@ pub fn buscar() -> Result<Vec<Conta>, String> {
             }
         }
         if gasto30 == 0.0 {
-            continue;
+            return Ok(None);
         }
 
         let hoje_r = c.consulta(
@@ -221,7 +254,8 @@ pub fn buscar() -> Result<Vec<Conta>, String> {
             )?
             .len();
 
-        contas.push(Conta {
+        Ok(Some(Conta {
+            erro: None,
             id,
             nome,
             gasto_hoje,
@@ -231,9 +265,7 @@ pub fn buscar() -> Result<Vec<Conta>, String> {
             cpa_3d: (c3 > 0.0).then(|| g3 / c3),
             cpa_30d: (conv30 > 0.0).then(|| gasto30 / conv30),
             conv_30d: conv30,
-        });
-    }
-    Ok(contas)
+        }))
 }
 
 /// Alertas já dados hoje, por conta e regra.
@@ -243,7 +275,9 @@ pub struct Memoria {
     avisados: HashSet<(String, &'static str)>,
 }
 
-pub fn avaliar(contas: &[Conta], mem: &mut Memoria) -> (Painel, Vec<Alerta>) {
+pub fn avaliar(contas: &[Conta], mem: &mut Memoria, cfg: &Config) -> (Painel, Vec<Alerta>) {
+    let gasto_sobre = cfg.ads_gasto_sobre_orcamento_pct / 100.0;
+    let cpa_sobe = 1.0 + cfg.ads_cpa_sobe_pct / 100.0;
     let agora = Local::now();
     if mem.dia != Some(agora.date_naive()) {
         mem.dia = Some(agora.date_naive());
@@ -255,10 +289,17 @@ pub fn avaliar(contas: &[Conta], mem: &mut Memoria) -> (Painel, Vec<Alerta>) {
 
     for c in contas {
         let mut problemas: Vec<(&'static str, String)> = Vec::new();
-        if c.orcamento > 0.0 && c.impressoes_hoje == 0.0 && agora.hour() >= HORA_SEM_IMPRESSOES {
+        if let Some(erro) = &c.erro {
+            itens.push((
+                true,
+                Item::novo(format!("{}: não consegui ler", c.nome), erro.clone(), true),
+            ));
+            continue;
+        }
+        if c.orcamento > 0.0 && c.impressoes_hoje == 0.0 && agora.hour() >= cfg.ads_hora_sem_impressoes {
             problemas.push(("sem_impressoes", format!("{} está sem impressões hoje.", c.nome)));
         }
-        if c.orcamento > 0.0 && c.gasto_hoje > c.orcamento * GASTO_SOBRE_ORCAMENTO {
+        if c.orcamento > 0.0 && c.gasto_hoje > c.orcamento * gasto_sobre {
             problemas.push((
                 "gasto",
                 format!("{} já gastou {} hoje, acima do orçamento de {}.", c.nome, reais(c.gasto_hoje), reais(c.orcamento)),
@@ -268,7 +309,7 @@ pub fn avaliar(contas: &[Conta], mem: &mut Memoria) -> (Painel, Vec<Alerta>) {
             problemas.push(("reprovados", format!("{} tem {} anúncio(s) reprovado(s).", c.nome, c.reprovados)));
         }
         if let (Some(c3), Some(c30)) = (c.cpa_3d, c.cpa_30d) {
-            if c.conv_30d >= CPA_MIN_CONVERSOES && c3 > c30 * CPA_SOBE {
+            if c.conv_30d >= cfg.ads_cpa_min_conversoes && c3 > c30 * cpa_sobe {
                 problemas.push((
                     "cpa",
                     format!("CPA da {} subiu: {} nos últimos 3 dias contra {} no mês.", c.nome, reais(c3), reais(c30)),
@@ -291,13 +332,16 @@ pub fn avaliar(contas: &[Conta], mem: &mut Memoria) -> (Painel, Vec<Alerta>) {
         itens.push((
             !problemas.is_empty(),
             Item {
-                titulo: match problemas.first() {
-                    Some((_, t)) => t.clone(),
-                    None => c.nome.clone(),
-                },
-                detalhe,
-                atencao: !problemas.is_empty(),
                 link: Some("https://ads.google.com/aw/overview".into()),
+                sub: (problemas.len() > 1).then(|| problemas[1..].iter().map(|(_, t)| t.as_str()).collect::<Vec<_>>().join(" ")),
+                ..Item::novo(
+                    match problemas.first() {
+                        Some((_, t)) => t.clone(),
+                        None => c.nome.clone(),
+                    },
+                    detalhe,
+                    !problemas.is_empty(),
+                )
             },
         ));
     }
@@ -329,6 +373,7 @@ mod testes {
 
     fn conta(id: &str) -> Conta {
         Conta {
+            erro: None,
             id: id.into(),
             nome: format!("Conta {id}"),
             gasto_hoje: 50.0,
@@ -343,7 +388,7 @@ mod testes {
 
     #[test]
     fn conta_saudavel_nao_alerta() {
-        let (p, a) = avaliar(&[conta("1")], &mut Memoria::default());
+        let (p, a) = avaliar(&[conta("1")], &mut Memoria::default(), &Config::default());
         assert!(a.is_empty());
         assert_eq!(p.numero, "0");
     }
@@ -355,13 +400,13 @@ mod testes {
         c.reprovados = 2;
         c.cpa_3d = Some(30.0);
         let mut mem = Memoria::default();
-        let (p, a) = avaliar(&[c], &mut mem);
+        let (p, a) = avaliar(&[c], &mut mem, &Config::default());
         assert_eq!(a.len(), 3);
         assert_eq!(p.numero, "1");
         assert!(p.itens[0].atencao);
         let mut c = conta("1");
         c.gasto_hoje = 130.0;
-        let (_, a) = avaliar(&[c], &mut mem);
+        let (_, a) = avaliar(&[c], &mut mem, &Config::default());
         assert!(a.is_empty());
     }
 }

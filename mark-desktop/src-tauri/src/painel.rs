@@ -8,6 +8,18 @@ pub struct Item {
     pub detalhe: String,
     pub atencao: bool,
     pub link: Option<String>,
+    /// Segunda linha, mais apagada (ex.: ferramenta que o Claude está usando).
+    pub sub: Option<String>,
+    /// Momento de referência (epoch em ms); a barra mostra "há 3 min".
+    pub desde_ms: Option<i64>,
+    /// Id no serviço de origem, para ações (concluir tarefa no Asana).
+    pub id: Option<String>,
+}
+
+impl Item {
+    pub fn novo(titulo: impl Into<String>, detalhe: impl Into<String>, atencao: bool) -> Self {
+        Item { titulo: titulo.into(), detalhe: detalhe.into(), atencao, link: None, sub: None, desde_ms: None, id: None }
+    }
 }
 
 #[derive(Serialize, Clone, Debug)]

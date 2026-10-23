@@ -6,17 +6,23 @@
     <link rel="stylesheet" href="/src/estilo.css" />
   </head>
   <body class="janela-ilha">
-    <div id="ilha" class="ilha">
-      <div class="ilha-topo">
-        <img src="/logo-vm.png" class="logo" alt="vm." />
-        <div id="balao" class="balao"></div>
-        <div class="chips">
-          <button class="chip" data-aba="asana" title="Asana"><span class="ponto"></span>Asana <b id="n-asana">–</b></button>
-          <button class="chip" data-aba="ads" title="Google Ads"><span class="ponto"></span>Ads <b id="n-ads">–</b></button>
-          <button class="chip" data-aba="claude" title="Claude Code"><span class="ponto"></span>Claude <b id="n-claude">–</b></button>
+    <div id="ilha" class="ilha fechada">
+      <div class="conteudo">
+        <div class="ilha-topo">
+          <img src="/logo-vm.png" class="logo" alt="vm." />
+          <div id="balao" class="balao"></div>
+          <div class="chips">
+            <button class="chip" data-aba="asana" title="Asana"><span class="ponto"></span>Asana <b id="n-asana">–</b></button>
+            <button class="chip" data-aba="ads" title="Google Ads"><span class="ponto"></span>Ads <b id="n-ads">–</b></button>
+            <button class="chip" data-aba="claude" title="Claude Code"><span class="ponto"></span>Claude <b id="n-claude">–</b></button>
+          </div>
+          <button id="engrenagem" class="engrenagem" title="Configurações" aria-label="Configurações">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+          </button>
         </div>
+        <div id="fala" class="fala"></div>
+        <div id="painel" class="painel"></div>
       </div>
-      <div id="painel" class="painel"></div>
     </div>
     <script type="module" src="/src/ilha.ts"></script>
   </body>

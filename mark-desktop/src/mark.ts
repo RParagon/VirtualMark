@@ -1,8 +1,8 @@
 import { invoke } from "@tauri-apps/api/core";
 import { emit, listen } from "@tauri-apps/api/event";
-import { getCurrentWindow, PhysicalPosition } from "@tauri-apps/api/window";
+import { getCurrentWindow, LogicalSize, PhysicalPosition } from "@tauri-apps/api/window";
 import { EV_ALERTA, EV_BANDEJA, EV_CLIQUE, EV_ESTADO, type Alerta, type Estado, type PedidoEstado } from "./eventos";
-import { animacao, precarregar, TODOS_ESTADOS } from "./sprites";
+import { animacao, precarregar, quadroOlhar, TODOS_ESTADOS } from "./sprites";
 
 interface Area {
   x: number;
@@ -14,6 +14,13 @@ interface Area {
 
 const janela = getCurrentWindow();
 const img = document.getElementById("mark") as HTMLImageElement;
+const balaoEl = document.getElementById("balao-mark")!;
+
+// Tamanhos lógicos (iguais aos de tauri.conf.json e do CSS).
+const LARGURA = 104;
+const ALTURA = 112;
+const BALAO_L = 250; // espaço extra ao lado para o balão
+const BALAO_A = 46; // espaço extra acima
 
 // ---------- Animação ----------
 
@@ -22,6 +29,7 @@ let atual: Estado = "idle";
 let quadro = 0;
 let restantes = 0; // ciclos que faltam numa animação de "uma vez"
 let relogio = 0;
+let olhandoAte = 0; // enquanto o cursor mexe, o Mark olha para ele em vez de piscar
 
 function tocar(estado: Estado, vezes = 0) {
   if (vezes === 0) base = estado;
@@ -34,7 +42,7 @@ function tocar(estado: Estado, vezes = 0) {
 function agendar() {
   clearTimeout(relogio);
   const { quadros, fps } = animacao(atual);
-  img.src = quadros[quadro];
+  if (!(atual === "idle" && Date.now() < olhandoAte)) img.src = quadros[quadro];
   relogio = window.setTimeout(() => {
     quadro++;
     if (quadro >= quadros.length) {
@@ -48,12 +56,11 @@ function agendar() {
 // ---------- Movimento ----------
 
 let area: Area = { x: 0, y: 0, largura: 1920, altura: 1080, escala: 1 };
-let casa = { x: 0, y: 0 }; // onde o Rafael deixou o Mark
+let casa = { x: 0, y: 0 }; // onde o Rafael deixou o Mark (canto da janela sem balão)
 let pos = { x: 0, y: 0 };
 let movendo = 0; // id do movimento em curso (0 = parado)
-let longeDeCasa = false;
+let comBalao = false;
 
-const LARGURA = 104;
 const VELOCIDADE = 90; // px lógicos por segundo
 
 function moverPara(x: number, y: number, velocidade = VELOCIDADE): Promise<boolean> {
@@ -96,30 +103,11 @@ async function passear() {
   tocar("idle");
 }
 
-/** Corre até logo abaixo da barra no topo e fica apontando para ela. */
-async function irAteBarra(estado: Estado) {
-  const largura = LARGURA * area.escala;
-  const x = area.x + (area.largura - largura) / 2;
-  const y = area.y + 50 * area.escala;
-  longeDeCasa = true;
-  tocar("jumping", 0);
-  await moverPara(x, y, VELOCIDADE * 4);
-  tocar(estado);
-}
-
-async function voltarParaCasa() {
-  if (!longeDeCasa) return;
-  longeDeCasa = false;
-  tocar("jumping", 0);
-  await moverPara(casa.x, casa.y, VELOCIDADE * 4);
-  tocar("idle");
-}
-
 // De vez em quando, quando está à toa, ele passeia ou dá um pulinho.
 function vidaPropria() {
   const espera = 20000 + Math.random() * 40000;
   setTimeout(() => {
-    if (!movendo && !longeDeCasa && base === "idle" && atual === "idle") {
+    if (!movendo && !comBalao && !arrastando && base === "idle" && atual === "idle" && Date.now() > olhandoAte) {
       const sorte = Math.random();
       if (sorte < 0.45) passear();
       else if (sorte < 0.7) tocar("jumping", 1);
@@ -129,39 +117,119 @@ function vidaPropria() {
   }, espera);
 }
 
+// ---------- Olhar para o cursor ----------
+
+let ultimoCursor = { x: -1, y: -1 };
+
+async function seguirCursor() {
+  try {
+    const c = await invoke<[number, number] | null>("cursor");
+    if (c && !movendo && !arrastando && base === "idle" && atual === "idle") {
+      const [cx, cy] = c;
+      if (Math.hypot(cx - ultimoCursor.x, cy - ultimoCursor.y) > 3) {
+        ultimoCursor = { x: cx, y: cy };
+        // Centro da cabeça do Mark (a imagem fica no canto de baixo da janela).
+        const e = area.escala;
+        const centroX = casa.x + (LARGURA / 2) * e;
+        const centroY = casa.y + (ALTURA - 52) * e;
+        const dx = cx - centroX;
+        const dy = cy - centroY;
+        if (Math.hypot(dx, dy) > 40 * e) {
+          olhandoAte = Date.now() + 2500;
+          img.src = quadroOlhar(Math.atan2(dy, dx));
+        }
+      }
+    }
+  } catch {
+    // sem cursor (tela bloqueada etc.): tenta de novo no próximo ciclo
+  }
+  setTimeout(seguirCursor, 120);
+}
+
+// ---------- Balão ao lado da cabeça ----------
+
+let relogioBalao = 0;
+
+async function mostrarBalao(texto: string, segundos = 9) {
+  clearTimeout(relogioBalao);
+  movendo = 0;
+  const e = area.escala;
+  // Balão do lado que tem mais espaço na tela.
+  const esquerda = casa.x + (LARGURA / 2) * e > area.x + area.largura / 2;
+  balaoEl.textContent = texto;
+  document.body.classList.toggle("balao-esquerda", esquerda);
+  document.body.classList.add("com-balao");
+  if (!comBalao) {
+    comBalao = true;
+    await janela.setSize(new LogicalSize(LARGURA + BALAO_L, ALTURA + BALAO_A));
+    const x = esquerda ? casa.x - BALAO_L * e : casa.x;
+    pos = { x, y: casa.y - BALAO_A * e };
+    await janela.setPosition(new PhysicalPosition(Math.round(pos.x), Math.round(pos.y)));
+  }
+  relogioBalao = window.setTimeout(esconderBalao, segundos * 1000);
+}
+
+async function esconderBalao() {
+  clearTimeout(relogioBalao);
+  if (!comBalao) return;
+  comBalao = false;
+  document.body.classList.remove("com-balao");
+  pos = { ...casa };
+  await janela.setPosition(new PhysicalPosition(Math.round(casa.x), Math.round(casa.y)));
+  await janela.setSize(new LogicalSize(LARGURA, ALTURA));
+  if (base !== "idle") tocar("idle");
+}
+
+balaoEl.addEventListener("click", (e) => {
+  e.stopPropagation();
+  emit(EV_CLIQUE);
+  esconderBalao();
+});
+
 // ---------- Arrastar e clicar ----------
 
 let apertou: { x: number; y: number } | null = null;
 let arrastando = false;
+let fimArrasto = 0;
 
 window.addEventListener("mousedown", (e) => {
-  if (e.button !== 0) return;
+  if (e.button !== 0 || (e.target as HTMLElement).closest(".balao-mark")) return;
   apertou = { x: e.screenX, y: e.screenY };
   arrastando = false;
 });
-window.addEventListener("mousemove", (e) => {
+window.addEventListener("mousemove", async (e) => {
   if (!apertou || arrastando) return;
   if (Math.hypot(e.screenX - apertou.x, e.screenY - apertou.y) > 4) {
-    arrastando = true;
-    movendo = 0; // cancela passeio
-    longeDeCasa = false;
     apertou = null;
+    movendo = 0; // cancela passeio
+    if (comBalao) await esconderBalao();
+    arrastando = true;
+    tocar("jumping", 0); // esperneando enquanto é carregado
     janela.startDragging();
   }
 });
 window.addEventListener("mouseup", () => {
   if (apertou && !arrastando) {
     emit(EV_CLIQUE);
-    voltarParaCasa();
+    tocar("waving", 1);
   }
   apertou = null;
 });
 
 // Quando o Rafael solta o Mark num lugar novo, ali vira a casa dele.
 janela.onMoved(({ payload }) => {
-  if (movendo) return;
+  if (movendo || comBalao) return;
   pos = { x: payload.x, y: payload.y };
-  if (!longeDeCasa) casa = { ...pos };
+  casa = { ...pos };
+  if (arrastando) {
+    // Não há evento de "soltou": quando para de mexer, considera que pousou.
+    clearTimeout(fimArrasto);
+    fimArrasto = window.setTimeout(() => {
+      arrastando = false;
+      tocar("idle");
+      tocar("jumping", 1);
+    }, 300);
+  }
 });
 
 // ---------- Eventos ----------
@@ -189,10 +257,15 @@ async function iniciar() {
   casa = { ...pos };
   tocar("idle");
   vidaPropria();
+  seguirCursor();
 
-  await listen<PedidoEstado>(EV_ESTADO, ({ payload }) => tocar(payload.estado, payload.vezes ?? 0));
-  await listen<Alerta>(EV_ALERTA, ({ payload }) => irAteBarra(ANIMACAO_DO_ALERTA[payload.fonte]));
-  await listen(EV_CLIQUE, () => voltarParaCasa());
+  await listen<PedidoEstado>(EV_ESTADO, ({ payload }) => {
+    if (!arrastando) tocar(payload.estado, payload.vezes ?? 0);
+  });
+  await listen<Alerta>(EV_ALERTA, ({ payload }) => {
+    tocar(ANIMACAO_DO_ALERTA[payload.fonte], 3);
+    mostrarBalao(payload.texto);
+  });
   await listen<string>(EV_BANDEJA, ({ payload }) => {
     if (payload === "demo") demonstracao();
   });
