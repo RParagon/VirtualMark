@@ -1,0 +1,13 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Permissões da barra VM e do Mark",
+  "windows": ["ilha", "mark"],
+  "permissions": [
+    "core:default",
+    "core:window:allow-set-position",
+    "core:window:allow-set-size",
+    "core:window:allow-start-dragging",
+    "opener:default"
+  ]
+}

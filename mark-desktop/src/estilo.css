@@ -1,0 +1,63 @@
+:root {
+  --vermelho: #dc2626;
+  --vermelho-vivo: #ff1339;
+  --fundo: #0b0b0c;
+  --fundo-2: #161618;
+  --borda: #2a2a2e;
+  --texto: #f4f4f5;
+  --texto-2: #a1a1aa;
+  --verde: #22c55e;
+  --azul: #3b82f6;
+}
+:root[data-tema="claro"] {
+  --fundo: #fafafa;
+  --fundo-2: #ffffff;
+  --borda: #e4e4e7;
+  --texto: #18181b;
+  --texto-2: #52525b;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: transparent; overflow: hidden; user-select: none; font: 13px/1.35 "Segoe UI", system-ui, sans-serif; color: var(--texto); }
+
+/* Mark */
+.janela-mark { display: flex; align-items: flex-end; justify-content: center; height: 100vh; cursor: grab; }
+#mark { width: 96px; height: 104px; image-rendering: auto; pointer-events: none; }
+
+/* Barra VM (ilha) */
+.janela-ilha { display: flex; justify-content: center; }
+.ilha {
+  width: 100%;
+  background: var(--fundo);
+  border: 1px solid var(--borda);
+  border-radius: 22px;
+  overflow: hidden;
+  transition: border-color .2s;
+}
+.ilha.alerta { border-color: var(--vermelho); box-shadow: 0 0 0 1px var(--vermelho) inset; }
+.ilha-topo { display: flex; align-items: center; gap: 8px; height: 42px; padding: 0 8px 0 14px; }
+.logo { height: 16px; }
+.balao { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--texto-2); font-size: 12px; }
+.balao.ativo { color: var(--texto); }
+.chips { display: flex; gap: 4px; }
+.chip {
+  display: flex; align-items: center; gap: 5px;
+  background: var(--fundo-2); color: var(--texto-2);
+  border: 1px solid var(--borda); border-radius: 999px;
+  padding: 3px 9px; font: inherit; font-size: 11.5px; cursor: pointer;
+}
+.chip b { color: var(--texto); font-weight: 600; }
+.chip .ponto { width: 7px; height: 7px; border-radius: 50%; background: var(--borda); }
+.chip[data-nivel="ok"] .ponto { background: var(--verde); }
+.chip[data-nivel="trabalhando"] .ponto { background: var(--azul); }
+.chip[data-nivel="atencao"] .ponto { background: var(--vermelho-vivo); }
+.chip.ativa { border-color: var(--vermelho); color: var(--texto); }
+
+.painel { display: none; padding: 4px 14px 14px; max-height: 260px; overflow-y: auto; }
+.ilha.aberta .painel { display: block; }
+.painel h3 { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--texto-2); margin: 10px 0 6px; }
+.item { display: flex; gap: 8px; align-items: baseline; padding: 6px 0; border-top: 1px solid var(--borda); }
+.item:first-of-type { border-top: 0; }
+.item .t { flex: 1; }
+.item .s { color: var(--texto-2); font-size: 11.5px; white-space: nowrap; }
+.item.atencao .s { color: var(--vermelho-vivo); }
+.vazio { color: var(--texto-2); padding: 8px 0; }

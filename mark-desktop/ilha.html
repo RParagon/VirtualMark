@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Barra VM</title>
+    <link rel="stylesheet" href="/src/estilo.css" />
+  </head>
+  <body class="janela-ilha">
+    <div id="ilha" class="ilha">
+      <div class="ilha-topo">
+        <img src="/logo-vm.png" class="logo" alt="vm." />
+        <div id="balao" class="balao"></div>
+        <div class="chips">
+          <button class="chip" data-aba="asana" title="Asana"><span class="ponto"></span>Asana <b id="n-asana">–</b></button>
+          <button class="chip" data-aba="ads" title="Google Ads"><span class="ponto"></span>Ads <b id="n-ads">–</b></button>
+          <button class="chip" data-aba="claude" title="Claude Code"><span class="ponto"></span>Claude <b id="n-claude">–</b></button>
+        </div>
+      </div>
+      <div id="painel" class="painel"></div>
+    </div>
+    <script type="module" src="/src/ilha.ts"></script>
+  </body>
+</html>
