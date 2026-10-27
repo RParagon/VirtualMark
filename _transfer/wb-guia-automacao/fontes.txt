@@ -1,0 +1,12 @@
+capa.jpg | https://unsplash.com/photos/sala-de-estar-moderna-luxuosa-com-sofa-bege-e-iluminacao-de-destaque-DgmK-H2VqTU | Maverick Frame | Unsplash License (uso comercial livre, sem atribuição obrigatória)
+app-celular.jpg | https://unsplash.com/photos/maos-controlando-dispositivos-domesticos-inteligentes-usando-um-smartphone-djFspwXyTms | HUUM | Unsplash License (uso comercial livre, sem atribuição obrigatória)
+interruptor.jpg | https://unsplash.com/photos/a-mao-de-uma-pessoa-tocando-um-botao-em-uma-parede-taNXaafOgAs | Aleksandr Lyaptsev | Unsplash License (uso comercial livre, sem atribuição obrigatória)
+assistente-voz.jpg | https://www.pexels.com/photo/a-person-holding-a-brown-speaker-4790264/ | Anete Lusina | Pexels License (uso comercial livre, sem atribuição obrigatória) | retocada: logo removido do alto-falante
+persiana.jpg | https://unsplash.com/photos/uma-mesa-e-cadeiras-em-uma-sala-EyhmdoIQpCQ | Tanya Semenchuk | Unsplash License (uso comercial livre, sem atribuição obrigatória)
+fechadura.jpg | https://www.pexels.com/photo/close-up-of-a-door-knob-20901468/ | Sucipta Mahendra | Pexels License (uso comercial livre, sem atribuição obrigatória) | retocada: logo removido da fechadura
+ar-condicionado.jpg | https://unsplash.com/photos/um-quarto-com-paredes-azuis-e-uma-cama-branca-MKNbt8Tapu4 | Mitchell Luo | Unsplash License (uso comercial livre, sem atribuição obrigatória)
+cozinha.jpg | https://unsplash.com/photos/cozinha-moderna-com-backsplash-de-marmore-e-eletrodomesticos-de-aco-inoxidavel-pGVQwb5lGX4 | Franco Debartolo | Unsplash License (uso comercial livre, sem atribuição obrigatória)
+eletricista.jpg | https://unsplash.com/photos/eletricista-instalando-fiacao-com-capacete-amarelo-_2AlIm-F6pw | Emmanuel Ikwuegbu | Unsplash License (uso comercial livre, sem atribuição obrigatória)
+obra.jpg | https://unsplash.com/photos/encanamento-e-fiacao-eletrica-expostos-em-uma-parede-de-tijolos-hPZk_DfODx0 | Olek Buzunov | Unsplash License (uso comercial livre, sem atribuição obrigatória)
+home-office.jpg | https://unsplash.com/photos/mesa-noturna-com-laptop-luminaria-e-luzes-de-camara-P6NY5x3ivYg | Avtar Singh | Unsplash License (uso comercial livre, sem atribuição obrigatória)
+cinema.jpg | https://unsplash.com/photos/um-quarto-com-um-sofa-e-uma-televisao-EE0DOgXztcY | Bilal Mansuri | Unsplash License (uso comercial livre, sem atribuição obrigatória)
