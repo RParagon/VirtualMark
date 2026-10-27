@@ -1,7 +1,0 @@
-95ab1b4e049eeed3693cdb9e9e46759514e707a6fd62f4cabbac11c83b44b8ac  ./netlify/functions/lead-guia.mts
-9a8b1c322fa43bb67f8857d7013c86ec853ba6235f56cc6860f8ef7a911a6c80  ./public/materiais/guia-automacao-capa.webp
-bf9ed56e4718a78c920a7dceac0a2410e932c501eb5b9f5d4184bfec063531ae  ./public/materiais/guia-casa-inteligente-wb-2026.pdf
-3d621d734b022830f4b6b15173401ccbff7f8aca001857ca0f460ce6a5fef280  ./src/components/lp/calculators.tsx
-2dba703829308e5ea3d86988b1ed89cb4d35db11f2dab832295d28c7d2cd8669  ./src/components/lp/content.ts
-c32ca6d9e6c48a1eee1a38478e615130d396fd006748e8159f2cc9536c630008  ./src/components/lp/guia.tsx
-6267020619c9bdb659bb639568ab16da35c84dfce01bcbbcdb28885db2b35fec  ./src/components/lp/landing-page.tsx
